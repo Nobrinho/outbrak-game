@@ -18,6 +18,7 @@ local Net = require(Shared.Net)
 local Types = require(Shared.Types)
 local ZombiePacket = require(Shared.ZombiePacket)
 local ZombieRigs = require(Shared.Art.ZombieRigs)
+local Signal = require(Shared.Util.Signal)
 local Effects = require(script.Parent.Parent.Effects)
 
 local LOD = Config.CLIENT_ZOMBIES
@@ -55,6 +56,9 @@ type Entry = {
 }
 
 local ZombieRenderer = {}
+
+-- A Creeper lit its fuse at this position (audio plays the hiss).
+ZombieRenderer.fuseLit = Signal.new() :: Signal.Signal<Vector3>
 
 local entries: { [number]: Entry } = {}
 -- Ids removed recently. Snapshots are unreliable and removals reliable, so a snapshot can
@@ -220,6 +224,9 @@ local function onSnapshot(b: buffer)
 			entry.to = position
 			entry.toYaw = yaw
 			entry.alpha = 0
+			if state == ZombiePacket.STATE_FUSE and entry.state ~= state then
+				ZombieRenderer.fuseLit:fire(position)
+			end
 			entry.state = state
 			entry.kind = kind
 			entry.lastSeen = now
@@ -293,6 +300,19 @@ end
 local function kindScale(kind: number): number
 	local name = Config.ZOMBIE_KINDS_BY_ID[kind]
 	return if name then Config.ZOMBIES[name].scale else 1
+end
+
+-- How many zombies are within `radius` studs of `point` (drives the horde ambience).
+function ZombieRenderer.countNear(point: Vector3, radius: number): number
+	local count = 0
+	local radiusSq = radius * radius
+	for _, entry in entries do
+		local offset = entry.to - point
+		if offset:Dot(offset) <= radiusSq then
+			count += 1
+		end
+	end
+	return count
 end
 
 -- Local hit feedback; the server still decides the damage.

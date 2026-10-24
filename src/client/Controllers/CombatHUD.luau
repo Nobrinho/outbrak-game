@@ -12,10 +12,10 @@ local Config = require(Shared.Config)
 local Types = require(Shared.Types)
 local Text = require(Shared.Util.Text)
 local WeaponController = require(script.Parent.WeaponController)
+local Theme = require(script.Parent.Parent.UI.Theme)
 
 local CombatHUD = {}
 
-local COLOR_PANEL = Color3.fromRGB(20, 20, 24)
 local COLOR_TEXT = Color3.fromRGB(240, 240, 240)
 local COLOR_LOW = Color3.fromRGB(220, 40, 40)
 local COLOR_HEAD = Color3.fromRGB(255, 140, 20)
@@ -27,6 +27,11 @@ local reserveLabel: TextLabel
 local gunLabel: TextLabel
 local grenadeLabel: TextLabel
 local creditsLabel: TextLabel
+local statusPanel: Frame
+local healthFill: Frame
+local healthLabel: TextLabel
+local vignette: { Frame } = {}
+local damageFlash = 0 -- 0..1, decays every frame
 local abilityLabel: TextLabel
 local reloadLabel: TextLabel
 local hitmarker: Frame
@@ -37,7 +42,8 @@ local function label(parent: Instance, props: { [string]: any }): TextLabel
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
 	l.TextColor3 = COLOR_TEXT
-	l.Font = Enum.Font.GothamBlack
+	l.FontFace = Theme.FONT.heavy
+	l.TextStrokeTransparency = 0.75
 	l.TextScaled = true
 	for key, value in props do
 		(l :: any)[key] = value
@@ -52,16 +58,12 @@ local function buildAmmoPanel(): Frame
 	panel.AnchorPoint = Vector2.new(1, 0)
 	panel.Position = UDim2.new(1, -16, 0, 16)
 	panel.Size = UDim2.fromScale(0.2, 0.14)
-	panel.BackgroundColor3 = COLOR_PANEL
-	panel.BackgroundTransparency = 0.35
+	Theme.panel(panel)
 	panel.Parent = screen
 
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 2.2
 	aspect.Parent = panel
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0.12, 0)
-	corner.Parent = panel
 
 	gunLabel = label(panel, {
 		Position = UDim2.fromScale(0.06, 0.06),
@@ -94,32 +96,135 @@ local function buildStatusPanel(ammo: Frame)
 	local panel = Instance.new("Frame")
 	panel.Name = "Status"
 	panel.AnchorPoint = Vector2.new(1, 0)
-	panel.BackgroundColor3 = COLOR_PANEL
-	panel.BackgroundTransparency = 0.35
+	Theme.panel(panel)
 	panel.Parent = screen
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0.2, 0)
-	corner.Parent = panel
 	local function place()
 		local size = ammo.AbsoluteSize
-		panel.Size = UDim2.fromOffset(size.X, size.Y * 0.45)
+		panel.Size = UDim2.fromOffset(size.X, size.Y * 0.62)
 		panel.Position = UDim2.new(1, -16, 0, 16 + size.Y + 6)
 	end
 	ammo:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
 	place()
 
+	statusPanel = panel
 	creditsLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.08),
-		Size = UDim2.fromScale(0.88, 0.42),
+		Position = UDim2.fromScale(0.06, 0.06),
+		Size = UDim2.fromScale(0.88, 0.3),
 		TextXAlignment = Enum.TextXAlignment.Left,
-		TextColor3 = Color3.fromRGB(255, 204, 0),
+		TextColor3 = Theme.COLOR.accent,
 	})
 	abilityLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.54),
-		Size = UDim2.fromScale(0.88, 0.38),
+		Position = UDim2.fromScale(0.06, 0.38),
+		Size = UDim2.fromScale(0.88, 0.26),
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextTransparency = 0.15,
 	})
+	-- Health bar along the bottom of the strip.
+	local back = Instance.new("Frame")
+	back.Position = UDim2.fromScale(0.06, 0.7)
+	back.Size = UDim2.fromScale(0.88, 0.22)
+	back.BackgroundColor3 = Color3.new(0, 0, 0)
+	back.BackgroundTransparency = 0.4
+	back.BorderSizePixel = 0
+	back.Parent = panel
+	healthFill = Instance.new("Frame")
+	healthFill.Size = UDim2.fromScale(1, 1)
+	healthFill.BackgroundColor3 = Theme.COLOR.player
+	healthFill.BorderSizePixel = 0
+	healthFill.Parent = back
+	healthLabel = label(back, {
+		Size = UDim2.fromScale(1, 1),
+		FontFace = Theme.FONT.heavy,
+		ZIndex = 3,
+	})
+end
+
+-- Red edges that flash on damage and pulse when health is low. Four gradient strips in the
+-- inset-free layer, so they hug the real screen edges.
+local function buildVignette()
+	for i, spec in
+		{
+			{ anchor = Vector2.new(0, 0), size = UDim2.fromScale(1, 0.18), rotation = 90 },
+			{ anchor = Vector2.new(0, 1), size = UDim2.fromScale(1, 0.18), rotation = -90 },
+			{ anchor = Vector2.new(0, 0), size = UDim2.fromScale(0.12, 1), rotation = 0 },
+			{ anchor = Vector2.new(1, 0), size = UDim2.fromScale(0.12, 1), rotation = 180 },
+		}
+	do
+		local edge = Instance.new("Frame")
+		edge.Name = "Vignette" .. i
+		edge.AnchorPoint = spec.anchor
+		edge.Position = UDim2.fromScale(spec.anchor.X, spec.anchor.Y)
+		edge.Size = spec.size
+		edge.BackgroundColor3 = Theme.COLOR.danger
+		edge.BackgroundTransparency = 1
+		edge.BorderSizePixel = 0
+		local gradient = Instance.new("UIGradient")
+		gradient.Rotation = spec.rotation
+		gradient.Transparency = NumberSequence.new(0, 1) -- solid at the edge, clear inward
+		gradient.Parent = edge
+		edge.Parent = center
+		table.insert(vignette, edge)
+	end
+end
+
+local function humanoid(): Humanoid?
+	local character = Players.LocalPlayer.Character
+	return character and character:FindFirstChildOfClass("Humanoid")
+end
+
+local function updateHealth(dt: number)
+	local h = humanoid()
+	local ratio = if h and h.MaxHealth > 0 then math.clamp(h.Health / h.MaxHealth, 0, 1) else 0
+	healthFill.Size = UDim2.fromScale(ratio, 1)
+	healthFill.BackgroundColor3 = if ratio < 0.35 then Theme.COLOR.danger else Theme.COLOR.player
+	healthLabel.Text = if h then tostring(math.ceil(h.Health)) else ""
+
+	damageFlash = math.max(0, damageFlash - dt * 1.8)
+	local lowPulse = if h
+			and h.Health > 0
+			and ratio < 0.35
+		then 0.25 + 0.15 * math.sin(os.clock() * 5)
+		else 0
+	local strength = math.max(damageFlash, lowPulse)
+	for _, edge in vignette do
+		edge.BackgroundTransparency = 1 - strength
+	end
+end
+
+local function watchDamage(character: Model)
+	local h = character:WaitForChild("Humanoid", 10)
+	if not h or not h:IsA("Humanoid") then
+		return
+	end
+	local last = h.Health
+	h.HealthChanged:Connect(function(health)
+		if health < last then
+			damageFlash = math.min(0.7, damageFlash + (last - health) / h.MaxHealth * 3 + 0.2)
+		end
+		last = health
+	end)
+end
+
+-- "+N" that rises from the credits line whenever credits go up.
+local function creditPopup(amount: number)
+	local popup = label(screen, {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.fromOffset(
+			statusPanel.AbsolutePosition.X - 8,
+			statusPanel.AbsolutePosition.Y
+		),
+		Size = UDim2.fromOffset(90, 26),
+		Text = "+" .. amount,
+		TextColor3 = Theme.COLOR.accent,
+		TextXAlignment = Enum.TextXAlignment.Right,
+	})
+	local info = TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	TweenService:Create(popup, info, {
+		Position = popup.Position - UDim2.fromOffset(0, 30),
+		TextTransparency = 1,
+		TextStrokeTransparency = 1,
+	}):Play()
+	task.delay(1, popup.Destroy, popup)
 end
 
 local function refreshStatus()
@@ -229,14 +334,37 @@ function CombatHUD.init()
 
 	buildStatusPanel(buildAmmoPanel())
 	buildCenter()
+	buildVignette()
 end
 
 function CombatHUD.start()
 	refresh()
 	WeaponController.changed:connect(refresh)
 	WeaponController.hit:connect(flashHit)
-	-- Credits and the cooldown countdown change constantly; a text write per frame is cheap.
-	RunService.RenderStepped:Connect(refreshStatus)
+	-- Credits, cooldown and health change constantly; a few writes per frame are cheap.
+	RunService.RenderStepped:Connect(function(dt)
+		refreshStatus()
+		updateHealth(dt)
+	end)
+
+	local player = Players.LocalPlayer
+	if player.Character then
+		task.spawn(watchDamage, player.Character)
+	end
+	player.CharacterAdded:Connect(watchDamage)
+	task.spawn(function()
+		local credits = player:WaitForChild("leaderstats"):WaitForChild("Créditos")
+		if credits:IsA("IntValue") then
+			local last = credits.Value
+			credits.Changed:Connect(function(value)
+				-- Kill rewards only; a new match resetting credits isn't a reward.
+				if value > last and value - last <= 500 then
+					creditPopup(value - last)
+				end
+				last = value
+			end)
+		end
+	end)
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 	screen.Parent = playerGui
 	center.Parent = playerGui

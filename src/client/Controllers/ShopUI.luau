@@ -16,6 +16,7 @@ local Config = require(Shared.Config)
 local Net = require(Shared.Net)
 local Tags = require(Shared.Tags)
 local InputController = require(script.Parent.InputController)
+local Theme = require(script.Parent.Parent.UI.Theme)
 
 local ShopUI = {}
 
@@ -41,7 +42,7 @@ local function label(parent: Instance, props: { [string]: any }): TextLabel
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
 	l.TextColor3 = COLOR_TEXT
-	l.Font = Enum.Font.GothamBlack
+	l.FontFace = Theme.FONT.heavy
 	l.TextScaled = true
 	for key, value in props do
 		(l :: any)[key] = value
@@ -76,21 +77,18 @@ local function buildMenu()
 	menu.AnchorPoint = Vector2.new(0.5, 0.5)
 	menu.Position = UDim2.fromScale(0.5, 0.5)
 	menu.Size = UDim2.fromScale(0.5, 0.8)
-	menu.BackgroundColor3 = COLOR_PANEL
-	menu.BackgroundTransparency = 0.1
+	Theme.panel(menu, 0.1)
 	menu.Visible = false
 	menu.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 0.9
 	aspect.Parent = menu
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0.03, 0)
-	corner.Parent = menu
 
 	label(menu, {
 		Position = UDim2.fromScale(0.05, 0.02),
 		Size = UDim2.fromScale(0.7, 0.08),
 		Text = "SUPRIMENTOS",
+		FontFace = Theme.FONT.display,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = COLOR_ACCENT,
 	})
@@ -101,7 +99,7 @@ local function buildMenu()
 	close.BackgroundColor3 = COLOR_ROW
 	close.Text = "X"
 	close.TextColor3 = COLOR_TEXT
-	close.Font = Enum.Font.GothamBlack
+	close.FontFace = Theme.FONT.heavy
 	close.TextScaled = true
 	close.Parent = menu
 	close.Activated:Connect(function()
@@ -123,7 +121,7 @@ local function buildMenu()
 			Position = UDim2.fromScale(0.04, 0.15),
 			Size = UDim2.fromScale(0.6, 0.7),
 			Text = item.displayName,
-			Font = Enum.Font.GothamBold,
+			FontFace = Theme.FONT.label,
 			TextXAlignment = Enum.TextXAlignment.Left,
 		})
 		local buy = Instance.new("TextButton")
@@ -131,8 +129,7 @@ local function buildMenu()
 		buy.Position = UDim2.fromScale(0.97, 0.5)
 		buy.Size = UDim2.fromScale(0.3, 0.75)
 		buy.Text = "$ " .. item.price
-		buy.Font = Enum.Font.GothamBlack
-		buy.TextScaled = true
+		Theme.button(buy)
 		buy.Parent = row
 		local buyCorner = Instance.new("UICorner")
 		buyCorner.CornerRadius = UDim.new(0.2, 0)

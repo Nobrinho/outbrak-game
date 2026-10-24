@@ -52,6 +52,7 @@ local lastDebug: { [Player]: number } = {}
 -- respawns: the client's counter never resets.
 local shotSeqs: { [Player]: number } = {}
 local syncRemote: RemoteEvent
+local shotFxRemote: UnreliableRemoteEvent
 local grenadeFolder: Folder
 
 local function classOf(player: Player): Config.ClassStats
@@ -231,6 +232,7 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 		state.mag -= 1
 	end
 	HordeService.noise(root.Position, gun.noise, 2.5, player)
+	shotFxRemote:FireAllClients(player, state.gun)
 
 	local hitList = hits :: { unknown }
 	local eye = head.Position
@@ -569,6 +571,7 @@ end
 
 function CombatService.init()
 	syncRemote = Net.weaponSync()
+	shotFxRemote = Net.shotFx()
 	grenadeFolder = Instance.new("Folder")
 	grenadeFolder.Name = "Grenades"
 	grenadeFolder.Parent = workspace

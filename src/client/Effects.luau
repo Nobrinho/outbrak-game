@@ -1,11 +1,16 @@
 --!strict
--- Local-only combat feedback: blood bursts, bullet tracers and the melee swipe. Greybox
--- visuals; the art pass (week 9) swaps textures and adds sound. One pooled emitter serves
--- every blood burst, so heavy fights don't create instances.
+-- Local-only combat feedback: blood, tracers, muzzle flashes, the melee swipe, explosion
+-- fireballs and camera shake. Pooled emitters serve every burst, so heavy fights don't create
+-- instances. `Effects.quality` drops to 0.5 when the frame rate sags (§2 Gráficos Dinâmicos):
+-- fewer particles and no flash lights.
 
 local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local Effects = {}
+
+Effects.quality = 1
 
 local COLOR_BLOOD = Color3.fromRGB(70, 8, 8)
 local COLOR_TRACER = Color3.fromRGB(255, 220, 140)
@@ -13,6 +18,9 @@ local COLOR_TRACER = Color3.fromRGB(255, 220, 140)
 local folder: Folder? = nil
 local bloodAttachment: Attachment? = nil
 local bloodEmitter: ParticleEmitter? = nil
+local smokeAttachment: Attachment? = nil
+local smokeEmitter: ParticleEmitter? = nil
+local trauma = 0 -- camera shake, 0..1
 
 local function container(): Folder
 	if folder then
@@ -65,7 +73,132 @@ end
 function Effects.blood(position: Vector3, amount: number)
 	local attachment, pe = emitter()
 	attachment.WorldPosition = position
-	pe:Emit(amount)
+	pe:Emit(math.max(1, math.round(amount * Effects.quality)))
+end
+
+local function smoke(): (Attachment, ParticleEmitter)
+	if smokeAttachment and smokeEmitter then
+		return smokeAttachment, smokeEmitter
+	end
+	local attachment = Instance.new("Attachment")
+	attachment.Parent = workspace.Terrain
+	local pe = Instance.new("ParticleEmitter")
+	pe.Enabled = false
+	pe.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	pe.Color = ColorSequence.new(Color3.fromRGB(70, 64, 60))
+	pe.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 2),
+		NumberSequenceKeypoint.new(1, 7),
+	})
+	pe.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.3),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	pe.Lifetime = NumberRange.new(1.2, 2)
+	pe.Speed = NumberRange.new(4, 12)
+	pe.SpreadAngle = Vector2.new(180, 180)
+	pe.Acceleration = Vector3.new(0, 6, 0)
+	pe.Drag = 1.5
+	pe.RotSpeed = NumberRange.new(-40, 40)
+	pe.Parent = attachment
+	smokeAttachment, smokeEmitter = attachment, pe
+	return attachment, pe
+end
+
+-- Short-lived neon flash at the muzzle; a light too unless quality is reduced.
+function Effects.muzzleFlash(position: Vector3, direction: Vector3)
+	local flash = Instance.new("Part")
+	flash.Anchored = true
+	flash.CanCollide = false
+	flash.CanQuery = false
+	flash.CanTouch = false
+	flash.CastShadow = false
+	flash.Material = Enum.Material.Neon
+	flash.Color = Color3.fromRGB(255, 200, 90)
+	flash.Size = Vector3.new(0.35, 0.35, 0.9)
+	flash.CFrame = CFrame.lookAt(position + direction * 0.4, position + direction)
+	if Effects.quality >= 1 then
+		local light = Instance.new("PointLight")
+		light.Color = flash.Color
+		light.Range = 10
+		light.Brightness = 3
+		light.Parent = flash
+	end
+	flash.Parent = container()
+	Debris:AddItem(flash, 0.05)
+end
+
+-- Fireball that swells and fades, a burst of smoke, and shake that falls off with distance.
+function Effects.explosion(position: Vector3, radius: number)
+	local ball = Instance.new("Part")
+	ball.Shape = Enum.PartType.Ball
+	ball.Anchored = true
+	ball.CanCollide = false
+	ball.CanQuery = false
+	ball.CanTouch = false
+	ball.CastShadow = false
+	ball.Material = Enum.Material.Neon
+	ball.Color = Color3.fromRGB(255, 130, 30)
+	ball.Size = Vector3.one * 2
+	ball.CFrame = CFrame.new(position)
+	ball.Parent = container()
+	local grow = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	TweenService:Create(ball, grow, {
+		Size = Vector3.one * radius * 1.2,
+		Transparency = 1,
+		Color = Color3.fromRGB(120, 40, 10),
+	}):Play()
+	Debris:AddItem(ball, 0.4)
+
+	local attachment, pe = smoke()
+	attachment.WorldPosition = position
+	pe:Emit(math.max(4, math.round(18 * Effects.quality)))
+
+	local camera = workspace.CurrentCamera
+	local distance = (camera.CFrame.Position - position).Magnitude
+	Effects.shake(math.clamp(1 - distance / (radius * 6), 0, 1) * 0.9)
+end
+
+-- Adds camera shake (0..1); it decays on its own.
+function Effects.shake(amount: number)
+	trauma = math.min(1, trauma + amount)
+end
+
+local function applyShake(dt: number)
+	if trauma <= 0 then
+		return
+	end
+	local strength = trauma * trauma
+	local t = os.clock() * 25
+	local camera = workspace.CurrentCamera
+	camera.CFrame *= CFrame.Angles(
+		math.rad(math.noise(t, 1) * 4 * strength),
+		math.rad(math.noise(t, 2) * 4 * strength),
+		math.rad(math.noise(t, 3) * 3 * strength)
+	)
+	trauma = math.max(0, trauma - dt * 1.6)
+end
+
+-- Starts camera shake and the frame-rate watch that drives `quality`. Call once.
+function Effects.start()
+	-- After the default camera has positioned itself this frame.
+	RunService:BindToRenderStep("SwarmShake", Enum.RenderPriority.Camera.Value + 2, applyShake)
+
+	local frames, elapsed = 0, 0
+	RunService.Heartbeat:Connect(function(dt)
+		frames += 1
+		elapsed += dt
+		if elapsed >= 2 then
+			local fps = frames / elapsed
+			-- Hysteresis so it doesn't flip every sample around the threshold.
+			if fps < 40 then
+				Effects.quality = 0.5
+			elseif fps > 50 then
+				Effects.quality = 1
+			end
+			frames, elapsed = 0, 0
+		end
+	end)
 end
 
 function Effects.tracer(from: Vector3, to: Vector3, color: Color3?)

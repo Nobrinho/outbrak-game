@@ -8,6 +8,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local Theme = require(script.Parent.Parent.UI.Theme)
+
 local MatchHUD = {}
 
 local COLOR_PANEL = Color3.fromRGB(20, 20, 24)
@@ -38,7 +40,8 @@ local function text(parent: Instance, props: { [string]: any }): TextLabel
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
 	l.TextColor3 = COLOR_TEXT
-	l.Font = Enum.Font.GothamBlack
+	l.FontFace = Theme.FONT.heavy
+	l.TextStrokeTransparency = 0.75
 	l.TextScaled = true
 	for key, value in props do
 		(l :: any)[key] = value
@@ -53,15 +56,11 @@ local function build()
 	banner.AnchorPoint = Vector2.new(0.5, 0)
 	banner.Position = UDim2.new(0.5, 0, 0, 12)
 	banner.Size = UDim2.fromScale(0.3, 0.1)
-	banner.BackgroundColor3 = COLOR_PANEL
-	banner.BackgroundTransparency = 0.35
+	Theme.panel(banner)
 	banner.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 4
 	aspect.Parent = banner
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0.15, 0)
-	corner.Parent = banner
 
 	titleLabel =
 		text(banner, { Position = UDim2.fromScale(0.05, 0.08), Size = UDim2.fromScale(0.9, 0.5) })
@@ -93,6 +92,7 @@ local function build()
 	end)
 
 	announce = text(screen, {
+		FontFace = Theme.FONT.display,
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.3),
 		Size = UDim2.fromScale(0.6, 0.1),
@@ -118,12 +118,14 @@ local function build()
 	result.ZIndex = 5
 	result.Parent = screen
 	resultTitle = text(result, {
+		FontFace = Theme.FONT.display,
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.35),
 		Size = UDim2.fromScale(0.7, 0.14),
 		ZIndex = 6,
 	})
 	resultStats = text(result, {
+		FontFace = Theme.FONT.label,
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.fromScale(0.5, 0.47),
 		Size = UDim2.fromScale(0.5, 0.3),

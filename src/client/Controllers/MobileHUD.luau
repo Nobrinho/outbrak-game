@@ -10,6 +10,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local InputController = require(script.Parent.InputController)
+local Theme = require(script.Parent.Parent.UI.Theme)
 local Text = require(game:GetService("ReplicatedStorage").Shared.Util.Text)
 
 type Action = InputController.Action
@@ -63,7 +64,7 @@ local function makeButton(spec: ButtonSpec, parent: GuiObject): TextButton
 	b.BackgroundTransparency = 0.35
 	b.Text = spec.label
 	b.TextColor3 = COLOR_TEXT
-	b.Font = Enum.Font.GothamBlack
+	b.FontFace = Theme.FONT.heavy
 	b.TextScaled = true
 	b.AutoButtonColor = false
 	corner(b, UDim.new(0.5, 0))

@@ -43,6 +43,12 @@ WeaponController.view = {
 WeaponController.changed = Signal.new() :: Signal.Signal<()>
 -- Fired on a confirmed-looking local hit; the argument is true for headshots.
 WeaponController.hit = Signal.new() :: Signal.Signal<boolean>
+-- Feedback hooks for audio and effects: a shot (gun name, muzzle position, aim direction),
+-- a melee swing, a grenade throw and the start of a reload.
+WeaponController.fired = Signal.new() :: Signal.Signal<string, Vector3, Vector3>
+WeaponController.swung = Signal.new() :: Signal.Signal<()>
+WeaponController.thrown = Signal.new() :: Signal.Signal<()>
+WeaponController.reloadStarted = Signal.new() :: Signal.Signal<()>
 
 local view = WeaponController.view
 local player = Players.LocalPlayer
@@ -176,6 +182,7 @@ local function requestReload()
 	view.reloading = true
 	reloadWatchdog = os.clock() + gun.reloadTime + 1.5
 	Net.reload():FireServer()
+	WeaponController.reloadStarted:fire()
 	WeaponController.changed:fire()
 end
 
@@ -214,6 +221,7 @@ local function fire(me: Body)
 	end
 
 	Net.fireWeapon():FireServer(shotSeq, hits)
+	WeaponController.fired:fire(view.gun, muzzle, center)
 	if anyHit then
 		WeaponController.hit:fire(anyHead)
 	end
@@ -240,6 +248,7 @@ local function swing()
 	local melee = Config.MELEE[view.melee]
 	nextMelee = now + melee.cooldown
 	Net.melee():FireServer()
+	WeaponController.swung:fire()
 	Effects.swipe(me.root.CFrame, melee.range)
 
 	-- Local hit check only drives feedback; the server decides the real targets.
@@ -272,6 +281,7 @@ local function throwGrenade()
 		view.grenades -= 1
 	end
 	Net.throwGrenade():FireServer(workspace.CurrentCamera.CFrame.LookVector)
+	WeaponController.thrown:fire()
 	WeaponController.changed:fire()
 end
 

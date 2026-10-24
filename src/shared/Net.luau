@@ -100,4 +100,9 @@ function Net.turretShot(): UnreliableRemoteEvent
 	return get("TurretShot", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
 end
 
+-- Server → clients, unreliable: (shooter: Player, gun: string) so others hear a shot.
+function Net.shotFx(): UnreliableRemoteEvent
+	return get("ShotFx", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
+end
+
 return Net

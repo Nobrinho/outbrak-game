@@ -12,6 +12,7 @@ local Net = require(Shared.Net)
 local Types = require(Shared.Types)
 local Text = require(Shared.Util.Text)
 local InputController = require(script.Parent.InputController)
+local Theme = require(script.Parent.Parent.UI.Theme)
 
 local ClassController = {}
 
@@ -30,7 +31,7 @@ local function label(parent: Instance, props: { [string]: any }): TextLabel
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
 	l.TextColor3 = COLOR_TEXT
-	l.Font = Enum.Font.GothamBlack
+	l.FontFace = Theme.FONT.heavy
 	l.TextScaled = true
 	l.TextWrapped = true
 	for key, value in props do
@@ -59,19 +60,16 @@ local function buildPicker()
 	picker.AnchorPoint = Vector2.new(0.5, 0.5)
 	picker.Position = UDim2.fromScale(0.5, 0.5)
 	picker.Size = UDim2.fromScale(0.7, 0.7)
-	picker.BackgroundColor3 = COLOR_PANEL
-	picker.BackgroundTransparency = 0.15
-	picker.Visible = false
 	picker.ZIndex = 10
+	Theme.panel(picker, 0.12)
+	picker.Visible = false
 	picker.Parent = screen
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0.03, 0)
-	corner.Parent = picker
 
 	label(picker, {
 		Position = UDim2.fromScale(0.05, 0.03),
 		Size = UDim2.fromScale(0.9, 0.12),
 		Text = "ESCOLHA SUA CLASSE",
+		FontFace = Theme.FONT.display,
 		ZIndex = 11,
 	})
 
@@ -105,21 +103,21 @@ local function buildPicker()
 			Position = UDim2.fromScale(0.06, 0.24),
 			Size = UDim2.fromScale(0.88, 0.1),
 			Text = "Arma inicial: " .. Config.GUNS[class.startGun].displayName,
-			Font = Enum.Font.GothamBold,
+			FontFace = Theme.FONT.label,
 			ZIndex = 12,
 		})
 		label(card, {
 			Position = UDim2.fromScale(0.06, 0.38),
 			Size = UDim2.fromScale(0.88, 0.24),
 			Text = class.description,
-			Font = Enum.Font.Gotham,
+			FontFace = Theme.FONT.label,
 			ZIndex = 12,
 		})
 		label(card, {
 			Position = UDim2.fromScale(0.06, 0.66),
 			Size = UDim2.fromScale(0.88, 0.28),
 			Text = "Habilidade — " .. class.ability.name .. ": " .. class.ability.description,
-			Font = Enum.Font.GothamBold,
+			FontFace = Theme.FONT.heavy,
 			TextColor3 = Color3.fromRGB(255, 160, 80),
 			ZIndex = 12,
 		})
@@ -140,7 +138,7 @@ local function buildPicker()
 	reopenButton.BackgroundColor3 = COLOR_PANEL
 	reopenButton.BackgroundTransparency = 0.3
 	reopenButton.TextColor3 = COLOR_TEXT
-	reopenButton.Font = Enum.Font.GothamBlack
+	reopenButton.FontFace = Theme.FONT.heavy
 	reopenButton.TextScaled = true
 	reopenButton.Text = "CLASSE"
 	reopenButton.Visible = false

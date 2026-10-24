@@ -6,6 +6,7 @@ local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
 
 local Tags = require(game:GetService("ReplicatedStorage").Shared.Tags)
+local Effects = require(script.Parent.Parent.Effects)
 
 local AmbienceController = {}
 
@@ -56,6 +57,7 @@ local function step()
 end
 
 function AmbienceController.start()
+	Effects.start() -- camera shake and automatic effect quality
 	CollectionService:GetInstanceAddedSignal(Tags.Flicker):Connect(track)
 	CollectionService:GetInstanceRemovedSignal(Tags.Flicker):Connect(function(instance)
 		flickers[instance] = nil
