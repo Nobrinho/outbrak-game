@@ -11,3 +11,9 @@ sourcemap.json
 
 # Selene std, regenerated on demand
 roblox.yml
+
+# Local toolchain and generated art (rebuild with tools/art.py)
+.local/
+assets/source/*.blend*
+assets/export/*
+__pycache__/

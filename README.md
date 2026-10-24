@@ -17,3 +17,10 @@ Co-op horde shooter (mobile first). Definições do jogo: [docs/DEFINICOES.md](d
 ## Checks
 
 - `stylua src` · `selene src`
+
+## Modelos 3D da fazenda
+
+Pipeline Blender → FBX → Roblox Studio: [docs/art/PIPELINE.md](docs/art/PIPELINE.md).
+
+- Verificar ferramentas: `python3 tools/art.py doctor`
+- Gerar modelo de teste: `python3 tools/art.py smoke`
