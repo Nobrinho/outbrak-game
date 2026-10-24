@@ -63,6 +63,17 @@ local function apply(player: Player, item: Config.ShopItem): string?
 			else "Você já está com essa arma"
 	elseif item.kind == "grenade" then
 		return if CombatService.addGrenade(player) then nil else "Granadas no máximo"
+	elseif item.kind == "heal" then
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if not humanoid or humanoid.Health <= 0 then
+			return "Item indisponível"
+		end
+		if humanoid.Health >= humanoid.MaxHealth then
+			return "Sua vida já está cheia"
+		end
+		humanoid.Health = humanoid.MaxHealth
+		return nil
 	elseif item.kind == "turret" then
 		return if TurretService.addKit(player) then nil else "Limite de torretas atingido"
 	end

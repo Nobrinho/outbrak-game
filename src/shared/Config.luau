@@ -126,7 +126,7 @@ export type ClassStats = {
 
 export type ShopItem = {
 	id: string,
-	kind: "gun" | "melee" | "grenade" | "turret",
+	kind: "gun" | "melee" | "grenade" | "turret" | "heal",
 	displayName: string,
 	price: number,
 }
@@ -297,6 +297,12 @@ return table.freeze({
 			kind = "grenade",
 			displayName = "Granada (+1)",
 			price = 150,
+		}),
+		table.freeze({
+			id = "Heal",
+			kind = "heal",
+			displayName = "Kit de cura (vida cheia)",
+			price = 250,
 		}),
 		table.freeze({
 			id = "Turret",
