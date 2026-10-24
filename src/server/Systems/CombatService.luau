@@ -10,6 +10,7 @@
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
@@ -372,6 +373,11 @@ end
 
 -- Grenades ---------------------------------------------------------------------------------
 
+-- Zombie body for grenade contact, per unit of kind scale: the body cylinder plus the
+-- grenade's own radius.
+local GRENADE_HIT_RADIUS = 1.4
+local GRENADE_HIT_TOP = 5.2
+
 local function explode(player: Player, position: Vector3)
 	local g = Config.GRENADE
 	HordeService.explode(position, {
@@ -427,11 +433,43 @@ local function onThrowGrenade(player: Player, direction: unknown)
 			HordeService.noise(grenade.Position, g.noise, g.fuse, nil)
 		end
 	end)
-	task.delay(g.fuse, function()
+	-- Blows on whichever comes first: touching a zombie (zombies are data, not parts, so a
+	-- per-frame check against their bodies stands in for Touched) or the fuse running out.
+	local done = false
+	local watch: RBXScriptConnection
+	local function detonate()
+		if done then
+			return
+		end
+		done = true
+		watch:Disconnect()
 		local position = grenade.Position
 		grenade:Destroy()
 		explode(player, position)
+	end
+	watch = RunService.Heartbeat:Connect(function()
+		if not grenade.Parent then
+			detonate()
+			return
+		end
+		local at = grenade.Position
+		for _, zombie in HordeService.getZombies() do
+			local scale = Config.ZOMBIES[zombie.kindName].scale
+			local feet = zombie.position
+			local height = at.Y - feet.Y
+			local flat = Vector2.new(at.X - feet.X, at.Z - feet.Z).Magnitude
+			if
+				not zombie.dead
+				and height >= 0
+				and height <= GRENADE_HIT_TOP * scale
+				and flat <= GRENADE_HIT_RADIUS * scale
+			then
+				detonate()
+				return
+			end
+		end
 	end)
+	task.delay(g.fuse, detonate)
 end
 
 -- Ammo box ---------------------------------------------------------------------------------
