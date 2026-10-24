@@ -120,8 +120,11 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 	},
 }
 
+local GOLD = Color3.fromRGB(214, 172, 62)
+
 -- Builds the model for `name` (a gun or melee name). The returned model's pivot is the grip.
-function WeaponModels.build(name: string): Model?
+-- `skin` "gold" (Pacote do Sobrevivente) turns the metal parts gold; wood stays wood.
+function WeaponModels.build(name: string, skin: string?): Model?
 	local def = MODELS[name]
 	if not def then
 		return nil
@@ -150,8 +153,14 @@ function WeaponModels.build(name: string): Model?
 			CFrame.new(piece.offset)
 				* CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
 		)
-		built.Color = piece.color
-		built.Material = piece.material or Enum.Material.SmoothPlastic
+		local metal = piece.color == METAL or piece.color == STEEL
+		if skin == "gold" and metal then
+			built.Color = GOLD
+			built.Material = Enum.Material.Foil
+		else
+			built.Color = piece.color
+			built.Material = piece.material or Enum.Material.SmoothPlastic
+		end
 	end
 	local muzzle = part("Muzzle", Vector3.new(0.1, 0.1, 0.1), CFrame.new(def.muzzle))
 	muzzle.Transparency = 1

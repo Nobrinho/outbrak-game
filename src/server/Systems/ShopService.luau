@@ -1,8 +1,9 @@
 --!strict
 -- Barn shop (Config.SHOP). The client opens the menu from the shop crate's prompt; purchases
 -- arrive here and are checked for everything that matters: the item exists, the player is
--- alive and standing at a shop crate, can afford it, and the item actually applies (not
--- already equipped, grenades not full, kit limit). Credits are only taken if it applied.
+-- alive and standing at a shop crate, has the account level that unlocks it, can afford it,
+-- and the item actually applies (not already equipped, grenades not full, kit limit). Credits
+-- are only taken if it applied.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -13,6 +14,7 @@ local Net = require(Shared.Net)
 local Tags = require(Shared.Tags)
 local CombatService = require(script.Parent.CombatService)
 local EconomyService = require(script.Parent.EconomyService)
+local ProgressionService = require(script.Parent.ProgressionService)
 local TurretService = require(script.Parent.TurretService)
 
 local ShopService = {}
@@ -80,6 +82,11 @@ local function onPurchase(player: Player, itemId: unknown)
 
 	if not atShop(player) then
 		notify(player, "Chegue mais perto da loja")
+		return
+	end
+	local required = Config.PROGRESSION.unlocks[item.id]
+	if required and ProgressionService.level(player) < required then
+		notify(player, `Desbloqueia no nível {required}`)
 		return
 	end
 	if EconomyService.get(player) < item.price then

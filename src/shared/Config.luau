@@ -377,6 +377,27 @@ return table.freeze({
 		releaseInterval = 0.6, -- one zombie leaves the top of a flowing pile this often
 		disbandAfter = 15, -- a pile with nowhere to land falls apart after this long idle
 	}),
+	-- Account progression (persisted). XP comes from kills, cleared waves, finishing matches
+	-- and extractions; shop items unlock by account level.
+	PROGRESSION = table.freeze({
+		xpPerKill = table.freeze({ Runner = 2, Creeper = 5, Bull = 15, Brute = 100 }) :: { [Types.ZombieKind]: number },
+		xpWaveCleared = 50,
+		xpMatchPlayed = 25,
+		xpExtraction = 200,
+		-- Level n needs this much XP to advance to n + 1.
+		levelBase = 100,
+		levelExponent = 1.5,
+		unlocks = table.freeze({ Bat = 2, Rifle = 3, Turret = 4, AK47 = 5 }) :: { [string]: number },
+	}),
+	-- Monetization (docs/DEFINICOES.md §6): cosmetic pass + XP boost only, never power. Ids come
+	-- from the Creator Hub after publishing; 0 means "not set up yet" (the offer is hidden).
+	MONETIZATION = table.freeze({
+		survivorPackId = 0, -- Gamepass "Pacote do Sobrevivente": gold weapon skin + trail
+		xpBoostProductId = 0, -- Developer Product "Boost 2x XP por 1 h"
+		boostSeconds = 3600,
+		boostMultiplier = 2,
+	}),
+
 	-- Test switches. ALL must be false before publishing.
 	DEBUG = table.freeze({
 		combatLog = true, -- prints why shots are accepted/rejected to the server Output

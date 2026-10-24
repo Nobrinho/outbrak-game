@@ -461,7 +461,9 @@ local function attachWeapon(character: Model, gun: string)
 	if old then
 		old:Destroy()
 	end
-	local model = WeaponModels.build(gun)
+	local owner = Players:GetPlayerFromCharacter(character)
+	local skin = if owner and owner:GetAttribute("SurvivorPack") == true then "gold" else nil
+	local model = WeaponModels.build(gun, skin)
 	if not model then
 		return
 	end
@@ -556,6 +558,13 @@ local function onPlayerAdded(player: Player)
 		task.spawn(onCharacter, player.Character)
 	end
 	player.CharacterAdded:Connect(onCharacter)
+	-- Buying the Survivor Pack mid-match repaints the gun right away.
+	player:GetAttributeChangedSignal("SurvivorPack"):Connect(function()
+		local state = states[player]
+		if state and player.Character then
+			attachWeapon(player.Character, state.gun)
+		end
+	end)
 	-- Picking a class re-issues the loadout (only allowed during Prep, see ClassService).
 	player:GetAttributeChangedSignal("Class"):Connect(function()
 		if states[player] and aliveCharacter(player) then

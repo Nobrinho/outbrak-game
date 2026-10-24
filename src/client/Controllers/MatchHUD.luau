@@ -184,7 +184,15 @@ local function onPhaseChanged()
 		local victory = attr("Outcome", "") == "Victory"
 		resultTitle.Text = if victory then "EXTRAÍDOS!" else "A HORDA VENCEU"
 		resultTitle.TextColor3 = if victory then COLOR_GOOD else COLOR_DANGER
-		resultStats.Text = killsTable()
+		-- XP is awarded as the match ends; give the attribute a moment to arrive.
+		task.delay(0.5, function()
+			local xp = player:GetAttribute("MatchXP")
+			local level = player:GetAttribute("Level")
+			local summary = if typeof(xp) == "number"
+				then string.format("+%d XP  ·  Nível %s\n\n", xp, tostring(level or 1))
+				else ""
+			resultStats.Text = summary .. killsTable()
+		end)
 	end
 end
 

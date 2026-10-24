@@ -53,10 +53,16 @@ end
 
 local function refreshPrices()
 	local have = credits()
+	local levelValue = player:GetAttribute("Level")
+	local level = if typeof(levelValue) == "number" then levelValue else 1
 	for _, item in Config.SHOP do
 		local button = buyButtons[item.id]
 		if button then
-			local affordable = have >= item.price
+			-- Items above the account level show what unlocks them instead of a price.
+			local required = Config.PROGRESSION.unlocks[item.id]
+			local locked = required ~= nil and level < required
+			local affordable = not locked and have >= item.price
+			button.Text = if locked then `NÍVEL {required}` else "$ " .. item.price
 			button.BackgroundColor3 = if affordable then COLOR_ACCENT else COLOR_DISABLED
 			button.TextColor3 = if affordable then COLOR_PANEL else COLOR_TEXT
 		end
@@ -218,6 +224,7 @@ function ShopUI.start()
 		local value = leaderstats:WaitForChild("Créditos")
 		if value:IsA("IntValue") then
 			value.Changed:Connect(refreshPrices)
+			player:GetAttributeChangedSignal("Level"):Connect(refreshPrices)
 		end
 	end)
 	RunService.Heartbeat:Connect(function()

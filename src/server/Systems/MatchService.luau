@@ -16,6 +16,7 @@ local Shared = ReplicatedStorage.Shared
 local Config = require(Shared.Config)
 local Tags = require(Shared.Tags)
 local Types = require(Shared.Types)
+local Signal = require(Shared.Util.Signal)
 local BarricadeService = require(script.Parent.BarricadeService)
 local ClassService = require(script.Parent.ClassService)
 local EconomyService = require(script.Parent.EconomyService)
@@ -23,6 +24,12 @@ local HordeService = require(script.Parent.HordeService)
 local TurretService = require(script.Parent.TurretService)
 
 local MatchService = {}
+
+-- Progression hooks: a new match began; a wave was cleared (its number); the match ended
+-- with the players who made it onto the helicopter (empty on a defeat).
+MatchService.started = Signal.new() :: Signal.Signal<()>
+MatchService.waveCleared = Signal.new() :: Signal.Signal<number>
+MatchService.finished = Signal.new() :: Signal.Signal<"Victory" | "Defeat", { Player }>
 
 local MATCH = Config.MATCH
 local EXTRACT_TIME = 25
@@ -194,7 +201,8 @@ local function startFinal()
 	state:SetAttribute("BossMaxHealth", health)
 end
 
-local function finish(outcome: "Victory" | "Defeat")
+local function finish(outcome: "Victory" | "Defeat", extracted: { Player }?)
+	MatchService.finished:fire(outcome, extracted or {})
 	state:SetAttribute("Outcome", outcome)
 	state:SetAttribute("BossMaxHealth", 0)
 	boss = nil
@@ -230,6 +238,7 @@ local function resetMatch()
 		task.spawn(player.LoadCharacter, player)
 	end
 	setPhase("Prep", MATCH.prepTimes[1])
+	MatchService.started:fire()
 end
 
 -- Tick ---------------------------------------------------------------------------------------
@@ -287,6 +296,7 @@ local function tick(dt: number)
 			queueEmptiedAt = now
 		end
 		if #spawnQueue == 0 and HordeService.aliveCount() == 0 then
+			MatchService.waveCleared:fire(wave)
 			startPrep()
 		elseif queueEmptiedAt > 0 and now - queueEmptiedAt > MATCH.waveTimeout then
 			HordeService.clear() -- stragglers stuck somewhere: don't block the match
@@ -314,19 +324,19 @@ local function tick(dt: number)
 			end
 		elseif phase == "Extract" then
 			local zone = extractionZone()
-			local alive = aliveHumanoids()
-			local inside, total = 0, 0
-			for _, root in alive do
+			local aboard: { Player } = {}
+			local total = 0
+			for player, root in aliveHumanoids() do
 				total += 1
 				if zone and inZone(zone, root.Position) then
-					inside += 1
+					table.insert(aboard, player)
 				end
 			end
 			-- Everyone still standing aboard: leave now. Timer out: whoever made it wins.
-			if total > 0 and inside == total then
-				finish("Victory")
+			if total > 0 and #aboard == total then
+				finish("Victory", aboard)
 			elseif timeUp then
-				finish(if inside > 0 then "Victory" else "Defeat")
+				finish(if #aboard > 0 then "Victory" else "Defeat", aboard)
 			end
 		end
 	end
