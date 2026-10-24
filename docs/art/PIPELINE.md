@@ -158,3 +158,27 @@ Validação em 24/10/2026: import real pelo 3D Importer (peças 100× maiores, e
 no Play os zumbis de perto usam as malhas, e vistos de frente e de perfil no Studio os
 quatro tipos ficam virados para a frente (olhos, mandíbula, visor do capacete e punhos à
 frente, corcunda do Brute nas costas).
+
+## Props da fazenda
+
+`python3 tools/art.py props` roda `tools/blender/props.py`: o trator enferrujado (~1850
+triângulos), a picape abandonada (~2200) e o caixote (~400, usado nas 5 pilhas). Gera
+`assets/export/props.fbx`, `props.json` e `props.preview.png`.
+
+- Cada prop é dividido em uma malha por tom (`Tractor_Paint`, `Truck_Glass`, `Crate_Wood`…)
+  mais `<Prop>_Origin`, um cubo de 0,1 stud no centro da peça-corpo do `FarmMap`
+  (`TractorBody`, `TruckBody`, `Crate`); o jogo mede a escala do import por ele e posiciona
+  cada malha a partir dele.
+- As peças originais continuam lá, invisíveis, dando colisão, cobertura e paredes do flow
+  field: o visual muda, a jogabilidade não (o `verify-map-graphics` continua valendo).
+- Mesmos eixos dos zumbis; cores e materiais vêm de `src/shared/Art/FarmProps.luau`.
+
+Import: 3D Importer com `assets/export/props.fbx`, depois mover as MeshParts para
+`ReplicatedStorage.Assets.Props`. Com elas, `FarmProps` desenha os props e o
+`FarmStructures` deixa de somar os detalhes de peças do caixote e da picape; sem elas, o
+mapa fica como antes.
+
+Validação em 24/10/2026: import real (100×, eixos certos). No Play, o mapa montado pelo
+`FarmMap` ganhou `TractorMeshes`, `TruckMeshes` e `CrateMeshes`, com as 20 peças originais
+invisíveis e só os aros dos tambores em `PropDetails`; de perto, trator, picape (com a
+inclinação de 4°) e as pilhas de caixotes ficam no lugar e com a frente certa.

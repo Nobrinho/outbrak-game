@@ -25,7 +25,7 @@ def blender_path():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["doctor", "smoke", "weapons", "zombies"])
+    parser.add_argument("command", choices=["doctor", "smoke", "weapons", "zombies", "props", "heroes"])
     args = parser.parse_args()
     blender = blender_path()
     if args.command == "doctor":
@@ -37,7 +37,7 @@ def main():
                 sys.exit("Ferramenta ausente: " + tool)
             subprocess.run([executable, "--version"], check=True)
     else:
-        script = {"smoke": "smoke.py", "weapons": "weapons.py", "zombies": "zombies.py"}[args.command]
+        script = {"smoke": "smoke.py", "weapons": "weapons.py", "zombies": "zombies.py", "props": "props.py", "heroes": "zombie_heroes.py"}[args.command]
         subprocess.run([
             blender, "--background", "--factory-startup", "--python-exit-code", "1",
             "--python", str(ROOT / "tools/blender" / script),

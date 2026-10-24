@@ -9,7 +9,10 @@ local RED = Color3.fromRGB(113, 44, 31)
 local RUST = Color3.fromRGB(106, 55, 32)
 local WARM = Color3.fromRGB(255, 151, 60)
 
-function Structures.build(map: Instance, parent: Instance)
+-- `meshed` names the props FarmProps already drew from Blender meshes; their part-built
+-- details are skipped.
+function Structures.build(map: Instance, parent: Instance, meshed: { [string]: boolean }?)
+	local meshedProps = meshed or {}
 	local rng = Random.new(241026)
 	local count = 0
 	local function group(name: string): Folder
@@ -512,7 +515,7 @@ function Structures.build(map: Instance, parent: Instance)
 	local pf = group("PropDetails")
 	for _, p in props:GetChildren() do
 		if p:IsA("BasePart") then
-			if p.Name == "Crate" then
+			if p.Name == "Crate" and not meshedProps.Crate then
 				for _, side in { -1, 1 } do
 					for _, y in { -1.2, 1.2 } do
 						piece(
@@ -549,49 +552,51 @@ function Structures.build(map: Instance, parent: Instance)
 			end
 		end
 	end
-	local truck = CFrame.new(-28, 0, 70) * CFrame.Angles(0, math.rad(-35), math.rad(4))
-	piece("TruckGrille", Vector3.new(4.5, 1.2, 0.18), truck * CFrame.new(0, 2, -6.15), DARK, pf)
-	piece(
-		"TruckBumper",
-		Vector3.new(5.2, 0.45, 0.6),
-		truck * CFrame.new(0, 1.1, -6.25),
-		Color3.fromRGB(82, 86, 86),
-		pf
-	)
-	for _, x in { -1.7, 1.7 } do
-		local headlight = piece(
-			"TruckHeadlight",
-			Vector3.new(0.15, 0.7, 0.7),
-			truck * CFrame.new(x, 2.2, -6.3) * CFrame.Angles(0, math.pi / 2, 0),
-			Color3.fromRGB(174, 161, 119),
-			pf
-		) :: Part
-		headlight.Shape = Enum.PartType.Cylinder
-	end
-	for i = 0, 5 do
+	if not meshedProps.Truck then
+		local truck = CFrame.new(-28, 0, 70) * CFrame.Angles(0, math.rad(-35), math.rad(4))
+		piece("TruckGrille", Vector3.new(4.5, 1.2, 0.18), truck * CFrame.new(0, 2, -6.15), DARK, pf)
 		piece(
-			"TruckGrilleSlat",
-			Vector3.new(0.1, 1, 0.1),
-			truck * CFrame.new(-1.1 + i * 0.44, 2, -6.28),
-			TRIM,
+			"TruckBumper",
+			Vector3.new(5.2, 0.45, 0.6),
+			truck * CFrame.new(0, 1.1, -6.25),
+			Color3.fromRGB(82, 86, 86),
 			pf
 		)
-	end
-	for _, side in { -1, 1 } do
-		piece(
-			"TruckBedSide",
-			Vector3.new(0.22, 1.25, 4),
-			truck * CFrame.new(side * 2.45, 3.9, 3.7),
-			RED,
-			pf
-		)
-		piece(
-			"TruckDoorHandle",
-			Vector3.new(0.15, 0.13, 0.6),
-			truck * CFrame.new(side * 2.5, 3.6, -0.3),
-			DARK,
-			pf
-		)
+		for _, x in { -1.7, 1.7 } do
+			local headlight = piece(
+				"TruckHeadlight",
+				Vector3.new(0.15, 0.7, 0.7),
+				truck * CFrame.new(x, 2.2, -6.3) * CFrame.Angles(0, math.pi / 2, 0),
+				Color3.fromRGB(174, 161, 119),
+				pf
+			) :: Part
+			headlight.Shape = Enum.PartType.Cylinder
+		end
+		for i = 0, 5 do
+			piece(
+				"TruckGrilleSlat",
+				Vector3.new(0.1, 1, 0.1),
+				truck * CFrame.new(-1.1 + i * 0.44, 2, -6.28),
+				TRIM,
+				pf
+			)
+		end
+		for _, side in { -1, 1 } do
+			piece(
+				"TruckBedSide",
+				Vector3.new(0.22, 1.25, 4),
+				truck * CFrame.new(side * 2.45, 3.9, 3.7),
+				RED,
+				pf
+			)
+			piece(
+				"TruckDoorHandle",
+				Vector3.new(0.15, 0.13, 0.6),
+				truck * CFrame.new(side * 2.5, 3.6, -0.3),
+				DARK,
+				pf
+			)
+		end
 	end
 	return count
 end
