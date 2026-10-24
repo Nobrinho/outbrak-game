@@ -6,9 +6,11 @@
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local InputController = require(script.Parent.InputController)
+local Text = require(game:GetService("ReplicatedStorage").Shared.Util.Text)
 
 type Action = InputController.Action
 
@@ -41,6 +43,7 @@ local BUTTONS: { ButtonSpec } = {
 local player = Players.LocalPlayer
 local screen: ScreenGui
 local contextButton: TextButton
+local abilityButton: TextButton?
 local shownPrompt: ProximityPrompt?
 local holdingPrompt: ProximityPrompt?
 
@@ -138,6 +141,9 @@ local function buildTouchCluster()
 
 	for _, spec in BUTTONS do
 		local button = makeButton(spec, cluster)
+		if spec.action == "Ability" then
+			abilityButton = button
+		end
 		local action = spec.action
 		bindHold(button, function()
 			InputController.setAction(action, true)
@@ -177,7 +183,7 @@ end
 local function watchPrompts()
 	ProximityPromptService.PromptShown:Connect(function(prompt)
 		shownPrompt = prompt
-		contextButton.Text = string.upper(prompt.ActionText)
+		contextButton.Text = Text.upper(prompt.ActionText)
 		contextButton.Visible = true
 	end)
 	ProximityPromptService.PromptHidden:Connect(function(prompt)
@@ -203,6 +209,19 @@ function MobileHUD.start()
 		-- Our context button replaces the built-in prompt tap target.
 		ProximityPromptService.MaxPromptsVisible = 1
 		task.spawn(hideDefaultJump)
+		-- Ability button shows its cooldown in seconds and dims until ready.
+		RunService.RenderStepped:Connect(function()
+			local button = abilityButton
+			if not button then
+				return
+			end
+			local readyAt = player:GetAttribute("AbilityReadyAt")
+			local left = if typeof(readyAt) == "number"
+				then readyAt - workspace:GetServerTimeNow()
+				else 0
+			button.Text = if left > 0 then tostring(math.ceil(left)) else "HABIL"
+			button.TextTransparency = if left > 0 then 0.4 else 0
+		end)
 	end
 
 	screen.Parent = player:WaitForChild("PlayerGui")

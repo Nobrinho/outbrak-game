@@ -101,6 +101,36 @@ export type MeleeStats = {
 	bleedTime: number,
 }
 
+export type AbilityStats = {
+	name: string,
+	description: string,
+	cooldown: number,
+	duration: number,
+	-- Incendiary rounds (Gunslinger): each hit sets the zombie burning.
+	burnDps: number,
+	burnTime: number,
+	-- Molotov (Exterminator): a fire patch where it lands.
+	radius: number,
+	fireDps: number,
+}
+
+export type ClassStats = {
+	displayName: string,
+	description: string,
+	startGun: GunName,
+	damageBonus: { [string]: number }, -- per gun name
+	reserveBonus: number, -- multiplies every gun's reserve
+	grenades: number, -- carry limit
+	ability: AbilityStats,
+}
+
+export type ShopItem = {
+	id: string,
+	kind: "gun" | "melee" | "grenade" | "turret",
+	displayName: string,
+	price: number,
+}
+
 local GUNS: { [GunName]: GunStats } = {
 	Pistol = {
 		displayName = "Pistola",
@@ -213,6 +243,78 @@ return table.freeze({
 		cooldown = 0.8,
 		noise = 100, -- heard from the moment it lands: a decoy
 	}),
+	CLASSES = table.freeze({
+		Gunslinger = table.freeze({
+			displayName = "Gunslinger",
+			description = "Precisão: +25% de dano com rifles e SMG, +30% de munição.",
+			startGun = "SMG",
+			damageBonus = table.freeze({ SMG = 1.25, Rifle = 1.25, AK47 = 1.25 }),
+			reserveBonus = 1.3,
+			grenades = 2,
+			ability = table.freeze({
+				name = "Munição incendiária",
+				description = "10 s de tiros que incendeiam os zumbis.",
+				cooldown = 45,
+				duration = 10,
+				burnDps = 12,
+				burnTime = 3,
+				radius = 0,
+				fireDps = 0,
+			}),
+		}),
+		Exterminator = table.freeze({
+			displayName = "Exterminador",
+			description = "Controle de multidão: +20% de dano com escopeta, +1 granada.",
+			startGun = "Shotgun",
+			damageBonus = table.freeze({ Shotgun = 1.2 }),
+			reserveBonus = 1,
+			grenades = 3,
+			ability = table.freeze({
+				name = "Coquetel molotov",
+				description = "Área de fogo por 6 s onde cair.",
+				cooldown = 45,
+				duration = 6,
+				burnDps = 0,
+				burnTime = 0,
+				radius = 9,
+				fireDps = 35,
+			}),
+		}),
+	}) :: { [Types.ClassId]: ClassStats },
+	DEFAULT_CLASS = "Gunslinger" :: Types.ClassId,
+
+	-- Credits per kill, spent at the barn shop. Reset every match.
+	REWARDS = table.freeze({ Runner = 5, Creeper = 15, Bull = 50, Brute = 300 }) :: { [Types.ZombieKind]: number },
+	START_CREDITS = 0,
+	SHOP = table.freeze({
+		table.freeze({ id = "SMG", kind = "gun", displayName = "Submetralhadora", price = 400 }),
+		table.freeze({ id = "Shotgun", kind = "gun", displayName = "Escopeta", price = 500 }),
+		table.freeze({ id = "Rifle", kind = "gun", displayName = "Rifle", price = 700 }),
+		table.freeze({ id = "AK47", kind = "gun", displayName = "AK-47", price = 900 }),
+		table.freeze({ id = "Bat", kind = "melee", displayName = "Taco com pregos", price = 350 }),
+		table.freeze({
+			id = "Grenade",
+			kind = "grenade",
+			displayName = "Granada (+1)",
+			price = 150,
+		}),
+		table.freeze({
+			id = "Turret",
+			kind = "turret",
+			displayName = "Torreta automática",
+			price = 750,
+		}),
+	}) :: { ShopItem },
+	SHOP_RANGE = 14, -- studs from a shop crate to buy
+	TURRET = table.freeze({
+		range = 65,
+		fireRate = 6,
+		damage = 12,
+		ammo = 400, -- shots before it powers down and frees its slot
+		noise = 50,
+		maxKits = 3,
+	}),
+
 	BULL = table.freeze({
 		chargeRange = 30, -- starts a charge at players closer than this (and visible)
 		chargeMinRange = 8,
@@ -253,9 +355,8 @@ return table.freeze({
 		finalMix = table.freeze({ Runner = 0.85, Creeper = 0.1, Bull = 0.05 }),
 		resultTime = 12,
 	}),
-	-- Starting loadout until the shop (week 7). Change `gun` to test the other guns.
+	-- Melee everyone starts with; the starting gun comes from the class (CLASSES.startGun).
 	LOADOUT = table.freeze({
-		gun = "Pistol" :: GunName,
 		melee = "Knife" :: MeleeName,
 	}),
 	AMMO_BOX_COOLDOWN = 30,
@@ -272,13 +373,16 @@ return table.freeze({
 		reach = 4, -- a zombie on top of the pile can grab a ledge this far above it
 		joinTime = 0.4,
 		climbTimes = table.freeze({ 0.55, 0.35, 0.45 }), -- up the pile, over the top, drop down
-		disbandAfter = 15, -- a pile nobody joined or climbed for this long falls apart
+		stallTime = 5, -- no newcomers for this long: the pile climbs over anyway, top first
+		releaseInterval = 0.6, -- one zombie leaves the top of a flowing pile this often
+		disbandAfter = 15, -- a pile with nowhere to land falls apart after this long idle
 	}),
 	-- Test switches. ALL must be false before publishing.
 	DEBUG = table.freeze({
 		combatLog = true, -- prints why shots are accepted/rejected to the server Output
 		godMode = true, -- players take no damage (invisible ForceField)
 		infiniteAmmo = true, -- magazine and grenades never run out
+		richStart = true, -- start every match with 5000 credits to try the shop
 	}),
 	AIM_ASSIST_DEGREES = 4, -- touch only: near-misses inside this cone count as body hits
 

@@ -28,7 +28,9 @@ type Pile = {
 	climbHeight: number,
 	landing: Vector3?,
 	members: { Member },
-	lastActivity: number,
+	lastActivity: number, -- last join or climb
+	lastJoin: number,
+	nextRelease: number,
 }
 
 type Joined = { pile: Pile, from: Vector3, joinedAt: number }
@@ -107,6 +109,8 @@ local function newPile(
 		landing = findLanding(anchor, outward, bx, bz),
 		members = {},
 		lastActivity = os.clock(),
+		lastJoin = os.clock(),
+		nextRelease = 0,
 	}
 end
 
@@ -183,6 +187,7 @@ function Piles.handleBreach(
 	joined[z] = { pile = pile, from = z.position, joinedAt = now }
 	z.state = ZombiePacket.STATE_PILE
 	pile.lastActivity = now
+	pile.lastJoin = now
 	return true
 end
 
@@ -248,8 +253,20 @@ end
 function Piles.step(now: number)
 	for _, byKey in piles do
 		for key, pile in byKey do
-			if #pile.members > 0 and now - pile.lastActivity > PILE.disbandAfter then
-				disband(pile)
+			if #pile.members > 0 and pile.landing then
+				-- The pile flows over the top: once it's tall enough, or once nobody new has
+				-- joined for a while (the end of a wave), the top zombie climbs every
+				-- releaseInterval. Without this the zombies forming the pile never leave and a
+				-- wave can't finish.
+				local stalled = now - pile.lastJoin > PILE.stallTime
+				if (climbable(pile) or stalled) and now >= pile.nextRelease then
+					pile.nextRelease = now + PILE.releaseInterval
+					local top = table.remove(pile.members) :: Member
+					joined[top] = nil
+					startClimb(top, pile, now)
+				end
+			elseif #pile.members > 0 and now - pile.lastActivity > PILE.disbandAfter then
+				disband(pile) -- nowhere to land: it can never get over
 			end
 			if #pile.members == 0 and now - pile.lastActivity > PILE.disbandAfter then
 				byKey[key] = nil

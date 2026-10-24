@@ -117,7 +117,7 @@ local function buildGround()
 		material = Enum.Material.Grass,
 	}).Position =
 		Vector3.new(0, -0.5, 0)
-	onGround("Yard", Vector3.new(FORT_HALF * 2, 0.2, FORT_HALF * 2), 0, 0, {
+	onGround("YardGround", Vector3.new(FORT_HALF * 2, 0.2, FORT_HALF * 2), 0, 0, {
 		color = COLOR.dirt,
 		material = Enum.Material.Ground,
 	})
@@ -350,8 +350,9 @@ local function buildYardProps()
 		yard
 	)
 
-	-- Turret slots: covering the gate, the corral wall and the silo corner.
-	for i, pos in { Vector3.new(0, 0, 45), Vector3.new(-45, 0, 30), Vector3.new(40, 0, -40) } do
+	-- Turret slots: covering the gate, the corral fence (from the corridor beside the house,
+	-- in reach of piles along its whole north half) and the silo corner.
+	for i, pos in { Vector3.new(0, 0, 45), Vector3.new(-52, 0, -10), Vector3.new(40, 0, -40) } do
 		local slot = onGround("TurretSlot" .. i, Vector3.new(6, 0.4, 6), pos.X, pos.Z, {
 			color = COLOR.player,
 			material = Enum.Material.Neon,

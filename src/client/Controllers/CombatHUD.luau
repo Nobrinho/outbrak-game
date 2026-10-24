@@ -4,10 +4,13 @@
 -- layer ignores every inset so its center is exactly the camera ray's center.
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
+local Types = require(Shared.Types)
+local Text = require(Shared.Util.Text)
 local WeaponController = require(script.Parent.WeaponController)
 
 local CombatHUD = {}
@@ -23,6 +26,8 @@ local magLabel: TextLabel
 local reserveLabel: TextLabel
 local gunLabel: TextLabel
 local grenadeLabel: TextLabel
+local creditsLabel: TextLabel
+local abilityLabel: TextLabel
 local reloadLabel: TextLabel
 local hitmarker: Frame
 local hitTicks: { Frame } = {}
@@ -41,7 +46,7 @@ local function label(parent: Instance, props: { [string]: any }): TextLabel
 	return l
 end
 
-local function buildAmmoPanel()
+local function buildAmmoPanel(): Frame
 	local panel = Instance.new("Frame")
 	panel.Name = "Ammo"
 	panel.AnchorPoint = Vector2.new(1, 0)
@@ -81,6 +86,54 @@ local function buildAmmoPanel()
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextTransparency = 0.2,
 	})
+	return panel
+end
+
+-- Credits and ability cooldown, in a strip right under the ammo panel.
+local function buildStatusPanel(ammo: Frame)
+	local panel = Instance.new("Frame")
+	panel.Name = "Status"
+	panel.AnchorPoint = Vector2.new(1, 0)
+	panel.BackgroundColor3 = COLOR_PANEL
+	panel.BackgroundTransparency = 0.35
+	panel.Parent = screen
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0.2, 0)
+	corner.Parent = panel
+	local function place()
+		local size = ammo.AbsoluteSize
+		panel.Size = UDim2.fromOffset(size.X, size.Y * 0.45)
+		panel.Position = UDim2.new(1, -16, 0, 16 + size.Y + 6)
+	end
+	ammo:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
+	place()
+
+	creditsLabel = label(panel, {
+		Position = UDim2.fromScale(0.06, 0.08),
+		Size = UDim2.fromScale(0.88, 0.42),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = Color3.fromRGB(255, 204, 0),
+	})
+	abilityLabel = label(panel, {
+		Position = UDim2.fromScale(0.06, 0.54),
+		Size = UDim2.fromScale(0.88, 0.38),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextTransparency = 0.15,
+	})
+end
+
+local function refreshStatus()
+	local player = Players.LocalPlayer
+	local leaderstats = player:FindFirstChild("leaderstats")
+	local value = leaderstats and leaderstats:FindFirstChild("Créditos")
+	creditsLabel.Text = "$ " .. (if value and value:IsA("IntValue") then value.Value else 0)
+
+	local class = Config.CLASSES[player:GetAttribute("Class") :: Types.ClassId]
+		or Config.CLASSES[Config.DEFAULT_CLASS]
+	local readyAt = player:GetAttribute("AbilityReadyAt")
+	local left = if typeof(readyAt) == "number" then readyAt - workspace:GetServerTimeNow() else 0
+	abilityLabel.Text = Text.upper(class.ability.name)
+		.. (if left > 0 then string.format(" — %ds", math.ceil(left)) else " — PRONTA")
 end
 
 local function buildCenter()
@@ -135,7 +188,7 @@ end
 local function refresh()
 	local view = WeaponController.view
 	local gun = Config.GUNS[view.gun]
-	gunLabel.Text = string.upper(gun.displayName)
+	gunLabel.Text = Text.upper(gun.displayName)
 	magLabel.Text = tostring(view.mag)
 	magLabel.TextColor3 = if view.mag <= gun.magSize * 0.25 then COLOR_LOW else COLOR_TEXT
 	reserveLabel.Text = if Config.DEBUG.infiniteAmmo then "/ ∞" else "/ " .. view.reserve
@@ -174,7 +227,7 @@ function CombatHUD.init()
 	center.ResetOnSpawn = false
 	center.ScreenInsets = Enum.ScreenInsets.None
 
-	buildAmmoPanel()
+	buildStatusPanel(buildAmmoPanel())
 	buildCenter()
 end
 
@@ -182,6 +235,8 @@ function CombatHUD.start()
 	refresh()
 	WeaponController.changed:connect(refresh)
 	WeaponController.hit:connect(flashHit)
+	-- Credits and the cooldown countdown change constantly; a text write per frame is cheap.
+	RunService.RenderStepped:Connect(refreshStatus)
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 	screen.Parent = playerGui
 	center.Parent = playerGui

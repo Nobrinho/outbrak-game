@@ -53,15 +53,24 @@ local shotSeqs: { [Player]: number } = {}
 local syncRemote: RemoteEvent
 local grenadeFolder: Folder
 
-local function newState(): PlayerState
-	local gun = Config.LOADOUT.gun
-	local stats = Config.GUNS[gun]
+local function classOf(player: Player): Config.ClassStats
+	local id = player:GetAttribute("Class")
+	return Config.CLASSES[id :: Types.ClassId] or Config.CLASSES[Config.DEFAULT_CLASS]
+end
+
+local function reserveFor(player: Player, gun: Config.GunName): number
+	return math.floor(Config.GUNS[gun].reserveMax * classOf(player).reserveBonus)
+end
+
+local function newState(player: Player): PlayerState
+	local class = classOf(player)
+	local gun = class.startGun
 	return {
 		gun = gun,
 		melee = Config.LOADOUT.melee,
-		mag = stats.magSize,
-		reserve = stats.reserveMax,
-		grenades = Config.GRENADE.maxCarry,
+		mag = Config.GUNS[gun].magSize,
+		reserve = reserveFor(player, gun),
+		grenades = class.grenades,
 		reloadToken = 0,
 		reloading = false,
 		fireAllowance = FIRE_BURST,
@@ -224,6 +233,12 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 
 	local hitList = hits :: { unknown }
 	local eye = head.Position
+	-- Gunslinger ability: hits set zombies burning (reuses the bleed damage-over-time).
+	local ability = classOf(player).ability
+	local incendiaryUntil = player:GetAttribute("IncendiaryUntil")
+	local incendiary = typeof(incendiaryUntil) == "number"
+		and workspace:GetServerTimeNow() < incendiaryUntil
+		and ability.burnDps > 0
 	local visible: { [number]: boolean } = {}
 	for i = 1, math.min(#hitList, gun.pellets) do
 		local hit = hitList[i]
@@ -243,7 +258,11 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 						local damage = gun.damage
 							* (if isHead then gun.headMultiplier else 1)
 							* backMultiplier(zombie, eye)
+							* (classOf(player).damageBonus[state.gun] or 1)
 						local killed = HordeService.damage(zombie, damage, player)
+						if not killed and incendiary then
+							HordeService.bleed(zombie, ability.burnDps, ability.burnTime, player)
+						end
 						debugLog(
 							player,
 							string.format(
@@ -416,8 +435,8 @@ local function onAmmoBox(player: Player)
 		return
 	end
 	state.ammoBoxReadyAt = now + Config.AMMO_BOX_COOLDOWN
-	state.reserve = Config.GUNS[state.gun].reserveMax
-	state.grenades = Config.GRENADE.maxCarry
+	state.reserve = reserveFor(player, state.gun)
+	state.grenades = classOf(player).grenades
 	sendSync(player)
 end
 
@@ -426,6 +445,43 @@ local function watchAmmoBox(box: Instance)
 	if prompt then
 		prompt.Triggered:Connect(onAmmoBox)
 	end
+end
+
+-- Shop API ---------------------------------------------------------------------------------
+
+-- Swaps the gun for `gun` with a full magazine and reserve. False if already equipped.
+function CombatService.equipGun(player: Player, gun: Config.GunName): boolean
+	local state = states[player]
+	if not state or state.gun == gun then
+		return false
+	end
+	state.gun = gun
+	state.mag = Config.GUNS[gun].magSize
+	state.reserve = reserveFor(player, gun)
+	state.reloading = false
+	state.reloadToken += 1 -- cancels a reload in progress on the old gun
+	sendSync(player)
+	return true
+end
+
+function CombatService.equipMelee(player: Player, melee: Config.MeleeName): boolean
+	local state = states[player]
+	if not state or state.melee == melee then
+		return false
+	end
+	state.melee = melee
+	sendSync(player)
+	return true
+end
+
+function CombatService.addGrenade(player: Player): boolean
+	local state = states[player]
+	if not state or state.grenades >= classOf(player).grenades then
+		return false
+	end
+	state.grenades += 1
+	sendSync(player)
+	return true
 end
 
 -- Players ----------------------------------------------------------------------------------
@@ -462,7 +518,7 @@ local function onPlayerAdded(player: Player)
 	leaderstats.Parent = player
 
 	local function onCharacter(character: Model)
-		states[player] = newState()
+		states[player] = newState(player)
 		if Config.DEBUG.godMode then
 			-- Humanoid:TakeDamage (every zombie and explosion hit) is ignored under a ForceField.
 			local shield = Instance.new("ForceField")
@@ -477,6 +533,13 @@ local function onPlayerAdded(player: Player)
 		task.spawn(onCharacter, player.Character)
 	end
 	player.CharacterAdded:Connect(onCharacter)
+	-- Picking a class re-issues the loadout (only allowed during Prep, see ClassService).
+	player:GetAttributeChangedSignal("Class"):Connect(function()
+		if states[player] and aliveCharacter(player) then
+			states[player] = newState(player)
+			sendSync(player)
+		end
+	end)
 end
 
 function CombatService.init()

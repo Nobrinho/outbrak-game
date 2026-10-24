@@ -68,7 +68,7 @@ function Effects.blood(position: Vector3, amount: number)
 	pe:Emit(amount)
 end
 
-function Effects.tracer(from: Vector3, to: Vector3)
+function Effects.tracer(from: Vector3, to: Vector3, color: Color3?)
 	local offset = to - from
 	local length = offset.Magnitude
 	if length < 0.5 then
@@ -81,7 +81,7 @@ function Effects.tracer(from: Vector3, to: Vector3)
 	beam.CanTouch = false
 	beam.CastShadow = false
 	beam.Material = Enum.Material.Neon
-	beam.Color = COLOR_TRACER
+	beam.Color = color or COLOR_TRACER
 	beam.Transparency = 0.3
 	beam.Size = Vector3.new(0.08, 0.08, length)
 	beam.CFrame = CFrame.lookAt(from + offset / 2, to)

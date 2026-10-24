@@ -75,4 +75,29 @@ function Net.weaponSync(): RemoteEvent
 	return get("WeaponSync", "RemoteEvent") :: RemoteEvent
 end
 
+-- Client → server: (classId: string). Only during a Prep phase.
+function Net.selectClass(): RemoteEvent
+	return get("SelectClass", "RemoteEvent") :: RemoteEvent
+end
+
+-- Client → server: (aim: Vector3, unit camera direction for thrown abilities).
+function Net.useAbility(): RemoteEvent
+	return get("UseAbility", "RemoteEvent") :: RemoteEvent
+end
+
+-- Client → server: (itemId: string), from Config.SHOP.
+function Net.purchase(): RemoteEvent
+	return get("Purchase", "RemoteEvent") :: RemoteEvent
+end
+
+-- Server → client: (message: string) shown as a short toast.
+function Net.notify(): RemoteEvent
+	return get("Notify", "RemoteEvent") :: RemoteEvent
+end
+
+-- Server → clients, unreliable: (from: Vector3, to: Vector3) tracer for a turret shot.
+function Net.turretShot(): UnreliableRemoteEvent
+	return get("TurretShot", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
+end
+
 return Net

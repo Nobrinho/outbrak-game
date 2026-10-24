@@ -18,6 +18,7 @@ InputController.actionChanged = Signal.new() :: Signal.Signal<Action, boolean>
 InputController.autoFire = false
 
 local down: { [Action]: boolean } = {}
+local modals: { [string]: boolean } = {}
 
 local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 	[Enum.UserInputType.MouseButton1] = "Fire",
@@ -35,6 +36,20 @@ local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 	[Enum.KeyCode.ButtonR1] = "Grenade",
 	[Enum.KeyCode.DPadUp] = "Interact",
 }
+
+-- Menus (shop, class picker) register while open: the mouse is freed and weapons hold fire.
+function InputController.setModal(name: string, open: boolean)
+	modals[name] = if open then true else nil
+	if open then
+		for action in down do
+			InputController.setAction(action, false)
+		end
+	end
+end
+
+function InputController.isModalOpen(): boolean
+	return next(modals) ~= nil
+end
 
 function InputController.isDown(action: Action): boolean
 	return down[action] == true
@@ -59,7 +74,7 @@ end
 
 function InputController.start()
 	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed then
+		if processed or InputController.isModalOpen() then
 			return
 		end
 		local action = bindingFor(input)

@@ -32,7 +32,7 @@ export type View = {
 -- What the HUD shows. Read-only outside this module.
 WeaponController.view = {
 	ready = false,
-	gun = Config.LOADOUT.gun,
+	gun = Config.CLASSES[Config.DEFAULT_CLASS].startGun,
 	melee = Config.LOADOUT.melee,
 	mag = 0,
 	reserve = 0,
@@ -53,6 +53,13 @@ local nextGrenade = 0
 local reloadWatchdog = 0
 
 local ASSIST_COS = math.cos(math.rad(Config.AIM_ASSIST_DEGREES))
+local COLOR_INCENDIARY = Color3.fromRGB(255, 90, 20)
+local COLOR_TURRET = Color3.fromRGB(120, 230, 255)
+
+local function incendiaryActive(): boolean
+	local untilTime = player:GetAttribute("IncendiaryUntil")
+	return typeof(untilTime) == "number" and workspace:GetServerTimeNow() < untilTime
+end
 
 type Body = { root: BasePart, head: BasePart }
 
@@ -192,9 +199,10 @@ local function fire(me: Body)
 
 	local hits = {}
 	local anyHit, anyHead = false, false
+	local tracerColor = if incendiaryActive() then COLOR_INCENDIARY else nil
 	for _ = 1, gun.pellets do
 		local endPoint, id, isHead = cast(origin, withSpread(center, spread), me, gun.range, assist)
-		Effects.tracer(muzzle, endPoint)
+		Effects.tracer(muzzle, endPoint, tracerColor)
 		if id then
 			table.insert(hits, { id = id, head = isHead })
 			Effects.blood(endPoint, 4)
@@ -277,7 +285,7 @@ local function step()
 		Net.weaponSync():FireServer()
 		WeaponController.changed:fire()
 	end
-	if view.reloading or now < nextShot then
+	if view.reloading or now < nextShot or InputController.isModalOpen() then
 		return
 	end
 	local me = body()
@@ -299,10 +307,15 @@ end
 
 function WeaponController.start()
 	Net.weaponSync().OnClientEvent:Connect(onSync)
+	Net.turretShot().OnClientEvent:Connect(function(from: Vector3, to: Vector3)
+		if typeof(from) == "Vector3" and typeof(to) == "Vector3" then
+			Effects.tracer(from, to, COLOR_TURRET)
+		end
+	end)
 	Net.weaponSync():FireServer()
 
 	InputController.actionChanged:connect(function(action, isDown)
-		if not isDown then
+		if not isDown or InputController.isModalOpen() then
 			return
 		end
 		if action == "Reload" then

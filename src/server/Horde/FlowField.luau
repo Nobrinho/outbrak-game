@@ -27,6 +27,10 @@ FlowField.UNREACHABLE = UNREACHABLE
 
 local kinds = buffer.create(N * N) -- u8 per cell
 local distance = buffer.create(N * N * 2) -- u16 per cell
+-- Same goals, but climb zones count as walls: for zombies that can't build pyramids (Bull,
+-- Creeper, Brute), so they head for a barricade instead of waiting at a fence forever.
+local walkerDistance = buffer.create(N * N * 2)
+local climbCells = buffer.create(N * N) -- u8: 1 where a ClimbZone owns the cell
 local queue = table.create(N * N) :: { number }
 -- The barricade / climb zone part behind each BREACH cell, and the reverse index, so a
 -- broken barricade can open exactly its own cells.
@@ -121,6 +125,9 @@ function FlowField.build(map: Instance)
 				then
 					kind = FlowField.BREACH
 					owners[index] = hit
+					if CollectionService:HasTag(hit, Tags.ClimbZone) then
+						buffer.writeu8(climbCells, index, 1)
+					end
 					local list = ownerCells[hit]
 					if list then
 						table.insert(list, index)
@@ -138,15 +145,20 @@ end
 
 -- Breadth-first from all goal positions at once, stopping `limit` cells out. A goal on top of
 -- something solid (a crate, hay bale) seeds the open cells around it instead.
-local function bfs(field: buffer, goals: { Vector3 }, limit: number)
+local function bfs(field: buffer, goals: { Vector3 }, limit: number, blockClimb: boolean)
 	buffer.fill(field, 0, 255)
+
+	local function blocked(index: number): boolean
+		return buffer.readu8(kinds, index) == FlowField.SOLID
+			or (blockClimb and buffer.readu8(climbCells, index) == 1)
+	end
 
 	local head, tail = 1, 0
 	local function seed(ix: number, iz: number)
 		local index = ix + iz * N
 		if
 			FlowField.inBounds(ix, iz)
-			and buffer.readu8(kinds, index) ~= FlowField.SOLID
+			and not blocked(index)
 			and buffer.readu16(field, index * 2) ~= 0
 		then
 			buffer.writeu16(field, index * 2, 0)
@@ -156,7 +168,7 @@ local function bfs(field: buffer, goals: { Vector3 }, limit: number)
 	end
 	for _, goal in goals do
 		local ix, iz = FlowField.cellAt(goal)
-		if FlowField.kind(ix, iz) ~= FlowField.SOLID then
+		if FlowField.inBounds(ix, iz) and not blocked(ix + iz * N) then
 			seed(ix, iz)
 		else
 			for _, offset in NEIGHBOURS do
@@ -177,10 +189,7 @@ local function bfs(field: buffer, goals: { Vector3 }, limit: number)
 			local nx, nz = ix + NEIGHBOURS[i][1], iz + NEIGHBOURS[i][2]
 			if FlowField.inBounds(nx, nz) then
 				local nIndex = nx + nz * N
-				if
-					buffer.readu8(kinds, nIndex) ~= FlowField.SOLID
-					and buffer.readu16(field, nIndex * 2) > nextDistance
-				then
+				if not blocked(nIndex) and buffer.readu16(field, nIndex * 2) > nextDistance then
 					buffer.writeu16(field, nIndex * 2, nextDistance)
 					tail += 1
 					queue[tail] = nIndex
@@ -191,12 +200,18 @@ local function bfs(field: buffer, goals: { Vector3 }, limit: number)
 end
 
 function FlowField.compute(goals: { Vector3 })
-	bfs(distance, goals, UNREACHABLE - 1)
+	bfs(distance, goals, UNREACHABLE - 1, false)
+	bfs(walkerDistance, goals, UNREACHABLE - 1, true)
+end
+
+-- The field for zombies that can't climb (see walkerDistance).
+function FlowField.walkerField(): buffer
+	return walkerDistance
 end
 
 -- Fills `field` with distances to `goals`, only up to `limitCells` away.
 function FlowField.computeField(field: buffer, goals: { Vector3 }, limitCells: number)
-	bfs(field, goals, limitCells)
+	bfs(field, goals, limitCells, false)
 end
 
 function FlowField.cellsFor(studs: number): number

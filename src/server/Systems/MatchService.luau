@@ -17,7 +17,10 @@ local Config = require(Shared.Config)
 local Tags = require(Shared.Tags)
 local Types = require(Shared.Types)
 local BarricadeService = require(script.Parent.BarricadeService)
+local ClassService = require(script.Parent.ClassService)
+local EconomyService = require(script.Parent.EconomyService)
 local HordeService = require(script.Parent.HordeService)
+local TurretService = require(script.Parent.TurretService)
 
 local MatchService = {}
 
@@ -204,6 +207,9 @@ end
 local function resetMatch()
 	HordeService.clear()
 	BarricadeService.resetAll()
+	TurretService.clear()
+	ClassService.reset()
+	EconomyService.resetAll()
 	if helicopter then
 		helicopter:Destroy()
 		helicopter = nil

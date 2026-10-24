@@ -648,16 +648,18 @@ local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number
 		return
 	end
 
-	-- Follow a noise while it lasts, otherwise the players' field.
-	local field: buffer? = nil
+	-- Follow a noise while it lasts, otherwise the players' field (the no-climbing version
+	-- for kinds that can't build pyramids).
+	local noiseField: buffer? = nil
 	local source = z.noise
 	if source then
 		if Noise.isActive(source, now) then
-			field = source.field
+			noiseField = source.field
 		else
 			z.noise = nil
 		end
 	end
+	local field = noiseField or (if stats.canPile then nil else FlowField.walkerField())
 
 	local ix, iz = FlowField.cellAt(z.position)
 	local direction: Vector3
@@ -668,7 +670,7 @@ local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number
 			return
 		end
 		direction = FlowField.cellCenter(nx, nz) - z.position
-	elseif not field and target and FlowField.distance(ix, iz) == 0 then
+	elseif not noiseField and target and FlowField.distance(ix, iz, field) == 0 then
 		-- Same cell as a player: close the last few studs directly.
 		direction = target.position - z.position
 	else

@@ -52,7 +52,10 @@ local function setAiming(aiming: boolean)
 end
 
 local function step(dt: number)
-	if not UserInputService.TouchEnabled or UserInputService.KeyboardEnabled then
+	if InputController.isModalOpen() then
+		-- A menu is open: give the mouse back so its buttons can be clicked.
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+	elseif not UserInputService.TouchEnabled or UserInputService.KeyboardEnabled then
 		UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 	end
 
