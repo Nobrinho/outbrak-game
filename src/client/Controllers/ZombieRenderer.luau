@@ -1,9 +1,9 @@
 --!strict
 -- Draws the server's zombie snapshots. Three LOD tiers, all pooled and moved in one
 -- workspace:BulkMoveTo per frame (never created/destroyed while playing):
---   near  — up to MAX_ANIMATED closest within NEAR_DISTANCE: 7-part greybox rig with a
---           procedural walk/attack cycle
---   mid   — single block with glowing eyes, up to FAR_DISTANCE
+--   near  — up to MAX_ANIMATED closest within NEAR_DISTANCE: the kind's low-poly rig
+--           (Art/ZombieRigs) with a procedural walk/attack cycle; pooled per kind
+--   mid   — single block in the zombie's shirt colour, up to FAR_DISTANCE
 --   none  — beyond that the corn and fog hide them anyway
 -- Positions are interpolated between 10 Hz snapshots, so motion stays smooth at any FPS.
 -- Hit zombies flinch; killed ones that were drawn as rigs fall over before returning to the
@@ -15,81 +15,26 @@ local RunService = game:GetService("RunService")
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
 local Net = require(Shared.Net)
+local Types = require(Shared.Types)
 local ZombiePacket = require(Shared.ZombiePacket)
+local ZombieRigs = require(Shared.Art.ZombieRigs)
 local Effects = require(script.Parent.Parent.Effects)
 
 local LOD = Config.CLIENT_ZOMBIES
 local SNAPSHOT_DT = 1 / Config.HORDE.REPLICATION_HZ
 local HIDDEN = CFrame.new(0, -1000, 0)
 
-local COLOR_SKIN = Color3.fromRGB(122, 132, 110)
-local COLOR_CLOTHES = Color3.fromRGB(84, 92, 62)
-local COLOR_EYES = Color3.fromRGB(255, 120, 20)
-local COLOR_FUSE = Color3.fromRGB(230, 30, 30)
-
--- Skin / clothes per kind id (Config.ZOMBIE_KIND_IDS), so each type reads at a glance.
-local KIND_COLORS: { [number]: { skin: Color3, clothes: Color3 } } = {
-	[1] = { skin = COLOR_SKIN, clothes = COLOR_CLOTHES }, -- Runner
-	[2] = { skin = Color3.fromRGB(110, 104, 96), clothes = Color3.fromRGB(58, 62, 72) }, -- Bull: armored
-	[3] = { skin = Color3.fromRGB(160, 176, 70), clothes = Color3.fromRGB(104, 118, 40) }, -- Creeper: bloated
-	[4] = { skin = Color3.fromRGB(104, 92, 84), clothes = Color3.fromRGB(58, 44, 38) }, -- Brute
-}
-
 type Tier = "none" | "mid" | "near"
 
--- Near rig part order; offsets are relative to the zombie's feet, facing -Z.
-local RIG = {
-	{
-		name = "Torso",
-		size = Vector3.new(1.8, 2, 1),
-		offset = Vector3.new(0, 3, 0),
-		color = COLOR_CLOTHES,
-	},
-	{
-		name = "Head",
-		size = Vector3.new(1.2, 1.2, 1.2),
-		offset = Vector3.new(0, 4.6, -0.2),
-		color = COLOR_SKIN,
-	},
-	{
-		name = "Eyes",
-		size = Vector3.new(0.9, 0.22, 0.1),
-		offset = Vector3.new(0, 4.75, -0.82),
-		color = COLOR_EYES,
-	},
-	{
-		name = "ArmL",
-		size = Vector3.new(0.5, 0.5, 2),
-		offset = Vector3.new(-1.15, 3.7, -0.9),
-		color = COLOR_SKIN,
-	},
-	{
-		name = "ArmR",
-		size = Vector3.new(0.5, 0.5, 2),
-		offset = Vector3.new(1.15, 3.7, -0.9),
-		color = COLOR_SKIN,
-	},
-	{
-		name = "LegL",
-		size = Vector3.new(0.7, 2, 0.7),
-		offset = Vector3.new(-0.45, 1, 0),
-		color = COLOR_CLOTHES,
-	},
-	{
-		name = "LegR",
-		size = Vector3.new(0.7, 2, 0.7),
-		offset = Vector3.new(0.45, 1, 0),
-		color = COLOR_CLOTHES,
-	},
-}
-local HIP_Y = 2
+-- A pooled set of parts for one kind; `specs` says how each part is posed and painted.
+type Rig = { kind: Types.ZombieKind, parts: { BasePart }, specs: { ZombieRigs.PartSpec } }
+
 local FLINCH_TIME = 0.18
 local FLINCH_ANGLE = math.rad(22)
 local CORPSE_FALL = 0.35
 local CORPSE_LIE = 2.5
 local CORPSE_SINK = 0.8
 local MAX_CORPSES = 16
-local SHOULDER = Vector3.new(0, 3.7, 0)
 
 type Entry = {
 	id: number,
@@ -103,8 +48,9 @@ type Entry = {
 	lastSeen: number,
 	phase: number, -- walk-cycle offset so the horde doesn't march in lockstep
 	hitAt: number,
+	variant: ZombieRigs.Variant,
 	tier: Tier,
-	near: { BasePart }?,
+	near: Rig?,
 	mid: BasePart?,
 }
 
@@ -115,20 +61,29 @@ local entries: { [number]: Entry } = {}
 -- arrive after the removal; without this the dead zombie would pop back for a second.
 local removedAt: { [number]: number } = {}
 local container: Folder
-local nearPool: { { BasePart } } = {}
+local nearPools: { [Types.ZombieKind]: { Rig } } = {}
 local midPool: { BasePart } = {}
 -- `root` is on the ground; zombies killed up on a pile drop from `height` as they fall.
-type Corpse = { rig: { BasePart }, root: CFrame, height: number, kind: number, diedAt: number }
+type Corpse = { rig: Rig, root: CFrame, height: number, kind: number, diedAt: number }
 local corpses: { Corpse } = {}
 local moveParts: { BasePart } = {}
 local moveCFrames: { CFrame } = {}
 
-local function newPart(name: string, size: Vector3, color: Color3, neon: boolean): BasePart
+local function newPart(
+	name: string,
+	size: Vector3,
+	color: Color3,
+	material: Enum.Material,
+	shape: Enum.PartType?
+): BasePart
 	local p = Instance.new("Part")
 	p.Name = name
+	if shape then
+		p.Shape = shape
+	end
 	p.Size = size
 	p.Color = color
-	p.Material = if neon then Enum.Material.Neon else Enum.Material.SmoothPlastic
+	p.Material = material
 	p.Anchored = true
 	p.CanCollide = false
 	p.CanTouch = false
@@ -141,16 +96,45 @@ local function newPart(name: string, size: Vector3, color: Color3, neon: boolean
 	return p
 end
 
-local function acquireNear(): { BasePart }
-	local rig = table.remove(nearPool)
+local function kindName(kind: number): Types.ZombieKind
+	return Config.ZOMBIE_KINDS_BY_ID[kind] or "Runner"
+end
+
+local function acquireNear(kind: Types.ZombieKind): Rig
+	local pool = nearPools[kind]
+	local rig = pool and table.remove(pool)
 	if rig then
 		return rig
 	end
-	local parts = {}
-	for _, spec in RIG do
-		table.insert(parts, newPart(spec.name, spec.size, spec.color, spec.name == "Eyes"))
+	local specs = ZombieRigs.RIGS[kind]
+	local parts = table.create(#specs) :: { BasePart }
+	for _, spec in specs do
+		table.insert(
+			parts,
+			newPart(spec.name, spec.size, Color3.new(), ZombieRigs.material(spec.tone), spec.shape)
+		)
 	end
-	return parts
+	return { kind = kind, parts = parts, specs = specs }
+end
+
+local function releaseRig(rig: Rig)
+	for _, p in rig.parts do
+		table.insert(moveParts, p)
+		table.insert(moveCFrames, HIDDEN)
+	end
+	local pool = nearPools[rig.kind]
+	if pool then
+		table.insert(pool, rig)
+	else
+		nearPools[rig.kind] = { rig }
+	end
+end
+
+-- Rigs are reused between zombies of a kind, so each is repainted with its new owner's outfit.
+local function paintRig(rig: Rig, variant: ZombieRigs.Variant)
+	for i, spec in rig.specs do
+		rig.parts[i].Color = ZombieRigs.color(spec.tone, variant, rig.kind)
+	end
 end
 
 local function acquireMid(): BasePart
@@ -159,18 +143,13 @@ local function acquireMid(): BasePart
 		return part
 	end
 	-- No lights or extra parts here: at 100+ instances even a SurfaceLight each is too costly.
-	local body = newPart("ZombieMid", Vector3.new(1.8, 5, 1), COLOR_CLOTHES, false)
-	return body
+	return newPart("ZombieMid", Vector3.new(1.8, 5, 1), Color3.new(), Enum.Material.SmoothPlastic)
 end
 
 local function release(entry: Entry)
 	local near = entry.near
 	if near then
-		for _, p in near do
-			table.insert(moveParts, p)
-			table.insert(moveCFrames, HIDDEN)
-		end
-		table.insert(nearPool, near)
+		releaseRig(near)
 		entry.near = nil
 	end
 	local mid = entry.mid
@@ -183,17 +162,6 @@ local function release(entry: Entry)
 	entry.tier = "none"
 end
 
--- Pooled rigs are shared by every kind, so they're repainted whenever one is handed out.
-local function paintRig(rig: { BasePart }, kind: number)
-	local colors = KIND_COLORS[kind] or KIND_COLORS[1]
-	for i, spec in RIG do
-		rig[i].Color = if spec.color == COLOR_EYES
-			then COLOR_EYES
-			elseif spec.color == COLOR_SKIN then colors.skin
-			else colors.clothes
-	end
-end
-
 local function setTier(entry: Entry, tier: Tier)
 	if entry.tier == tier then
 		return
@@ -201,12 +169,12 @@ local function setTier(entry: Entry, tier: Tier)
 	release(entry)
 	entry.tier = tier
 	if tier == "near" then
-		local rig = acquireNear()
-		paintRig(rig, entry.kind)
+		local rig = acquireNear(kindName(entry.kind))
+		paintRig(rig, entry.variant)
 		entry.near = rig
 	elseif tier == "mid" then
 		local mid = acquireMid()
-		mid.Color = (KIND_COLORS[entry.kind] or KIND_COLORS[1]).clothes
+		mid.Color = entry.variant.shirt
 		entry.mid = mid
 	end
 end
@@ -268,6 +236,7 @@ local function onSnapshot(b: buffer)
 				lastSeen = now,
 				phase = math.random() * math.pi * 2,
 				hitAt = -math.huge,
+				variant = ZombieRigs.variant(kindName(kind), id),
 				tier = "none",
 			}
 		end
@@ -368,9 +337,10 @@ local function onRemoved(ids: { number })
 	end
 end
 
--- Places the 7 rig parts relative to `base` (the feet, facing -Z).
+-- Places every rig part relative to `base` (the feet, facing -Z): legs swing around the
+-- hips, arms around the shoulders, body and head bob.
 local function poseRig(
-	rig: { BasePart },
+	rig: Rig,
 	base: CFrame,
 	scale: number,
 	legSwing: number,
@@ -379,40 +349,43 @@ local function poseRig(
 	bob: number,
 	rightRaise: number? -- extra lift on the right arm only (Brute holding a rock up)
 )
-	for i, spec in RIG do
-		local part = rig[i]
+	local lift = CFrame.new(0, bob, 0)
+	for i, spec in rig.specs do
+		local part = rig.parts[i]
+		local role = spec.role
 		local offset = spec.offset * scale
 		local cf: CFrame
-		if spec.name == "LegL" or spec.name == "LegR" then
-			local sign = if spec.name == "LegL" then 1 else -1
-			local hip = Vector3.new(offset.X, HIP_Y * scale, 0)
-			cf = base
-				* CFrame.new(hip)
-				* CFrame.Angles(legSwing * sign, 0, 0)
-				* CFrame.new(0, -HIP_Y * scale / 2, 0)
-		elseif spec.name == "ArmL" or spec.name == "ArmR" then
-			local sign = if spec.name == "ArmL" then 1 else -1
-			local shoulder = Vector3.new(offset.X, SHOULDER.Y * scale + bob, 0)
-			cf = base
-				* CFrame.new(shoulder)
-				* CFrame.Angles(
-					armRaise + armSwing * sign + (if sign < 0 then rightRaise or 0 else 0),
-					0,
-					0
-				)
-				* CFrame.new(0, 0, offset.Z)
+		if role == "Body" or role == "Head" then
+			cf = base * lift * CFrame.new(offset)
 		else
-			cf = base * CFrame.new(offset + Vector3.new(0, bob, 0))
+			local pivot = ZombieRigs.PIVOTS[role] * scale
+			local angle: number
+			if role == "LegL" then
+				angle = legSwing
+			elseif role == "LegR" then
+				angle = -legSwing
+			elseif role == "ArmL" then
+				angle = armRaise + armSwing
+			else
+				angle = armRaise - armSwing + (rightRaise or 0)
+			end
+			-- Arms ride the body's bob; legs stay planted.
+			local origin = if role == "ArmL" or role == "ArmR" then base * lift else base
+			cf = origin
+				* CFrame.new(pivot)
+				* CFrame.Angles(angle, 0, 0)
+				* CFrame.new(offset - pivot)
 		end
-		if part.Size ~= spec.size * scale then
-			part.Size = spec.size * scale
+		local size = spec.size * scale
+		if part.Size ~= size then
+			part.Size = size
 		end
 		table.insert(moveParts, part)
 		table.insert(moveCFrames, cf)
 	end
 end
 
-local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number)
+local function poseNear(entry: Entry, rig: Rig, root: CFrame, t: number)
 	local state = entry.state
 	local cycle = t * 9 + entry.phase
 	local legSwing, armSwing, armRaise, bob, lean = 0, math.sin(cycle) * 0.12, 0, 0, 0
@@ -437,7 +410,7 @@ local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number
 		legSwing = math.sin(t * 18 + entry.phase) * 0.9
 		armRaise, lean = -0.6, -0.45
 	elseif state == ZombiePacket.STATE_WINDUP then
-		if Config.ZOMBIE_KINDS_BY_ID[entry.kind] == "Brute" then
+		if rig.kind == "Brute" then
 			rightRaise, lean = 2.6, 0.12 -- rock held high: the throw telegraph
 		else
 			-- Bull scraping the ground before a charge.
@@ -445,13 +418,18 @@ local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number
 			lean = -0.3
 		end
 	elseif state == ZombiePacket.STATE_FUSE then
-		-- Creeper about to blow: trembling and flashing red.
+		-- Creeper about to blow: trembling, belly and pustules flashing red.
 		local s = 0.08 * kindScale(entry.kind)
 		shake = Vector3.new((math.random() - 0.5) * s, 0, (math.random() - 0.5) * s)
 		armRaise = 0.4
 		local flash = math.sin(t * 30) > 0
-		local colors = KIND_COLORS[entry.kind] or KIND_COLORS[1]
-		rig[1].Color = if flash then COLOR_FUSE else colors.clothes
+		for i, spec in rig.specs do
+			if spec.tone == "glow" or spec.name == "Belly" then
+				rig.parts[i].Color = if flash
+					then ZombieRigs.FUSE_COLOR
+					else ZombieRigs.color(spec.tone, entry.variant, rig.kind)
+			end
+		end
 	end
 	-- Hit reaction: snap back from the feet and recover.
 	local flinch = math.max(0, 1 - (t - entry.hitAt) / FLINCH_TIME)
@@ -465,11 +443,7 @@ local function poseCorpses(t: number)
 		local corpse = corpses[i]
 		local age = t - corpse.diedAt
 		if age >= CORPSE_FALL + CORPSE_LIE + CORPSE_SINK then
-			for _, part in corpse.rig do
-				table.insert(moveParts, part)
-				table.insert(moveCFrames, HIDDEN)
-			end
-			table.insert(nearPool, corpse.rig)
+			releaseRig(corpse.rig)
 			corpses[i] = corpses[#corpses]
 			corpses[#corpses] = nil
 		else

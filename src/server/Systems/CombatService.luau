@@ -18,6 +18,7 @@ local Net = require(Shared.Net)
 local Tags = require(Shared.Tags)
 local Types = require(Shared.Types)
 local HordeService = require(script.Parent.HordeService)
+local WeaponModels = require(Shared.Art.WeaponModels)
 
 local CombatService = {}
 
@@ -447,6 +448,34 @@ local function watchAmmoBox(box: Instance)
 	end
 end
 
+-- Puts the current gun's low-poly model (Art/WeaponModels) in the right hand, replacing
+-- the previous one. Other players see it; the client also uses its Muzzle for tracers.
+local function attachWeapon(character: Model, gun: string)
+	local hand = character:WaitForChild("RightHand", 5) or character:FindFirstChild("Right Arm")
+	if not hand or not hand:IsA("BasePart") then
+		return
+	end
+	local old = character:FindFirstChild("Gun")
+	if old then
+		old:Destroy()
+	end
+	local model = WeaponModels.build(gun)
+	if not model then
+		return
+	end
+	model.Name = "Gun"
+	model:PivotTo(hand.CFrame * CFrame.new(0, -0.25, -0.15))
+	for _, piece in model:GetChildren() do
+		if piece:IsA("BasePart") then
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = hand
+			weld.Part1 = piece
+			weld.Parent = piece
+		end
+	end
+	model.Parent = character
+end
+
 -- Shop API ---------------------------------------------------------------------------------
 
 -- Swaps the gun for `gun` with a full magazine and reserve. False if already equipped.
@@ -460,6 +489,9 @@ function CombatService.equipGun(player: Player, gun: Config.GunName): boolean
 	state.reserve = reserveFor(player, gun)
 	state.reloading = false
 	state.reloadToken += 1 -- cancels a reload in progress on the old gun
+	if player.Character then
+		attachWeapon(player.Character, gun)
+	end
 	sendSync(player)
 	return true
 end
@@ -487,27 +519,6 @@ end
 -- Players ----------------------------------------------------------------------------------
 
 -- Greybox gun so other players can see who is armed; replaced by real models in the art pass.
-local function attachGun(character: Model)
-	local hand = character:WaitForChild("RightHand", 5) or character:FindFirstChild("Right Arm")
-	if not hand or not hand:IsA("BasePart") then
-		return
-	end
-	local gun = Instance.new("Part")
-	gun.Name = "Gun"
-	gun.Size = Vector3.new(0.35, 0.6, 2)
-	gun.Color = Color3.fromRGB(40, 40, 44)
-	gun.Material = Enum.Material.Metal
-	gun.Massless = true
-	gun.CanCollide = false
-	gun.CanQuery = false
-	gun.CanTouch = false
-	gun.CFrame = hand.CFrame * CFrame.new(0, -0.3, -0.7)
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = hand
-	weld.Part1 = gun
-	weld.Parent = gun
-	gun.Parent = character
-end
 
 local function onPlayerAdded(player: Player)
 	local leaderstats = Instance.new("Folder")
@@ -527,7 +538,17 @@ local function onPlayerAdded(player: Player)
 			shield.Parent = character
 		end
 		sendSync(player)
-		attachGun(character)
+		-- The avatar's body parts are swapped when its appearance finishes loading, which would
+		-- drop a gun welded to the old hand; attach it only after that.
+		task.spawn(function()
+			if not player:HasAppearanceLoaded() then
+				player.CharacterAppearanceLoaded:Wait()
+			end
+			local state = states[player]
+			if state and player.Character == character then
+				attachWeapon(character, state.gun)
+			end
+		end)
 	end
 	if player.Character then
 		task.spawn(onCharacter, player.Character)
@@ -536,7 +557,11 @@ local function onPlayerAdded(player: Player)
 	-- Picking a class re-issues the loadout (only allowed during Prep, see ClassService).
 	player:GetAttributeChangedSignal("Class"):Connect(function()
 		if states[player] and aliveCharacter(player) then
-			states[player] = newState(player)
+			local state = newState(player)
+			states[player] = state
+			if player.Character then
+				attachWeapon(player.Character, state.gun)
+			end
 			sendSync(player)
 		end
 	end)

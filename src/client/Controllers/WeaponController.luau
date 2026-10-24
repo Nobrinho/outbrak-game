@@ -192,9 +192,10 @@ local function fire(me: Body)
 	local spread = gun.spread * (if aiming then 0.5 else 1)
 	local assist = InputController.autoFire and gun.pellets == 1
 	local origin, center = centerRay()
-	local gunPart = me.root.Parent and me.root.Parent:FindFirstChild("Gun")
-	local muzzle = if gunPart and gunPart:IsA("BasePart")
-		then gunPart.Position
+	local gunModel = me.root.Parent and me.root.Parent:FindFirstChild("Gun")
+	local muzzlePart = gunModel and gunModel:FindFirstChild("Muzzle")
+	local muzzle = if muzzlePart and muzzlePart:IsA("BasePart")
+		then muzzlePart.Position
 		else me.head.Position
 
 	local hits = {}
