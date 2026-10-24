@@ -14,6 +14,7 @@ local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 
 local Tags = require(game:GetService("ReplicatedStorage").Shared.Tags)
+local FarmVisuals = require(game:GetService("ReplicatedStorage").Shared.Art.FarmVisuals)
 
 local FarmMap = {}
 
@@ -1237,6 +1238,7 @@ function FarmMap.init()
 	buildExtraction()
 	buildLights()
 	buildLighting()
+	FarmVisuals.apply(mapFolder)
 
 	mapFolder.Parent = workspace
 end
