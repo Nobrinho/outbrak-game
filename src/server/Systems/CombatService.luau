@@ -53,6 +53,7 @@ local lastDebug: { [Player]: number } = {}
 local shotSeqs: { [Player]: number } = {}
 local syncRemote: RemoteEvent
 local shotFxRemote: UnreliableRemoteEvent
+local characterFxRemote: UnreliableRemoteEvent
 local grenadeFolder: Folder
 
 local function classOf(player: Player): Config.ClassStats
@@ -233,6 +234,7 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 	end
 	HordeService.noise(root.Position, gun.noise, 2.5, player)
 	shotFxRemote:FireAllClients(player, state.gun)
+	characterFxRemote:FireAllClients(player, "shot", state.gun)
 
 	local hitList = hits :: { unknown }
 	local eye = head.Position
@@ -316,6 +318,7 @@ local function onReload(player: Player)
 		return
 	end
 	state.reloading = true
+	characterFxRemote:FireAllClients(player, "reload", state.gun)
 	state.reloadToken += 1
 	local token = state.reloadToken
 	sendSync(player)
@@ -337,6 +340,7 @@ local function onMelee(player: Player)
 		return
 	end
 	state.nextMelee = now + melee.cooldown
+	characterFxRemote:FireAllClients(player, "melee", state.gun)
 
 	local look = root.CFrame.LookVector
 	local forward = Vector3.new(look.X, 0, look.Z).Unit
@@ -402,6 +406,7 @@ local function onThrowGrenade(player: Player, direction: unknown)
 		state.grenades -= 1
 	end
 	state.nextGrenade = now + g.cooldown
+	characterFxRemote:FireAllClients(player, "throw", state.gun)
 
 	local grenade = Instance.new("Part")
 	grenade.Name = "Grenade"
@@ -468,7 +473,9 @@ local function attachWeapon(character: Model, gun: string)
 		return
 	end
 	model.Name = "Gun"
-	model:PivotTo(hand.CFrame * CFrame.new(0, -0.25, -0.15))
+	-- Barrel along the hand's -Y (down the forearm) and the gun's top facing the back of the
+	-- hand, matching the aiming pose the client puts the arms in (PoseController).
+	model:PivotTo(hand.CFrame * CFrame.new(0, -0.3, 0) * CFrame.Angles(math.rad(-90), 0, 0))
 	for _, piece in model:GetChildren() do
 		if piece:IsA("BasePart") then
 			local weld = Instance.new("WeldConstraint")
@@ -581,6 +588,7 @@ end
 function CombatService.init()
 	syncRemote = Net.weaponSync()
 	shotFxRemote = Net.shotFx()
+	characterFxRemote = Net.characterFx()
 	grenadeFolder = Instance.new("Folder")
 	grenadeFolder.Name = "Grenades"
 	grenadeFolder.Parent = workspace
@@ -592,6 +600,22 @@ function CombatService.start()
 	Net.melee().OnServerEvent:Connect(onMelee)
 	Net.throwGrenade().OnServerEvent:Connect(onThrowGrenade)
 	syncRemote.OnServerEvent:Connect(queueSync)
+	-- Aim pitch for everyone's poses: a finite number in range, copied to the character.
+	local lastPitch: { [Player]: number } = {}
+	Players.PlayerRemoving:Connect(function(player)
+		lastPitch[player] = nil
+	end)
+	Net.aimPitch().OnServerEvent:Connect(function(player, pitch: unknown)
+		local now = os.clock()
+		if now - (lastPitch[player] or 0) < 0.08 then
+			return -- the client sends ~8/s at most; ignore floods
+		end
+		lastPitch[player] = now
+		local character = player.Character
+		if character and typeof(pitch) == "number" and pitch == pitch then
+			character:SetAttribute("AimPitch", math.clamp(pitch :: number, -1.1, 1.1))
+		end
+	end)
 
 	HordeService.killed:connect(onKill)
 

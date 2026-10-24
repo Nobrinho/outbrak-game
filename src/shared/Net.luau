@@ -105,4 +105,16 @@ function Net.shotFx(): UnreliableRemoteEvent
 	return get("ShotFx", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
 end
 
+-- Client → server, unreliable: (pitch: number) where the player aims, radians. The server
+-- copies it to the character's AimPitch attribute for everyone's pose.
+function Net.aimPitch(): UnreliableRemoteEvent
+	return get("AimPitch", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
+end
+
+-- Server → clients, unreliable: (player, action: "shot" | "reload" | "melee" | "throw",
+-- gun: string) so every client can animate that player's character.
+function Net.characterFx(): UnreliableRemoteEvent
+	return get("CharacterFx", "UnreliableRemoteEvent") :: UnreliableRemoteEvent
+end
+
 return Net
