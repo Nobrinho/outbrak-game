@@ -205,6 +205,16 @@ function ProgressionHUD.init()
 	screen.DisplayOrder = 4
 	buildBadge()
 	buildVip()
+	-- Build tag in the corner so testers can say which version they played.
+	Theme.text(screen, "label", {
+		AnchorPoint = Vector2.new(1, 1),
+		Position = UDim2.new(1, -8, 1, -4),
+		Size = UDim2.fromOffset(160, 14),
+		Text = "build " .. Config.BUILD,
+		TextColor3 = Theme.COLOR.muted,
+		TextTransparency = 0.3,
+		TextXAlignment = Enum.TextXAlignment.Right,
+	})
 end
 
 function ProgressionHUD.start()

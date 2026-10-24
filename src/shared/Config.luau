@@ -398,12 +398,14 @@ return table.freeze({
 		boostMultiplier = 2,
 	}),
 
+	-- Shown on the HUD so testers can say which build they played.
+	BUILD = "0.11.0-teste",
 	-- Test switches. ALL must be false before publishing.
 	DEBUG = table.freeze({
-		combatLog = true, -- prints why shots are accepted/rejected to the server Output
-		godMode = true, -- players take no damage (invisible ForceField)
-		infiniteAmmo = true, -- magazine and grenades never run out
-		richStart = true, -- start every match with 5000 credits to try the shop
+		combatLog = false, -- prints why shots are accepted/rejected to the server Output
+		godMode = false, -- players take no damage (invisible ForceField)
+		infiniteAmmo = false, -- magazine and grenades never run out
+		richStart = false, -- start every match with 5000 credits to try the shop
 	}),
 	AIM_ASSIST_DEGREES = 4, -- touch only: near-misses inside this cone count as body hits
 
