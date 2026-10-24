@@ -111,3 +111,27 @@ O place não foi salvo automaticamente após a correção.
 FBX/GLB não entram automaticamente no Roblox pelo Rojo. O import piloto do
 barril foi validado; novos assets ainda passam pelo importador do Studio.
 A configuração das ferramentas não comprova ainda a fidelidade do mapa.
+
+## Armas (piloto de produção)
+
+`python3 tools/art.py weapons` roda `tools/blender/weapons.py` e gera
+`assets/source/weapons.blend`, `assets/export/weapons.fbx`, o manifesto
+`assets/export/weapons.json` (triângulos e posição do cano) e a prévia
+`assets/export/weapons.preview.png` (Cycles na CPU, perfil lateral das 7 armas).
+
+- 7 armas (Pistol, SMG, Shotgun, Rifle, AK47, Knife, Bat), de 68 a 324 triângulos.
+- Uma malha por tom: `<Arma>_Metal`, `_Steel`, `_Wood`, `_WoodDark`. As cores são
+  reaplicadas pelo jogo, que também pinta Metal/Steel de dourado no Pacote do Sobrevivente.
+- Marcadores `<Arma>_Grip` (no punho) e `<Arma>_Muzzle` (na ponta do cano), cubos de
+  0,1 stud. O jogo usa o Grip para medir a escala do import e o eixo Grip→Muzzle para
+  corrigir a orientação; não é preciso normalizar o import à mão.
+
+Import: 3D Importer do Studio com `assets/export/weapons.fbx`, depois colocar o modelo
+importado (ou só as MeshParts) dentro de `ReplicatedStorage.Assets.Weapons`. O Rojo não
+gerencia `ReplicatedStorage.Assets`, então o conteúdo fica salvo no place.
+`src/shared/Art/WeaponModels.luau` usa as malhas quando as encontra e, sem elas, volta
+aos modelos feitos de peças.
+
+Validação em 24/10/2026: import simulado no Studio (peças 100× maiores e giradas 90°)
+reconstruiu a AK-47 nas medidas e posições do Blender, com o dourado só em Metal/Steel.
+O import real pelo importador ainda não foi feito.

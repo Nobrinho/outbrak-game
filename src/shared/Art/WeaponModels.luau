@@ -1,7 +1,13 @@
 --!strict
--- Low-poly weapon models held in the player's right hand. Each is a handful of parts in
--- model space with the grip at the origin and the barrel pointing -Z; a "Muzzle" part marks
--- where tracers start. No textures: dark metal, worn wood, a little steel.
+-- Low-poly weapon models held in the player's right hand, grip at the origin and barrel
+-- pointing -Z; a "Muzzle" part marks where tracers start. No textures: dark metal, worn wood,
+-- a little steel.
+--
+-- Preferred source: Blender meshes (tools/blender/weapons.py) imported into
+-- ReplicatedStorage.Assets.Weapons — one MeshPart per colour tone (<Name>_Metal, _Steel,
+-- _Wood, _WoodDark) plus <Name>_Grip / <Name>_Muzzle marker cubes (0.1 stud in Blender). The
+-- markers fix the importer's unit scale and orientation, so the raw import works as is.
+-- Without imported meshes, the part-built models below are used.
 
 local WeaponModels = {}
 
@@ -122,9 +128,127 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 
 local GOLD = Color3.fromRGB(214, 172, 62)
 
+local TONE_COLORS: { [string]: Color3 } = {
+	Metal = METAL,
+	Steel = STEEL,
+	Wood = WOOD,
+	WoodDark = WOOD_DARK,
+}
+local MARKER_SIZE = 0.1
+-- Grip → muzzle in studs as authored in Blender (assets/export/weapons.json).
+local MESH_MUZZLE: { [string]: Vector3 } = {
+	Pistol = Vector3.new(0, 0.24, -0.95),
+	SMG = Vector3.new(0, 0.28, -1.48),
+	Shotgun = Vector3.new(0, 0.33, -2.25),
+	Rifle = Vector3.new(0, 0.26, -2.35),
+	AK47 = Vector3.new(0, 0.24, -2.25),
+	Knife = Vector3.new(0, 0.03, -1.0),
+	Bat = Vector3.new(0, 0, -2.45),
+}
+
+local function meshSource(): Instance?
+	local assets = game:GetService("ReplicatedStorage"):FindFirstChild("Assets")
+	return assets and assets:FindFirstChild("Weapons")
+end
+
+local function findMesh(root: Instance, name: string): BasePart?
+	local found = root:FindFirstChild(name, true)
+	return if found and found:IsA("BasePart") then found else nil
+end
+
+-- Shortest-arc rotation turning `from` onto `to` (both non-zero).
+local function arc(from: Vector3, to: Vector3): CFrame
+	local a, b = from.Unit, to.Unit
+	local axis = a:Cross(b)
+	local dot = math.clamp(a:Dot(b), -1, 1)
+	if axis.Magnitude < 1e-4 then
+		return if dot > 0 then CFrame.identity else CFrame.fromAxisAngle(Vector3.yAxis, math.pi)
+	end
+	return CFrame.fromAxisAngle(axis.Unit, math.acos(dot))
+end
+
+-- Rotation that turns `from` onto `to`, for import axis mismatches. Turns around the vertical
+-- first (the Studio importer brings these FBX files in facing +Z, a 180° yaw), then fixes any
+-- remaining pitch — a plain shortest arc would roll a reversed gun onto its side.
+local function alignRotation(from: Vector3, to: Vector3): CFrame
+	local yaw = CFrame.identity
+	if
+		Vector2.new(from.X, from.Z).Magnitude > 1e-3
+		and Vector2.new(to.X, to.Z).Magnitude > 1e-3
+	then
+		yaw = CFrame.Angles(0, math.atan2(to.X, to.Z) - math.atan2(from.X, from.Z), 0)
+	end
+	return arc(yaw * from, to) * yaw
+end
+
+-- Builds `name` from imported Blender meshes, normalised to studs with the grip at the
+-- origin. Nil if the meshes for it aren't in the place.
+local function buildFromMeshes(name: string, skin: string?): Model?
+	local source = meshSource()
+	local grip = source and findMesh(source, name .. "_Grip")
+	local tip = source and findMesh(source, name .. "_Muzzle")
+	local expected = MESH_MUZZLE[name]
+	if not source or not grip or not tip or not expected then
+		return nil
+	end
+	local scale = MARKER_SIZE / math.max(grip.Size.X, 1e-6)
+	local gripFrame = grip.CFrame
+	local rawMuzzle = gripFrame:PointToObjectSpace(tip.Position) * scale
+	if rawMuzzle.Magnitude < 1e-3 then
+		return nil
+	end
+	-- Whatever axes the importer used, turn the grip→muzzle line onto the authored one.
+	local fix = alignRotation(rawMuzzle, expected)
+
+	local model = Instance.new("Model")
+	model.Name = name
+	for tone, color in TONE_COLORS do
+		local mesh = findMesh(source, name .. "_" .. tone)
+		if mesh then
+			local piece = mesh:Clone()
+			for _, child in piece:GetChildren() do
+				child:Destroy() -- drop importer leftovers (welds, attachments)
+			end
+			local relative = gripFrame:ToObjectSpace(mesh.CFrame)
+			piece.Size = mesh.Size * scale
+			piece.CFrame = fix * (CFrame.new(relative.Position * scale) * relative.Rotation)
+			local metal = tone == "Metal" or tone == "Steel"
+			piece.Color = if skin == "gold" and metal then GOLD else color
+			piece.Material = if skin == "gold" and metal
+				then Enum.Material.Foil
+				elseif metal then Enum.Material.Metal
+				else Enum.Material.Wood
+			piece.Anchored = false
+			piece.Massless = true
+			piece.CanCollide = false
+			piece.CanQuery = false
+			piece.CanTouch = false
+			piece.CastShadow = false
+			piece.Parent = model
+		end
+	end
+	local muzzle = Instance.new("Part")
+	muzzle.Name = "Muzzle"
+	muzzle.Size = Vector3.new(0.1, 0.1, 0.1)
+	muzzle.Transparency = 1
+	muzzle.Anchored = false
+	muzzle.Massless = true
+	muzzle.CanCollide = false
+	muzzle.CanQuery = false
+	muzzle.CanTouch = false
+	muzzle.CFrame = CFrame.new(expected)
+	muzzle.Parent = model
+	model.WorldPivot = CFrame.new()
+	return model
+end
+
 -- Builds the model for `name` (a gun or melee name). The returned model's pivot is the grip.
 -- `skin` "gold" (Pacote do Sobrevivente) turns the metal parts gold; wood stays wood.
 function WeaponModels.build(name: string, skin: string?): Model?
+	local fromMeshes = buildFromMeshes(name, skin)
+	if fromMeshes then
+		return fromMeshes
+	end
 	local def = MODELS[name]
 	if not def then
 		return nil
