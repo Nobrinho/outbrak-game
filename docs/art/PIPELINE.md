@@ -135,3 +135,26 @@ aos modelos feitos de peças.
 Validação em 24/10/2026: import simulado no Studio (peças 100× maiores e giradas 90°)
 reconstruiu a AK-47 nas medidas e posições do Blender, com o dourado só em Metal/Steel.
 O import real pelo importador ainda não foi feito.
+
+## Zumbis
+
+`python3 tools/art.py zombies` roda `tools/blender/zombies.py`: 16 malhas de partes do
+corpo (`Zombie_Torso`, `Zombie_Head`, `Zombie_Arm`…), de 20 a 76 triângulos cada, usadas
+pelos quatro tipos (Runner, Bull, Creeper, Brute) — um Runner inteiro fica em ~600
+triângulos. Gera `assets/export/zombies.fbx`, `zombies.json` e `zombies.preview.png`.
+
+- Cada malha tem exatamente o tamanho da peça em `src/shared/Art/ZombieRigs.luau` e é
+  centrada; o jogo define `MeshPart.Size`, então a escala do import não importa.
+- Lados esquerdo/direito e as pústulas compartilham a mesma malha.
+- Eixos, pelo que o import das armas mostrou: um ponto Roblox (x, y, z) é modelado em
+  Blender (-x, z, y); a frente do zumbi é Blender -Y.
+- Cores vêm do jogo (roupas variadas por zumbi, olhos neon), não do FBX.
+
+Import: 3D Importer com `assets/export/zombies.fbx`, depois mover as MeshParts para
+`ReplicatedStorage.Assets.Zombies`. O renderizador (`ZombieRenderer`) usa as malhas quando
+as encontra e, sem elas, continua com blocos.
+
+Validação em 24/10/2026: import real pelo 3D Importer (peças 100× maiores, eixos certos);
+no Play os zumbis de perto usam as malhas, e vistos de frente e de perfil no Studio os
+quatro tipos ficam virados para a frente (olhos, mandíbula, visor do capacete e punhos à
+frente, corcunda do Brute nas costas).

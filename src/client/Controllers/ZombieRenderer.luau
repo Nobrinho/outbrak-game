@@ -2,7 +2,9 @@
 -- Draws the server's zombie snapshots. Three LOD tiers, all pooled and moved in one
 -- workspace:BulkMoveTo per frame (never created/destroyed while playing):
 --   near  — up to MAX_ANIMATED closest within NEAR_DISTANCE: the kind's low-poly rig
---           (Art/ZombieRigs) with a procedural walk/attack cycle; pooled per kind
+--           (Art/ZombieRigs) with a procedural walk/attack cycle; pooled per kind. Each part
+--           uses the matching Blender mesh from ReplicatedStorage.Assets.Zombies
+--           (tools/blender/zombies.py) when the place has it, a plain block otherwise
 --   mid   — single block in the zombie's shirt colour, up to FAR_DISTANCE
 --   none  — beyond that the corn and fog hide them anyway
 -- Positions are interpolated between 10 Hz snapshots, so motion stays smooth at any FPS.
@@ -100,6 +102,68 @@ local function newPart(
 	return p
 end
 
+-- Blender meshes by name ("Zombie_Torso"…); left/right and lettered parts share one mesh.
+local meshTemplates: { [string]: MeshPart } = {}
+local MESH_ALIASES: { [string]: string } = {
+	LegL = "Leg",
+	LegR = "Leg",
+	ArmL = "Arm",
+	ArmR = "Arm",
+	SleeveL = "Sleeve",
+	SleeveR = "Sleeve",
+	PlateL = "Plate",
+	PlateR = "Plate",
+	FistL = "Fist",
+	FistR = "Fist",
+	TrapL = "Trap",
+	TrapR = "Trap",
+	PustuleA = "Pustule",
+	PustuleB = "Pustule",
+	PustuleC = "Pustule",
+}
+
+local function loadMeshTemplates()
+	local assets = game:GetService("ReplicatedStorage"):FindFirstChild("Assets")
+	local folder = assets and assets:FindFirstChild("Zombies")
+	if not folder then
+		return
+	end
+	for _, d in folder:GetDescendants() do
+		if d:IsA("MeshPart") then
+			meshTemplates[d.Name] = d
+		end
+	end
+end
+
+-- A pooled rig part: the Blender mesh for this spec if imported, else a block/ball.
+local function rigPart(spec: ZombieRigs.PartSpec): BasePart
+	local template = meshTemplates["Zombie_" .. (MESH_ALIASES[spec.name] or spec.name)]
+	if not template then
+		return newPart(
+			spec.name,
+			spec.size,
+			Color3.new(),
+			ZombieRigs.material(spec.tone),
+			spec.shape
+		)
+	end
+	local p = template:Clone()
+	for _, child in p:GetChildren() do
+		child:Destroy()
+	end
+	p.Name = spec.name
+	p.Size = spec.size
+	p.Material = ZombieRigs.material(spec.tone)
+	p.Anchored = true
+	p.CanCollide = false
+	p.CanTouch = false
+	p.CanQuery = false
+	p.CastShadow = false
+	p.CFrame = HIDDEN
+	p.Parent = container
+	return p
+end
+
 local function kindName(kind: number): Types.ZombieKind
 	return Config.ZOMBIE_KINDS_BY_ID[kind] or "Runner"
 end
@@ -113,10 +177,7 @@ local function acquireNear(kind: Types.ZombieKind): Rig
 	local specs = ZombieRigs.RIGS[kind]
 	local parts = table.create(#specs) :: { BasePart }
 	for _, spec in specs do
-		table.insert(
-			parts,
-			newPart(spec.name, spec.size, Color3.new(), ZombieRigs.material(spec.tone), spec.shape)
-		)
+		table.insert(parts, rigPart(spec))
 	end
 	return { kind = kind, parts = parts, specs = specs }
 end
@@ -513,6 +574,7 @@ function ZombieRenderer.init()
 end
 
 function ZombieRenderer.start()
+	loadMeshTemplates()
 	Net.zombieState().OnClientEvent:Connect(onSnapshot)
 	Net.zombieRemoved().OnClientEvent:Connect(function(ids: { number })
 		if typeof(ids) == "table" then
