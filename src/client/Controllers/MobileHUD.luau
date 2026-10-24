@@ -54,8 +54,10 @@ local function corner(parent: GuiObject, radius: UDim)
 	c.Parent = parent
 end
 
-local function makeButton(spec: ButtonSpec, parent: GuiObject): TextButton
-	local b = Instance.new("TextButton")
+-- `passThrough` buttons are labels that don't sink the touch, so the default camera still
+-- turns when that finger drags (ATIRAR: hold to fire and drag to aim with one thumb).
+local function makeButton(spec: ButtonSpec, parent: GuiObject, passThrough: boolean?): TextButton
+	local b: any = Instance.new(if passThrough then "TextLabel" else "TextButton")
 	b.Name = spec.action
 	b.AnchorPoint = Vector2.new(0.5, 0.5)
 	b.Position = UDim2.fromScale(spec.pos.X, spec.pos.Y)
@@ -66,7 +68,11 @@ local function makeButton(spec: ButtonSpec, parent: GuiObject): TextButton
 	b.TextColor3 = COLOR_TEXT
 	b.FontFace = Theme.FONT.heavy
 	b.TextScaled = true
-	b.AutoButtonColor = false
+	if passThrough then
+		b.Active = false
+	else
+		b.AutoButtonColor = false
+	end
 	corner(b, UDim.new(0.5, 0))
 
 	local pad = Instance.new("UIPadding")
@@ -86,16 +92,34 @@ local function makeButton(spec: ButtonSpec, parent: GuiObject): TextButton
 end
 
 -- Press/release wiring. InputEnded on the button can be missed if the finger slides off, so
--- we also release on the touch's global end.
-local function bindHold(button: GuiButton, onDown: () -> (), onUp: () -> ())
+-- we also release on the touch's global end. Pass-through buttons never receive input
+-- themselves, so their press is a hit test of every touch that starts.
+local function bindHold(button: GuiObject, onDown: () -> (), onUp: () -> (), passThrough: boolean?)
 	local activeTouch: InputObject? = nil
-	button.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.Touch and not activeTouch then
-			activeTouch = input
-			button.BackgroundTransparency = 0.1
-			onDown()
-		end
-	end)
+	local function press(input: InputObject)
+		activeTouch = input
+		button.BackgroundTransparency = 0.1
+		onDown()
+	end
+	if passThrough then
+		UserInputService.TouchStarted:Connect(function(input)
+			if activeTouch or not button.Visible then
+				return
+			end
+			local radius = button.AbsoluteSize.X / 2
+			local center = button.AbsolutePosition + button.AbsoluteSize / 2
+			local point = Vector2.new(input.Position.X, input.Position.Y)
+			if (point - center).Magnitude <= radius then
+				press(input)
+			end
+		end)
+	else
+		button.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch and not activeTouch then
+				press(input)
+			end
+		end)
+	end
 	UserInputService.TouchEnded:Connect(function(input)
 		if input == activeTouch then
 			activeTouch = nil
@@ -141,7 +165,8 @@ local function buildTouchCluster()
 	aspect.Parent = cluster
 
 	for _, spec in BUTTONS do
-		local button = makeButton(spec, cluster)
+		local passThrough = spec.action == "Fire"
+		local button = makeButton(spec, cluster, passThrough)
 		if spec.action == "Ability" then
 			abilityButton = button
 		end
@@ -153,7 +178,7 @@ local function buildTouchCluster()
 			end
 		end, function()
 			InputController.setAction(action, false)
-		end)
+		end, passThrough)
 	end
 
 	-- Context button: only visible while a prompt is on screen; label mirrors the prompt.
@@ -204,6 +229,8 @@ function MobileHUD.init()
 end
 
 function MobileHUD.start()
+	-- Always landscape on phones, whichever way the device is held (also set on StarterGui).
+	player:WaitForChild("PlayerGui").ScreenOrientation = Enum.ScreenOrientation.LandscapeSensor
 	if UserInputService.TouchEnabled then
 		buildTouchCluster()
 		watchPrompts()

@@ -29,6 +29,11 @@
         "Technology": "ShadowMap",
         "GlobalShadows": true
       }
+    },
+    "StarterGui": {
+      "$properties": {
+        "ScreenOrientation": "LandscapeSensor"
+      }
     }
   }
 }
