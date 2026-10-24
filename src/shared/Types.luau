@@ -23,4 +23,7 @@ export type WeaponState = {
 	shotSeq: number, -- last shot the server processed; the client re-applies newer ones
 }
 
+-- Match flow (MatchService); replicated as attributes on ReplicatedStorage.Match.
+export type MatchPhase = "Waiting" | "Prep" | "Wave" | "Final" | "Extract" | "Result"
+
 return nil

@@ -87,7 +87,7 @@ local function onSync(payload: unknown)
 	if not Config.GUNS[gun] or not Config.MELEE[melee] then
 		return
 	end
-	local pending = math.max(0, shotSeq - state.shotSeq)
+	local pending = if Config.DEBUG.infiniteAmmo then 0 else math.max(0, shotSeq - state.shotSeq)
 	view.gun = gun
 	view.melee = melee
 	view.mag = math.max(0, state.mag - pending)
@@ -177,7 +177,9 @@ local function fire(me: Body)
 	local now = os.clock()
 	nextShot = now + 1 / gun.fireRate
 	shotSeq += 1
-	view.mag -= 1
+	if not Config.DEBUG.infiniteAmmo then
+		view.mag -= 1
+	end
 
 	local aiming = InputController.isDown("Aim")
 	local spread = gun.spread * (if aiming then 0.5 else 1)
@@ -257,7 +259,9 @@ local function throwGrenade()
 		return
 	end
 	nextGrenade = now + Config.GRENADE.cooldown
-	view.grenades -= 1
+	if not Config.DEBUG.infiniteAmmo then
+		view.grenades -= 1
+	end
 	Net.throwGrenade():FireServer(workspace.CurrentCamera.CFrame.LookVector)
 	WeaponController.changed:fire()
 end

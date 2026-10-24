@@ -5,45 +5,70 @@
 local Types = require(script.Parent.Types)
 
 export type ZombieStats = {
+	displayName: string,
 	health: number,
 	speed: number,
 	damage: number,
 	attackRange: number,
 	attackCooldown: number,
+	barricadeDamage: number, -- per hit on a barricade
+	backMultiplier: number, -- damage taken from behind (weak spot)
+	canPile: boolean, -- joins pyramids and climbs walls
+	hearsNoise: boolean, -- pulled toward gunfire and explosions
 	scale: number, -- visual size multiplier for the client rig
 }
 
 local ZOMBIES: { [Types.ZombieKind]: ZombieStats } = {
 	Runner = {
+		displayName = "Corredor",
 		health = 50,
 		speed = 22,
 		damage = 10,
 		attackRange = 3,
 		attackCooldown = 1,
+		barricadeDamage = 3,
+		backMultiplier = 1,
+		canPile = true,
+		hearsNoise = true,
 		scale = 1,
 	},
 	Bull = {
+		displayName = "Bull",
 		health = 600,
 		speed = 14,
 		damage = 35,
 		attackRange = 4,
 		attackCooldown = 1.5,
+		barricadeDamage = 60,
+		backMultiplier = 2,
+		canPile = false,
+		hearsNoise = false,
 		scale = 1.5,
 	},
 	Creeper = {
+		displayName = "Creeper",
 		health = 80,
 		speed = 16,
-		damage = 60,
-		attackRange = 4,
+		damage = 60, -- explosion at the center
+		attackRange = 4, -- starts its fuse this close
 		attackCooldown = 1,
+		barricadeDamage = 150, -- explosion vs barricades
+		backMultiplier = 1,
+		canPile = false,
+		hearsNoise = true,
 		scale = 1.2,
 	},
 	Brute = {
-		health = 3000,
+		displayName = "Brute",
+		health = 2000, -- plus BRUTE.healthPerPlayer for each player
 		speed = 12,
 		damage = 50,
 		attackRange = 6,
 		attackCooldown = 2,
+		barricadeDamage = 120,
+		backMultiplier = 3,
+		canPile = false,
+		hearsNoise = false,
 		scale = 2.4,
 	},
 }
@@ -62,6 +87,7 @@ export type GunStats = {
 	spread: number, -- degrees, halved while aiming
 	pellets: number,
 	headMultiplier: number,
+	noise: number, -- studs within which Runners hear it
 }
 
 export type MeleeStats = {
@@ -87,6 +113,7 @@ local GUNS: { [GunName]: GunStats } = {
 		spread = 1.2,
 		pellets = 1,
 		headMultiplier = 2,
+		noise = 40,
 	},
 	SMG = {
 		displayName = "Submetralhadora",
@@ -99,6 +126,7 @@ local GUNS: { [GunName]: GunStats } = {
 		spread = 2.5,
 		pellets = 1,
 		headMultiplier = 1.5,
+		noise = 45,
 	},
 	Shotgun = {
 		displayName = "Escopeta",
@@ -111,6 +139,7 @@ local GUNS: { [GunName]: GunStats } = {
 		spread = 6,
 		pellets = 8,
 		headMultiplier = 1.5,
+		noise = 60,
 	},
 	Rifle = {
 		displayName = "Rifle",
@@ -123,6 +152,7 @@ local GUNS: { [GunName]: GunStats } = {
 		spread = 1.5,
 		pellets = 1,
 		headMultiplier = 2,
+		noise = 60,
 	},
 	AK47 = {
 		displayName = "AK-47",
@@ -135,6 +165,7 @@ local GUNS: { [GunName]: GunStats } = {
 		spread = 2.6,
 		pellets = 1,
 		headMultiplier = 2,
+		noise = 70,
 	},
 }
 
@@ -180,6 +211,47 @@ return table.freeze({
 		throwSpeed = 90,
 		throwLift = 30,
 		cooldown = 0.8,
+		noise = 100, -- heard from the moment it lands: a decoy
+	}),
+	BULL = table.freeze({
+		chargeRange = 30, -- starts a charge at players closer than this (and visible)
+		chargeMinRange = 8,
+		windup = 0.6, -- scrapes the ground before charging (telegraph)
+		chargeSpeed = 42,
+		chargeTime = 1.2,
+		chargeDamage = 35,
+		chargeBarricadeDamage = 250,
+		cooldown = 6,
+	}),
+	CREEPER = table.freeze({
+		fuse = 1,
+		radius = 12,
+		zombieDamage = 80, -- hurts the horde too: shoot it next to a pile
+		noise = 60,
+	}),
+	BRUTE = table.freeze({
+		healthPerPlayer = 1000,
+		throwMinRange = 14,
+		throwMaxRange = 90,
+		windup = 1, -- arm raised before the rock leaves
+		cooldown = 7,
+		rockDamage = 30,
+		rockBarricadeDamage = 80,
+		rockRadius = 7,
+	}),
+	MATCH = table.freeze({
+		prepTimes = table.freeze({ 45, 35, 35 }), -- before wave 1, wave 2 and the final wave
+		waves = table.freeze({
+			table.freeze({ Runner = 50, Creeper = 2 }),
+			table.freeze({ Runner = 70, Creeper = 3, Bull = 1 }),
+		}),
+		spawnInterval = 0.2,
+		extraPlayerScale = 0.35, -- each player beyond the first adds 35% to wave sizes
+		waveTimeout = 150, -- after everything spawned, leftovers are despawned
+		finalDuration = 90, -- survive this long, then reach the helicopter
+		finalSpawnInterval = 0.3,
+		finalMix = table.freeze({ Runner = 0.85, Creeper = 0.1, Bull = 0.05 }),
+		resultTime = 12,
 	}),
 	-- Starting loadout until the shop (week 7). Change `gun` to test the other guns.
 	LOADOUT = table.freeze({
@@ -188,7 +260,7 @@ return table.freeze({
 	}),
 	AMMO_BOX_COOLDOWN = 30,
 	BARRICADE = table.freeze({
-		maxHealth = 1000,
+		maxHealth = 1500,
 		repairFraction = 0.25, -- of max health per completed hold
 		repairHold = 1.2,
 		repairCooldown = 0.3,
@@ -202,8 +274,12 @@ return table.freeze({
 		climbTimes = table.freeze({ 0.55, 0.35, 0.45 }), -- up the pile, over the top, drop down
 		disbandAfter = 15, -- a pile nobody joined or climbed for this long falls apart
 	}),
-	-- Prints why shots are accepted/rejected to the server Output. Turn off before release.
-	DEBUG_COMBAT = true,
+	-- Test switches. ALL must be false before publishing.
+	DEBUG = table.freeze({
+		combatLog = true, -- prints why shots are accepted/rejected to the server Output
+		godMode = true, -- players take no damage (invisible ForceField)
+		infiniteAmmo = true, -- magazine and grenades never run out
+	}),
 	AIM_ASSIST_DEGREES = 4, -- touch only: near-misses inside this cone count as body hits
 
 	HORDE = table.freeze({
@@ -214,9 +290,6 @@ return table.freeze({
 		CELL_SIZE = 4,
 		HALF_EXTENT = 240, -- flow field covers [-HALF_EXTENT, HALF_EXTENT] on X and Z
 		SEPARATION_RADIUS = 2.2,
-		-- Keeps the horde topped up to MAX_ALIVE so the week-3 performance gate can be measured.
-		DEBUG_KEEP_FULL = true,
-		DEBUG_SPAWN_INTERVAL = 0.2,
 	}),
 
 	CLIENT_ZOMBIES = table.freeze({

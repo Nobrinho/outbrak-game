@@ -66,11 +66,19 @@ function FlowField.kind(ix: number, iz: number): number
 	return buffer.readu8(kinds, ix + iz * N)
 end
 
-function FlowField.distance(ix: number, iz: number): number
+-- A distance field (u16 per cell). The main field leads to the players; noise sources get
+-- their own small fields (see Noise.luau).
+function FlowField.newField(): buffer
+	local field = buffer.create(N * N * 2)
+	buffer.fill(field, 0, 255)
+	return field
+end
+
+function FlowField.distance(ix: number, iz: number, field: buffer?): number
 	if not FlowField.inBounds(ix, iz) then
 		return UNREACHABLE
 	end
-	return buffer.readu16(distance, (ix + iz * N) * 2)
+	return buffer.readu16(field or distance, (ix + iz * N) * 2)
 end
 
 function FlowField.ownerAt(ix: number, iz: number): BasePart?
@@ -128,10 +136,10 @@ function FlowField.build(map: Instance)
 	end
 end
 
--- Breadth-first from all goal positions at once. A player standing on top of something solid
--- (the firing platform) seeds the open cells around it instead, so zombies gather below.
-function FlowField.compute(goals: { Vector3 })
-	buffer.fill(distance, 0, 255)
+-- Breadth-first from all goal positions at once, stopping `limit` cells out. A goal on top of
+-- something solid (a crate, hay bale) seeds the open cells around it instead.
+local function bfs(field: buffer, goals: { Vector3 }, limit: number)
+	buffer.fill(field, 0, 255)
 
 	local head, tail = 1, 0
 	local function seed(ix: number, iz: number)
@@ -139,9 +147,9 @@ function FlowField.compute(goals: { Vector3 })
 		if
 			FlowField.inBounds(ix, iz)
 			and buffer.readu8(kinds, index) ~= FlowField.SOLID
-			and buffer.readu16(distance, index * 2) ~= 0
+			and buffer.readu16(field, index * 2) ~= 0
 		then
-			buffer.writeu16(distance, index * 2, 0)
+			buffer.writeu16(field, index * 2, 0)
 			tail += 1
 			queue[tail] = index
 		end
@@ -161,16 +169,19 @@ function FlowField.compute(goals: { Vector3 })
 		local index = queue[head]
 		head += 1
 		local ix, iz = index % N, index // N
-		local nextDistance = buffer.readu16(distance, index * 2) + 1
+		local nextDistance = buffer.readu16(field, index * 2) + 1
+		if nextDistance > limit then
+			continue
+		end
 		for i = 1, 4 do
 			local nx, nz = ix + NEIGHBOURS[i][1], iz + NEIGHBOURS[i][2]
 			if FlowField.inBounds(nx, nz) then
 				local nIndex = nx + nz * N
 				if
 					buffer.readu8(kinds, nIndex) ~= FlowField.SOLID
-					and buffer.readu16(distance, nIndex * 2) > nextDistance
+					and buffer.readu16(field, nIndex * 2) > nextDistance
 				then
-					buffer.writeu16(distance, nIndex * 2, nextDistance)
+					buffer.writeu16(field, nIndex * 2, nextDistance)
 					tail += 1
 					queue[tail] = nIndex
 				end
@@ -179,17 +190,30 @@ function FlowField.compute(goals: { Vector3 })
 	end
 end
 
+function FlowField.compute(goals: { Vector3 })
+	bfs(distance, goals, UNREACHABLE - 1)
+end
+
+-- Fills `field` with distances to `goals`, only up to `limitCells` away.
+function FlowField.computeField(field: buffer, goals: { Vector3 }, limitCells: number)
+	bfs(field, goals, limitCells)
+end
+
+function FlowField.cellsFor(studs: number): number
+	return math.ceil(studs / CELL)
+end
+
 -- Best neighbour to step toward. Diagonals are only allowed when both orthogonal cells are
 -- open, so zombies never cut wall corners. Returns nil when already at a goal or stranded.
-function FlowField.nextCell(ix: number, iz: number): (number?, number?)
-	local best = FlowField.distance(ix, iz)
+function FlowField.nextCell(ix: number, iz: number, field: buffer?): (number?, number?)
+	local best = FlowField.distance(ix, iz, field)
 	if best == 0 or best == UNREACHABLE then
 		return nil, nil
 	end
 	local bx, bz = nil, nil
 	for i, offset in NEIGHBOURS do
 		local nx, nz = ix + offset[1], iz + offset[2]
-		local d = FlowField.distance(nx, nz)
+		local d = FlowField.distance(nx, nz, field)
 		if d < best and FlowField.kind(nx, nz) ~= FlowField.SOLID then
 			local diagonalOk = i <= 4
 				or (

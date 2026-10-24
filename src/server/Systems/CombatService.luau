@@ -112,9 +112,9 @@ local function queueSync(player: Player)
 	end)
 end
 
--- Rate-limited diagnostics (Config.DEBUG_COMBAT), at most a few lines per second per player.
+-- Rate-limited diagnostics (Config.DEBUG.combatLog), at most a few lines per second per player.
 local function debugLog(player: Player, message: string)
-	if not Config.DEBUG_COMBAT then
+	if not Config.DEBUG.combatLog then
 		return
 	end
 	local now = os.clock()
@@ -158,6 +158,20 @@ local function onKill(_zombie: HordeService.Zombie, attacker: Player?)
 end
 
 -- Guns -------------------------------------------------------------------------------------
+
+-- Bulls and the Brute take extra damage from behind (their weak spot).
+local function backMultiplier(zombie: HordeService.Zombie, from: Vector3): number
+	local multiplier = Config.ZOMBIES[zombie.kindName].backMultiplier
+	if multiplier == 1 then
+		return 1
+	end
+	local toAttacker = Vector3.new(from.X - zombie.position.X, 0, from.Z - zombie.position.Z)
+	if toAttacker.Magnitude < 1e-3 then
+		return 1
+	end
+	local forward = Vector3.new(-math.sin(zombie.yaw), 0, -math.cos(zombie.yaw))
+	return if forward:Dot(toAttacker.Unit) < -0.35 then multiplier else 1
+end
 
 local function takeFireAllowance(state: PlayerState, fireRate: number): boolean
 	local now = os.clock()
@@ -203,7 +217,10 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 		queueSync(player)
 		return
 	end
-	state.mag -= 1
+	if not Config.DEBUG.infiniteAmmo then
+		state.mag -= 1
+	end
+	HordeService.noise(root.Position, gun.noise, 2.5, player)
 
 	local hitList = hits :: { unknown }
 	local eye = head.Position
@@ -223,7 +240,9 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 						visible[id] = Hitscan.canSeeZombie(eye, zombie.position, scale)
 					end
 					if inRange and visible[id] then
-						local damage = gun.damage * (if isHead then gun.headMultiplier else 1)
+						local damage = gun.damage
+							* (if isHead then gun.headMultiplier else 1)
+							* backMultiplier(zombie, eye)
 						local killed = HordeService.damage(zombie, damage, player)
 						debugLog(
 							player,
@@ -318,7 +337,8 @@ local function onMelee(player: Player)
 	end)
 	for i = 1, math.min(#candidates, melee.maxTargets) do
 		local zombie = candidates[i].zombie
-		if not HordeService.damage(zombie, melee.damage, player) then
+		local damage = melee.damage * backMultiplier(zombie, root.Position)
+		if not HordeService.damage(zombie, damage, player) then
 			HordeService.bleed(zombie, melee.bleedDps, melee.bleedTime, player)
 		end
 	end
@@ -328,22 +348,14 @@ end
 
 local function explode(player: Player, position: Vector3)
 	local g = Config.GRENADE
-	local blast = Instance.new("Explosion")
-	blast.Position = position
-	blast.BlastRadius = g.radius
-	blast.BlastPressure = 0 -- visual only: no physics push
-	blast.DestroyJointRadiusPercent = 0 -- never kills players
-	blast.ExplosionType = Enum.ExplosionType.NoCraters
-	blast.Parent = workspace
-
-	for _, zombie in HordeService.getZombies() do
-		if not zombie.dead then
-			local dist = (zombie.position - position).Magnitude
-			if dist <= g.radius then
-				HordeService.damage(zombie, g.damage * (1 - 0.5 * dist / g.radius), player)
-			end
-		end
-	end
+	HordeService.explode(position, {
+		radius = g.radius,
+		playerDamage = 0, -- no friendly fire
+		zombieDamage = g.damage,
+		barricadeDamage = 0,
+		noise = g.noise,
+		attacker = player,
+	})
 end
 
 local function onThrowGrenade(player: Player, direction: unknown)
@@ -364,7 +376,9 @@ local function onThrowGrenade(player: Player, direction: unknown)
 		queueSync(player)
 		return
 	end
-	state.grenades -= 1
+	if not Config.DEBUG.infiniteAmmo then
+		state.grenades -= 1
+	end
 	state.nextGrenade = now + g.cooldown
 
 	local grenade = Instance.new("Part")
@@ -380,6 +394,12 @@ local function onThrowGrenade(player: Player, direction: unknown)
 	grenade.Parent = grenadeFolder
 	grenade:SetNetworkOwner(nil) -- server simulates it, so the client can't steer the blast
 
+	-- Once it has (roughly) landed it starts pulling Runners in: the decoy.
+	task.delay(0.4, function()
+		if grenade.Parent then
+			HordeService.noise(grenade.Position, g.noise, g.fuse, nil)
+		end
+	end)
 	task.delay(g.fuse, function()
 		local position = grenade.Position
 		grenade:Destroy()
@@ -443,6 +463,13 @@ local function onPlayerAdded(player: Player)
 
 	local function onCharacter(character: Model)
 		states[player] = newState()
+		if Config.DEBUG.godMode then
+			-- Humanoid:TakeDamage (every zombie and explosion hit) is ignored under a ForceField.
+			local shield = Instance.new("ForceField")
+			shield.Name = "DebugGodMode"
+			shield.Visible = false
+			shield.Parent = character
+		end
 		sendSync(player)
 		attachGun(character)
 	end

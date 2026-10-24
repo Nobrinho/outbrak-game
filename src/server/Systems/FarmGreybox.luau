@@ -389,7 +389,7 @@ local function buildYardProps()
 	spawn.Color = COLOR.player
 	spawn.Material = Enum.Material.SmoothPlastic
 	spawn.Neutral = true
-	spawn.Duration = 0
+	spawn.Duration = 3 -- brief spawn protection (ForceField)
 	spawn.Parent = yard
 end
 

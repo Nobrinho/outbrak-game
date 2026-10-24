@@ -25,6 +25,15 @@ local HIDDEN = CFrame.new(0, -1000, 0)
 local COLOR_SKIN = Color3.fromRGB(122, 132, 110)
 local COLOR_CLOTHES = Color3.fromRGB(84, 92, 62)
 local COLOR_EYES = Color3.fromRGB(255, 120, 20)
+local COLOR_FUSE = Color3.fromRGB(230, 30, 30)
+
+-- Skin / clothes per kind id (Config.ZOMBIE_KIND_IDS), so each type reads at a glance.
+local KIND_COLORS: { [number]: { skin: Color3, clothes: Color3 } } = {
+	[1] = { skin = COLOR_SKIN, clothes = COLOR_CLOTHES }, -- Runner
+	[2] = { skin = Color3.fromRGB(110, 104, 96), clothes = Color3.fromRGB(58, 62, 72) }, -- Bull: armored
+	[3] = { skin = Color3.fromRGB(160, 176, 70), clothes = Color3.fromRGB(104, 118, 40) }, -- Creeper: bloated
+	[4] = { skin = Color3.fromRGB(104, 92, 84), clothes = Color3.fromRGB(58, 44, 38) }, -- Brute
+}
 
 type Tier = "none" | "mid" | "near"
 
@@ -174,6 +183,17 @@ local function release(entry: Entry)
 	entry.tier = "none"
 end
 
+-- Pooled rigs are shared by every kind, so they're repainted whenever one is handed out.
+local function paintRig(rig: { BasePart }, kind: number)
+	local colors = KIND_COLORS[kind] or KIND_COLORS[1]
+	for i, spec in RIG do
+		rig[i].Color = if spec.color == COLOR_EYES
+			then COLOR_EYES
+			elseif spec.color == COLOR_SKIN then colors.skin
+			else colors.clothes
+	end
+end
+
 local function setTier(entry: Entry, tier: Tier)
 	if entry.tier == tier then
 		return
@@ -181,9 +201,13 @@ local function setTier(entry: Entry, tier: Tier)
 	release(entry)
 	entry.tier = tier
 	if tier == "near" then
-		entry.near = acquireNear()
+		local rig = acquireNear()
+		paintRig(rig, entry.kind)
+		entry.near = rig
 	elseif tier == "mid" then
-		entry.mid = acquireMid()
+		local mid = acquireMid()
+		mid.Color = (KIND_COLORS[entry.kind] or KIND_COLORS[1]).clothes
+		entry.mid = mid
 	end
 end
 
@@ -352,7 +376,8 @@ local function poseRig(
 	legSwing: number,
 	armSwing: number,
 	armRaise: number, -- both arms up together (climbing, grabbing the wall)
-	bob: number
+	bob: number,
+	rightRaise: number? -- extra lift on the right arm only (Brute holding a rock up)
 )
 	for i, spec in RIG do
 		local part = rig[i]
@@ -370,7 +395,11 @@ local function poseRig(
 			local shoulder = Vector3.new(offset.X, SHOULDER.Y * scale + bob, 0)
 			cf = base
 				* CFrame.new(shoulder)
-				* CFrame.Angles(armRaise + armSwing * sign, 0, 0)
+				* CFrame.Angles(
+					armRaise + armSwing * sign + (if sign < 0 then rightRaise or 0 else 0),
+					0,
+					0
+				)
 				* CFrame.new(0, 0, offset.Z)
 		else
 			cf = base * CFrame.new(offset + Vector3.new(0, bob, 0))
@@ -387,6 +416,8 @@ local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number
 	local state = entry.state
 	local cycle = t * 9 + entry.phase
 	local legSwing, armSwing, armRaise, bob, lean = 0, math.sin(cycle) * 0.12, 0, 0, 0
+	local rightRaise = 0
+	local shake = Vector3.zero
 	if state == ZombiePacket.STATE_WALK then
 		legSwing = math.sin(cycle) * 0.7
 		bob = math.abs(math.sin(cycle)) * 0.25
@@ -401,11 +432,31 @@ local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number
 		legSwing = math.sin(t * 16 + entry.phase) * 0.9
 		armSwing = math.sin(t * 16 + entry.phase) * 0.5
 		armRaise, lean = 1.2, -0.2
+	elseif state == ZombiePacket.STATE_CHARGE then
+		-- Head down, arms back, legs pumping.
+		legSwing = math.sin(t * 18 + entry.phase) * 0.9
+		armRaise, lean = -0.6, -0.45
+	elseif state == ZombiePacket.STATE_WINDUP then
+		if Config.ZOMBIE_KINDS_BY_ID[entry.kind] == "Brute" then
+			rightRaise, lean = 2.6, 0.12 -- rock held high: the throw telegraph
+		else
+			-- Bull scraping the ground before a charge.
+			legSwing = math.max(0, math.sin(t * 10)) * 0.6
+			lean = -0.3
+		end
+	elseif state == ZombiePacket.STATE_FUSE then
+		-- Creeper about to blow: trembling and flashing red.
+		local s = 0.08 * kindScale(entry.kind)
+		shake = Vector3.new((math.random() - 0.5) * s, 0, (math.random() - 0.5) * s)
+		armRaise = 0.4
+		local flash = math.sin(t * 30) > 0
+		local colors = KIND_COLORS[entry.kind] or KIND_COLORS[1]
+		rig[1].Color = if flash then COLOR_FUSE else colors.clothes
 	end
 	-- Hit reaction: snap back from the feet and recover.
 	local flinch = math.max(0, 1 - (t - entry.hitAt) / FLINCH_TIME)
-	local base = root * CFrame.Angles(lean + flinch * FLINCH_ANGLE, 0, 0)
-	poseRig(rig, base, kindScale(entry.kind), legSwing, armSwing, armRaise, bob)
+	local base = root * CFrame.new(shake) * CFrame.Angles(lean + flinch * FLINCH_ANGLE, 0, 0)
+	poseRig(rig, base, kindScale(entry.kind), legSwing, armSwing, armRaise, bob, rightRaise)
 end
 
 -- Dead rigs fall on their back, lie still, then sink into the ground and go back to the pool.

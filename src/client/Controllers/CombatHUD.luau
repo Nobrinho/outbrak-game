@@ -138,7 +138,7 @@ local function refresh()
 	gunLabel.Text = string.upper(gun.displayName)
 	magLabel.Text = tostring(view.mag)
 	magLabel.TextColor3 = if view.mag <= gun.magSize * 0.25 then COLOR_LOW else COLOR_TEXT
-	reserveLabel.Text = "/ " .. view.reserve
+	reserveLabel.Text = if Config.DEBUG.infiniteAmmo then "/ ∞" else "/ " .. view.reserve
 	grenadeLabel.Text = "GRANADAS x" .. view.grenades
 	reloadLabel.Visible = view.reloading
 end

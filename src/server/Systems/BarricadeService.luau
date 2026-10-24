@@ -119,6 +119,19 @@ local function setup(instance: Instance)
 	refresh(part)
 end
 
+-- Restores every barricade to full health (new match).
+function BarricadeService.resetAll()
+	for _, instance in CollectionService:GetTagged(Tags.Barricade) do
+		if instance:IsA("BasePart") then
+			if instance:GetAttribute("Broken") == true then
+				instance:SetAttribute("Broken", false)
+				FlowField.setOwnerKind(instance, FlowField.BREACH)
+			end
+			setHealth(instance, BARRICADE.maxHealth)
+		end
+	end
+end
+
 function BarricadeService.start()
 	HordeService.barricadeHit:connect(onHit)
 	CollectionService:GetInstanceAddedSignal(Tags.Barricade):Connect(setup)

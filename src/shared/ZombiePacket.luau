@@ -14,6 +14,9 @@ ZombiePacket.STATE_ATTACK = 1
 ZombiePacket.STATE_IDLE = 2
 ZombiePacket.STATE_CLIMB = 3 -- running up a pile and over a wall
 ZombiePacket.STATE_PILE = 4 -- part of a pyramid against a wall
+ZombiePacket.STATE_CHARGE = 5 -- Bull mid-charge
+ZombiePacket.STATE_FUSE = 6 -- Creeper about to explode
+ZombiePacket.STATE_WINDUP = 7 -- Bull scraping before a charge, Brute with a rock raised
 
 export type Record = {
 	id: number,
