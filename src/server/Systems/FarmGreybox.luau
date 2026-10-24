@@ -33,7 +33,8 @@ local FIRE = Color3.fromRGB(255, 130, 50)
 
 local FORT_HALF = 60
 local FENCE_HEIGHT = 4.5 -- fence posts and gate; rails between them let bullets through
-local WALL_HEIGHT = 12
+-- Height zombies must pile up to before climbing over the corral fence or onto the silo.
+local CLIMB_HEIGHT = 9
 local GATE_WIDTH = 16
 
 type PartProps = {
@@ -174,11 +175,28 @@ local function buildPerimeter()
 	fenceRun("FenceSouthE", Vector3.new(gate, 0, h), Vector3.new(h, 0, h), perimeter)
 
 	local length = FORT_HALF * 2
-	local wall = onGround("CorralWall", Vector3.new(3, WALL_HEIGHT, length), -FORT_HALF, 0, {
-		color = COLOR.stone,
-		material = Enum.Material.Cobblestone,
+	-- Corral: tall chain-link fence. Zombies can't walk through it but pile up and climb it;
+	-- players see and shoot through the mesh, so the pyramid is a target as it grows.
+	local mesh = onGround("CorralFence", Vector3.new(1, CLIMB_HEIGHT, length), -FORT_HALF, 0, {
+		color = COLOR.metal,
+		material = Enum.Material.Metal,
+		transparency = 0.55,
 	}, perimeter)
-	tag(wall, Tags.ClimbZone)
+	mesh:SetAttribute("ClimbHeight", CLIMB_HEIGHT)
+	mesh:SetAttribute("Inside", Vector3.zero)
+	tag(mesh, Tags.ClimbZone)
+	tag(mesh, Tags.ShootThrough)
+	for i = 0, 12 do
+		local post = onGround(
+			"CorralPost" .. i,
+			Vector3.new(0.6, CLIMB_HEIGHT + 0.5, 0.6),
+			-FORT_HALF,
+			-FORT_HALF + i * 10,
+			{ color = COLOR.woodDark, material = Enum.Material.Metal },
+			perimeter
+		)
+		tag(post, Tags.ShootThrough)
+	end
 
 	local silo = part(
 		"Silo",
@@ -191,7 +209,22 @@ local function buildPerimeter()
 		},
 		perimeter
 	)
+	-- Zombies pile against the silo up to the catwalk ring, then drop into the yard.
+	silo:SetAttribute("ClimbHeight", CLIMB_HEIGHT)
+	silo:SetAttribute("Inside", Vector3.zero)
 	tag(silo, Tags.ClimbZone)
+	part(
+		"SiloCatwalk",
+		Vector3.new(0.6, 19, 19),
+		CFrame.new(FORT_HALF - 4, CLIMB_HEIGHT, -FORT_HALF + 4) * CFrame.Angles(0, 0, math.rad(90)),
+		{
+			color = COLOR.woodDark,
+			material = Enum.Material.DiamondPlate,
+			shape = Enum.PartType.Cylinder,
+			canCollide = false,
+		},
+		perimeter
+	)
 end
 
 local function barricade(name: string, size: Vector3, cframe: CFrame, parent: Instance)
@@ -199,9 +232,7 @@ local function barricade(name: string, size: Vector3, cframe: CFrame, parent: In
 		color = COLOR.interactive,
 		material = Enum.Material.WoodPlanks,
 	}, parent)
-	b:SetAttribute("MaxHealth", 500)
-	b:SetAttribute("Health", 500)
-	tag(b, Tags.Barricade)
+	tag(b, Tags.Barricade) -- health and repair: BarricadeService
 	prompt(b, "Reparar", "Barricada")
 end
 

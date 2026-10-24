@@ -12,6 +12,8 @@ export type State = number
 ZombiePacket.STATE_WALK = 0
 ZombiePacket.STATE_ATTACK = 1
 ZombiePacket.STATE_IDLE = 2
+ZombiePacket.STATE_CLIMB = 3 -- running up a pile and over a wall
+ZombiePacket.STATE_PILE = 4 -- part of a pyramid against a wall
 
 export type Record = {
 	id: number,

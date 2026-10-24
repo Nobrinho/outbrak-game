@@ -108,7 +108,8 @@ local removedAt: { [number]: number } = {}
 local container: Folder
 local nearPool: { { BasePart } } = {}
 local midPool: { BasePart } = {}
-type Corpse = { rig: { BasePart }, root: CFrame, kind: number, diedAt: number }
+-- `root` is on the ground; zombies killed up on a pile drop from `height` as they fall.
+type Corpse = { rig: { BasePart }, root: CFrame, height: number, kind: number, diedAt: number }
 local corpses: { Corpse } = {}
 local moveParts: { BasePart } = {}
 local moveCFrames: { CFrame } = {}
@@ -330,7 +331,9 @@ local function onRemoved(ids: { number })
 				entry.near = nil
 				table.insert(corpses, {
 					rig = rig,
-					root = CFrame.new(position) * CFrame.Angles(0, currentYaw(entry), 0),
+					root = CFrame.new(position.X, 0, position.Z)
+						* CFrame.Angles(0, currentYaw(entry), 0),
+					height = position.Y,
 					kind = entry.kind,
 					diedAt = now,
 				})
@@ -348,6 +351,7 @@ local function poseRig(
 	scale: number,
 	legSwing: number,
 	armSwing: number,
+	armRaise: number, -- both arms up together (climbing, grabbing the wall)
 	bob: number
 )
 	for i, spec in RIG do
@@ -366,7 +370,7 @@ local function poseRig(
 			local shoulder = Vector3.new(offset.X, SHOULDER.Y * scale + bob, 0)
 			cf = base
 				* CFrame.new(shoulder)
-				* CFrame.Angles(armSwing * sign, 0, 0)
+				* CFrame.Angles(armRaise + armSwing * sign, 0, 0)
 				* CFrame.new(0, 0, offset.Z)
 		else
 			cf = base * CFrame.new(offset + Vector3.new(0, bob, 0))
@@ -380,18 +384,28 @@ local function poseRig(
 end
 
 local function poseNear(entry: Entry, rig: { BasePart }, root: CFrame, t: number)
-	local walking = entry.state == ZombiePacket.STATE_WALK
-	local attacking = entry.state == ZombiePacket.STATE_ATTACK
+	local state = entry.state
 	local cycle = t * 9 + entry.phase
-	local legSwing = if walking then math.sin(cycle) * 0.7 else 0
-	local armSwing = if attacking
-		then math.sin(t * 12 + entry.phase) * 0.6
-		else math.sin(cycle) * 0.12
-	local bob = if walking then math.abs(math.sin(cycle)) * 0.25 else 0
+	local legSwing, armSwing, armRaise, bob, lean = 0, math.sin(cycle) * 0.12, 0, 0, 0
+	if state == ZombiePacket.STATE_WALK then
+		legSwing = math.sin(cycle) * 0.7
+		bob = math.abs(math.sin(cycle)) * 0.25
+	elseif state == ZombiePacket.STATE_ATTACK then
+		armSwing = math.sin(t * 12 + entry.phase) * 0.6
+	elseif state == ZombiePacket.STATE_PILE then
+		-- Clawing at the wall: leaning in, arms up, legs scrabbling.
+		legSwing = math.sin(t * 3 + entry.phase) * 0.15
+		armSwing = math.sin(t * 6 + entry.phase) * 0.3
+		armRaise, lean = 1.4, -0.35
+	elseif state == ZombiePacket.STATE_CLIMB then
+		legSwing = math.sin(t * 16 + entry.phase) * 0.9
+		armSwing = math.sin(t * 16 + entry.phase) * 0.5
+		armRaise, lean = 1.2, -0.2
+	end
 	-- Hit reaction: snap back from the feet and recover.
 	local flinch = math.max(0, 1 - (t - entry.hitAt) / FLINCH_TIME)
-	local base = root * CFrame.Angles(flinch * FLINCH_ANGLE, 0, 0)
-	poseRig(rig, base, kindScale(entry.kind), legSwing, armSwing, bob)
+	local base = root * CFrame.Angles(lean + flinch * FLINCH_ANGLE, 0, 0)
+	poseRig(rig, base, kindScale(entry.kind), legSwing, armSwing, armRaise, bob)
 end
 
 -- Dead rigs fall on their back, lie still, then sink into the ground and go back to the pool.
@@ -414,9 +428,9 @@ local function poseCorpses(t: number)
 			local sink = math.max(0, age - CORPSE_FALL - CORPSE_LIE) / CORPSE_SINK * 2 * scale
 			-- Lifting by half the torso depth keeps the back on the ground once flat.
 			local base = corpse.root
-				* CFrame.new(0, fall * 0.5 * scale - sink, 0)
+				* CFrame.new(0, corpse.height * (1 - fall) + fall * 0.5 * scale - sink, 0)
 				* CFrame.Angles(fall * math.rad(88), 0, 0)
-			poseRig(corpse.rig, base, scale, fall * 0.2, fall * 0.4, 0)
+			poseRig(corpse.rig, base, scale, fall * 0.2, fall * 0.4, 0, 0)
 		end
 	end
 end

@@ -28,6 +28,10 @@ FlowField.UNREACHABLE = UNREACHABLE
 local kinds = buffer.create(N * N) -- u8 per cell
 local distance = buffer.create(N * N * 2) -- u16 per cell
 local queue = table.create(N * N) :: { number }
+-- The barricade / climb zone part behind each BREACH cell, and the reverse index, so a
+-- broken barricade can open exactly its own cells.
+local owners: { [number]: BasePart } = {}
+local ownerCells: { [BasePart]: { number } } = {}
 
 local NEIGHBOURS = {
 	{ 1, 0 },
@@ -69,6 +73,23 @@ function FlowField.distance(ix: number, iz: number): number
 	return buffer.readu16(distance, (ix + iz * N) * 2)
 end
 
+function FlowField.ownerAt(ix: number, iz: number): BasePart?
+	if not FlowField.inBounds(ix, iz) then
+		return nil
+	end
+	return owners[ix + iz * N]
+end
+
+-- Switches every cell owned by `owner` (e.g. BREACH → FREE when a barricade breaks).
+function FlowField.setOwnerKind(owner: BasePart, kind: number)
+	local cells = ownerCells[owner]
+	if cells then
+		for _, index in cells do
+			buffer.writeu8(kinds, index, kind)
+		end
+	end
+end
+
 -- Samples the map once. Anything collidable between knee and head height blocks a cell;
 -- a hit on a Barricade or ClimbZone part makes it a breach point instead.
 function FlowField.build(map: Instance)
@@ -84,32 +105,55 @@ function FlowField.build(map: Instance)
 			local hits =
 				workspace:GetPartBoundsInBox(CFrame.new(center.X, 4, center.Z), boxSize, params)
 			local kind = FlowField.FREE
+			local index = ix + iz * N
 			for _, hit in hits do
 				if
 					CollectionService:HasTag(hit, Tags.Barricade)
 					or CollectionService:HasTag(hit, Tags.ClimbZone)
 				then
 					kind = FlowField.BREACH
+					owners[index] = hit
+					local list = ownerCells[hit]
+					if list then
+						table.insert(list, index)
+					else
+						ownerCells[hit] = { index }
+					end
 					break
 				end
 				kind = FlowField.SOLID
 			end
-			buffer.writeu8(kinds, ix + iz * N, kind)
+			buffer.writeu8(kinds, index, kind)
 		end
 	end
 end
 
--- Breadth-first from all goal positions at once.
+-- Breadth-first from all goal positions at once. A player standing on top of something solid
+-- (the firing platform) seeds the open cells around it instead, so zombies gather below.
 function FlowField.compute(goals: { Vector3 })
 	buffer.fill(distance, 0, 255)
 
 	local head, tail = 1, 0
+	local function seed(ix: number, iz: number)
+		local index = ix + iz * N
+		if
+			FlowField.inBounds(ix, iz)
+			and buffer.readu8(kinds, index) ~= FlowField.SOLID
+			and buffer.readu16(distance, index * 2) ~= 0
+		then
+			buffer.writeu16(distance, index * 2, 0)
+			tail += 1
+			queue[tail] = index
+		end
+	end
 	for _, goal in goals do
 		local ix, iz = FlowField.cellAt(goal)
-		if FlowField.inBounds(ix, iz) and FlowField.kind(ix, iz) ~= FlowField.SOLID then
-			buffer.writeu16(distance, (ix + iz * N) * 2, 0)
-			tail += 1
-			queue[tail] = ix + iz * N
+		if FlowField.kind(ix, iz) ~= FlowField.SOLID then
+			seed(ix, iz)
+		else
+			for _, offset in NEIGHBOURS do
+				seed(ix + offset[1], iz + offset[2])
+			end
 		end
 	end
 

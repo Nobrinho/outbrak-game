@@ -40,7 +40,7 @@ Entregável ao aprovar: salvar este documento como `/Users/emersonnobre/wwz/docs
 
 ## 3b. Mapa 1: Fazenda Abandonada
 - **Clima:** céu vermelho-acinzentado com fumaça no horizonte, cinzas no ar, plantação seca e moinho quebrado. Trovões distantes sem chuva (a chuva custa partículas).
-- **Layout:** a casa-sede e o celeiro formam o **forte dos jogadores**, dentro de uma cerca de madeira com portão. O milharal ao redor é a **névoa natural**, porque os zumbis surgem de dentro dele, o que também esconde o LOD. O silo e o muro de pedra do curral são os **ClimbZones** da pirâmide. A extração acontece no campo aberto, onde o helicóptero pousa, e é preciso correr até lá na onda final.
+- **Layout:** a casa-sede e o celeiro formam o **forte dos jogadores**, dentro de uma cerca de madeira com portão. O milharal ao redor é a **névoa natural**, porque os zumbis surgem de dentro dele, o que também esconde o LOD. O silo (até a passarela, a 9 studs) e a **cerca alta de tela do curral** são os **ClimbZones** da pirâmide. A tela é vazada: os jogadores veem a pirâmide crescer e atiram nela. A extração acontece no campo aberto, onde o helicóptero pousa, e é preciso correr até lá na onda final.
 - **Pontos de interesse:** a caixa de loja fica no celeiro, a munição na varanda, a torreta em 3 posições marcadas e há 4 barricadas (2 janelas, porta da casa e portão).
 - **Música:** drone grave contínuo na preparação (cordas e sintetizador) que **cresce em camadas** conforme a onda chega (percussão e batida cardíaca). Stinger quando o Brute aparece. Sons diegéticos: cata-vento rangendo, corvos, porteira batendo.
 

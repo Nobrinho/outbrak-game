@@ -187,6 +187,21 @@ return table.freeze({
 		melee = "Knife" :: MeleeName,
 	}),
 	AMMO_BOX_COOLDOWN = 30,
+	BARRICADE = table.freeze({
+		maxHealth = 1000,
+		repairFraction = 0.25, -- of max health per completed hold
+		repairHold = 1.2,
+		repairCooldown = 0.3,
+		zombieDamageMultiplier = 0.5, -- zombies hit barricades for half their player damage
+	}),
+	PILE = table.freeze({
+		perLayer = 3,
+		layerHeight = 1.6,
+		reach = 4, -- a zombie on top of the pile can grab a ledge this far above it
+		joinTime = 0.4,
+		climbTimes = table.freeze({ 0.55, 0.35, 0.45 }), -- up the pile, over the top, drop down
+		disbandAfter = 15, -- a pile nobody joined or climbed for this long falls apart
+	}),
 	-- Prints why shots are accepted/rejected to the server Output. Turn off before release.
 	DEBUG_COMBAT = true,
 	AIM_ASSIST_DEGREES = 4, -- touch only: near-misses inside this cone count as body hits

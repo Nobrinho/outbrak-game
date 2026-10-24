@@ -15,11 +15,14 @@ local Types = require(Shared.Types)
 local Signal = require(Shared.Util.Signal)
 local ZombiePacket = require(Shared.ZombiePacket)
 local FlowField = require(script.Parent.Parent.Horde.FlowField)
+local Piles = require(script.Parent.Parent.Horde.Piles)
 
 local HORDE = Config.HORDE
 local SIM_DT = 1 / HORDE.SIM_HZ
 local SEPARATION_SQ = HORDE.SEPARATION_RADIUS * HORDE.SEPARATION_RADIUS
 local HASH_CELL = HORDE.CELL_SIZE
+-- Zombies grab upward: players on crates, hay bales or fence rails are still in reach.
+local VERTICAL_REACH = 7
 
 export type Zombie = ZombiePacket.Record & {
 	kindName: Types.ZombieKind,
@@ -32,6 +35,9 @@ export type Zombie = ZombiePacket.Record & {
 }
 
 local HordeService = {}
+
+-- Fired when a zombie strikes a barricade: (barricade, damage). BarricadeService applies it.
+HordeService.barricadeHit = Signal.new() :: Signal.Signal<BasePart, number>
 
 -- Fired once per kill, after the zombie is gone from the simulation.
 HordeService.killed = Signal.new() :: Signal.Signal<Zombie, Player?>
@@ -140,6 +146,7 @@ local function flushDying()
 		if byId[zombie.id] == zombie then
 			byId[zombie.id] = nil
 		end
+		Piles.forget(zombie)
 		table.insert(ids, zombie.id)
 	end
 	local killed = dying
@@ -218,9 +225,15 @@ local function isWalkable(position: Vector3): boolean
 	return FlowField.kind(ix, iz) == FlowField.FREE
 end
 
--- Moves with wall sliding: try the full step, then each axis alone.
+-- Moves with wall sliding: try the full step, then each axis alone. A zombie already standing
+-- on a blocked cell (dropped from a pile, or a barricade rebuilt around it) moves freely
+-- until it is out.
 local function moveTo(z: Zombie, step: Vector3)
 	local p = z.position
+	if not isWalkable(p) then
+		z.position = p + step
+		return
+	end
 	local candidates = { p + step, p + Vector3.new(step.X, 0, 0), p + Vector3.new(0, 0, step.Z) }
 	for _, candidate in candidates do
 		if isWalkable(candidate) then
@@ -230,16 +243,54 @@ local function moveTo(z: Zombie, step: Vector3)
 	end
 end
 
+-- Nearest player by ground distance among those within vertical reach.
 local function nearestTarget(position: Vector3): (Target?, number)
 	local best: Target? = nil
 	local bestDist = math.huge
 	for _, t in targets do
-		local d = (t.position - position).Magnitude
-		if d < bestDist then
-			best, bestDist = t, d
+		local offset = t.position - position
+		if math.abs(offset.Y) <= VERTICAL_REACH then
+			local d = Vector3.new(offset.X, 0, offset.Z).Magnitude
+			if d < bestDist then
+				best, bestDist = t, d
+			end
 		end
 	end
 	return best, bestDist
+end
+
+local function face(z: Zombie, point: Vector3)
+	local offset = point - z.position
+	if offset.X ~= 0 or offset.Z ~= 0 then
+		z.yaw = math.atan2(-offset.X, -offset.Z)
+	end
+end
+
+-- The next cell is a barricade or climb zone: join/climb a pile, or stand and hit it.
+local function handleBreach(
+	z: Zombie,
+	stats: Config.ZombieStats,
+	ix: number,
+	iz: number,
+	nx: number,
+	nz: number,
+	now: number
+)
+	local owner = FlowField.ownerAt(nx, nz)
+	if owner and CollectionService:HasTag(owner, Tags.ClimbZone) then
+		if Piles.handleBreach(z, owner, nx, nz, ix, iz, now) then
+			return
+		end
+	end
+	z.state = ZombiePacket.STATE_ATTACK
+	face(z, FlowField.cellCenter(nx, nz))
+	if owner and CollectionService:HasTag(owner, Tags.Barricade) and now >= z.nextAttack then
+		z.nextAttack = now + stats.attackCooldown
+		HordeService.barricadeHit:fire(
+			owner,
+			stats.damage * Config.BARRICADE.zombieDamageMultiplier
+		)
+	end
 end
 
 local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number)
@@ -251,13 +302,15 @@ local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number
 			return
 		end
 	end
+	if Piles.isBusy(z) then
+		return -- position is driven by Piles.step
+	end
 	local stats = Config.ZOMBIES[z.kindName]
 	local target, targetDist = nearestTarget(z.position)
 
 	if target and targetDist <= stats.attackRange then
 		z.state = ZombiePacket.STATE_ATTACK
-		local toTarget = target.position - z.position
-		z.yaw = math.atan2(-toTarget.X, -toTarget.Z)
+		face(z, target.position)
 		if now >= z.nextAttack then
 			z.nextAttack = now + stats.attackCooldown
 			target.humanoid:TakeDamage(stats.damage)
@@ -270,10 +323,7 @@ local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number
 	local nx, nz = FlowField.nextCell(ix, iz)
 	if nx and nz then
 		if FlowField.kind(nx, nz) == FlowField.BREACH then
-			-- Arrived at a barricade / climb wall: hold here (week 5 adds damage and the pyramid).
-			z.state = ZombiePacket.STATE_ATTACK
-			local toBreach = FlowField.cellCenter(nx, nz) - z.position
-			z.yaw = math.atan2(-toBreach.X, -toBreach.Z)
+			handleBreach(z, stats, ix, iz, nx, nz, now)
 			return
 		end
 		direction = FlowField.cellCenter(nx, nz) - z.position
@@ -304,6 +354,7 @@ local function simulate(now: number)
 	for _, z in zombies do
 		stepZombie(z, hash, now)
 	end
+	Piles.step(now)
 end
 
 local function replicate()
