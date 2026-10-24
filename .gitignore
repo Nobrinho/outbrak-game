@@ -1,0 +1,13 @@
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+Packages/
+ServerPackages/
+DevPackages/
+wally.lock
+sourcemap.json
+.DS_Store
+
+# Selene std, regenerated on demand
+roblox.yml

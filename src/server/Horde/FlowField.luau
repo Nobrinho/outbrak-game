@@ -1,0 +1,163 @@
+--!strict
+-- Grid flow field shared by the whole horde. One BFS from every player's cell gives each cell
+-- its distance to the nearest player; a zombie only looks at its 8 neighbours to pick a step.
+-- Cost is O(cells) per recompute no matter how many zombies there are.
+--
+-- Cells are FREE, SOLID (walls, props) or BREACH (barricades and climb zones). BREACH cells
+-- carry distance like FREE ones so the field leads into the fort, but zombies never step onto
+-- them: reaching one is where they stop and attack (and, from week 5, pile up and climb).
+
+local CollectionService = game:GetService("CollectionService")
+
+local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+local Tags = require(game:GetService("ReplicatedStorage").Shared.Tags)
+
+local FlowField = {}
+
+FlowField.FREE = 0
+FlowField.SOLID = 1
+FlowField.BREACH = 2
+
+local CELL = Config.HORDE.CELL_SIZE
+local HALF = Config.HORDE.HALF_EXTENT
+local N = math.floor(HALF * 2 / CELL)
+local UNREACHABLE = 65535
+
+FlowField.UNREACHABLE = UNREACHABLE
+
+local kinds = buffer.create(N * N) -- u8 per cell
+local distance = buffer.create(N * N * 2) -- u16 per cell
+local queue = table.create(N * N) :: { number }
+
+local NEIGHBOURS = {
+	{ 1, 0 },
+	{ -1, 0 },
+	{ 0, 1 },
+	{ 0, -1 },
+	{ 1, 1 },
+	{ 1, -1 },
+	{ -1, 1 },
+	{ -1, -1 },
+}
+
+-- Cell index is 0-based: ix + iz * N.
+function FlowField.cellAt(position: Vector3): (number, number)
+	local ix = math.floor((position.X + HALF) / CELL)
+	local iz = math.floor((position.Z + HALF) / CELL)
+	return ix, iz
+end
+
+function FlowField.inBounds(ix: number, iz: number): boolean
+	return ix >= 0 and iz >= 0 and ix < N and iz < N
+end
+
+function FlowField.cellCenter(ix: number, iz: number): Vector3
+	return Vector3.new(ix * CELL - HALF + CELL / 2, 0, iz * CELL - HALF + CELL / 2)
+end
+
+function FlowField.kind(ix: number, iz: number): number
+	if not FlowField.inBounds(ix, iz) then
+		return FlowField.SOLID
+	end
+	return buffer.readu8(kinds, ix + iz * N)
+end
+
+function FlowField.distance(ix: number, iz: number): number
+	if not FlowField.inBounds(ix, iz) then
+		return UNREACHABLE
+	end
+	return buffer.readu16(distance, (ix + iz * N) * 2)
+end
+
+-- Samples the map once. Anything collidable between knee and head height blocks a cell;
+-- a hit on a Barricade or ClimbZone part makes it a breach point instead.
+function FlowField.build(map: Instance)
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { map }
+	params.RespectCanCollide = true
+
+	local boxSize = Vector3.new(CELL - 0.5, 5, CELL - 0.5)
+	for iz = 0, N - 1 do
+		for ix = 0, N - 1 do
+			local center = FlowField.cellCenter(ix, iz)
+			local hits =
+				workspace:GetPartBoundsInBox(CFrame.new(center.X, 4, center.Z), boxSize, params)
+			local kind = FlowField.FREE
+			for _, hit in hits do
+				if
+					CollectionService:HasTag(hit, Tags.Barricade)
+					or CollectionService:HasTag(hit, Tags.ClimbZone)
+				then
+					kind = FlowField.BREACH
+					break
+				end
+				kind = FlowField.SOLID
+			end
+			buffer.writeu8(kinds, ix + iz * N, kind)
+		end
+	end
+end
+
+-- Breadth-first from all goal positions at once.
+function FlowField.compute(goals: { Vector3 })
+	buffer.fill(distance, 0, 255)
+
+	local head, tail = 1, 0
+	for _, goal in goals do
+		local ix, iz = FlowField.cellAt(goal)
+		if FlowField.inBounds(ix, iz) and FlowField.kind(ix, iz) ~= FlowField.SOLID then
+			buffer.writeu16(distance, (ix + iz * N) * 2, 0)
+			tail += 1
+			queue[tail] = ix + iz * N
+		end
+	end
+
+	while head <= tail do
+		local index = queue[head]
+		head += 1
+		local ix, iz = index % N, index // N
+		local nextDistance = buffer.readu16(distance, index * 2) + 1
+		for i = 1, 4 do
+			local nx, nz = ix + NEIGHBOURS[i][1], iz + NEIGHBOURS[i][2]
+			if FlowField.inBounds(nx, nz) then
+				local nIndex = nx + nz * N
+				if
+					buffer.readu8(kinds, nIndex) ~= FlowField.SOLID
+					and buffer.readu16(distance, nIndex * 2) > nextDistance
+				then
+					buffer.writeu16(distance, nIndex * 2, nextDistance)
+					tail += 1
+					queue[tail] = nIndex
+				end
+			end
+		end
+	end
+end
+
+-- Best neighbour to step toward. Diagonals are only allowed when both orthogonal cells are
+-- open, so zombies never cut wall corners. Returns nil when already at a goal or stranded.
+function FlowField.nextCell(ix: number, iz: number): (number?, number?)
+	local best = FlowField.distance(ix, iz)
+	if best == 0 or best == UNREACHABLE then
+		return nil, nil
+	end
+	local bx, bz = nil, nil
+	for i, offset in NEIGHBOURS do
+		local nx, nz = ix + offset[1], iz + offset[2]
+		local d = FlowField.distance(nx, nz)
+		if d < best and FlowField.kind(nx, nz) ~= FlowField.SOLID then
+			local diagonalOk = i <= 4
+				or (
+					FlowField.kind(ix + offset[1], iz) ~= FlowField.SOLID
+					and FlowField.kind(ix, iz + offset[2]) ~= FlowField.SOLID
+				)
+			if diagonalOk then
+				best, bx, bz = d, nx, nz
+			end
+		end
+	end
+	return bx, bz
+end
+
+return FlowField
