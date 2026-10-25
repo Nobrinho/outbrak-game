@@ -370,7 +370,7 @@ function MatchService.init()
 	state.Name = "Match"
 	state:SetAttribute("Phase", "Waiting")
 	state:SetAttribute("Wave", 0)
-	state:SetAttribute("Waves", #MATCH.waves)
+	state:SetAttribute("Waves", #MATCH.waves + 1) -- the final wave counts too
 	state:SetAttribute("EndsAt", 0)
 	state:SetAttribute("Remaining", 0)
 	state:SetAttribute("BossHealth", 0)

@@ -284,7 +284,7 @@ return table.freeze({
 	DEFAULT_CLASS = "Gunslinger" :: Types.ClassId,
 
 	-- Credits per kill, spent at the barn shop. Reset every match.
-	REWARDS = table.freeze({ Runner = 5, Creeper = 15, Bull = 50, Brute = 300 }) :: { [Types.ZombieKind]: number },
+	REWARDS = table.freeze({ Runner = 10, Creeper = 25, Bull = 100, Brute = 500 }) :: { [Types.ZombieKind]: number },
 	START_CREDITS = 0,
 	SHOP = table.freeze({
 		table.freeze({ id = "SMG", kind = "gun", displayName = "Submetralhadora", price = 400 }),
@@ -348,10 +348,19 @@ return table.freeze({
 		rockRadius = 7,
 	}),
 	MATCH = table.freeze({
-		prepTimes = table.freeze({ 45, 35, 35 }), -- before wave 1, wave 2 and the final wave
+		-- 10 waves: these 9, then the final one (Brute + survive finalDuration). The ramp gives
+		-- a gentle start to buy a weapon, Bulls from wave 3, a step up at 5 and a peak at 9.
+		prepTimes = table.freeze({ 45, 30, 30, 30, 35, 30, 30, 30, 35, 40 }), -- before wave n
 		waves = table.freeze({
-			table.freeze({ Runner = 50, Creeper = 2 }),
-			table.freeze({ Runner = 70, Creeper = 3, Bull = 1 }),
+			table.freeze({ Runner = 30 }),
+			table.freeze({ Runner = 45, Creeper = 2 }),
+			table.freeze({ Runner = 55, Creeper = 3, Bull = 1 }),
+			table.freeze({ Runner = 65, Creeper = 5, Bull = 1 }),
+			table.freeze({ Runner = 75, Creeper = 6, Bull = 2 }),
+			table.freeze({ Runner = 85, Creeper = 7, Bull = 2 }),
+			table.freeze({ Runner = 95, Creeper = 8, Bull = 3 }),
+			table.freeze({ Runner = 105, Creeper = 10, Bull = 3 }),
+			table.freeze({ Runner = 120, Creeper = 12, Bull = 4 }),
 		}),
 		spawnInterval = 0.2,
 		extraPlayerScale = 0.35, -- each player beyond the first adds 35% to wave sizes

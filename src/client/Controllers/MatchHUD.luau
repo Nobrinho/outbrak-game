@@ -212,7 +212,7 @@ end
 local function update()
 	local phase = attr("Phase", "Waiting")
 	local wave = attr("Wave", 0)
-	local waves = attr("Waves", 2)
+	local waves = attr("Waves", 10)
 	local left = timeLeft()
 
 	if phase == "Prep" then
@@ -222,7 +222,7 @@ local function update()
 		titleLabel.Text = string.format("ONDA %d / %d", wave, waves)
 		detailLabel.Text = string.format("%d zumbis restantes", attr("Remaining", 0))
 	elseif phase == "Final" then
-		titleLabel.Text = "ONDA FINAL"
+		titleLabel.Text = string.format("ONDA FINAL %d / %d", waves, waves)
 		detailLabel.Text = "Helicóptero em " .. clock(left)
 	elseif phase == "Extract" then
 		titleLabel.Text = "EXTRAÇÃO"
