@@ -1,0 +1,75 @@
+{
+  "name": "roblox-swarm-outbreak-hub",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/hub/HubServer.server.luau",
+        "Data": {
+          "$path": "src/server/Data"
+        },
+        "Systems": {
+          "$className": "Folder",
+          "DataService": {
+            "$path": "src/server/Systems/DataService.luau"
+          },
+          "ProgressionService": {
+            "$path": "src/server/Systems/ProgressionService.luau"
+          },
+          "MonetizationService": {
+            "$path": "src/server/Systems/MonetizationService.luau"
+          },
+          "HubMap": {
+            "$path": "src/hub/Systems/HubMap.luau"
+          },
+          "PortalService": {
+            "$path": "src/hub/Systems/PortalService.luau"
+          }
+        }
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/hub/HubClient.client.luau",
+          "UI": {
+            "$path": "src/client/UI"
+          },
+          "Controllers": {
+            "$className": "Folder",
+            "InputController": {
+              "$path": "src/client/Controllers/InputController.luau"
+            },
+            "ProgressionHUD": {
+              "$path": "src/client/Controllers/ProgressionHUD.luau"
+            },
+            "PortalHUD": {
+              "$path": "src/hub/Controllers/PortalHUD.luau"
+            }
+          }
+        }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": false
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Technology": "ShadowMap",
+        "GlobalShadows": true
+      }
+    },
+    "StarterGui": {
+      "$properties": {
+        "ScreenOrientation": "LandscapeSensor"
+      }
+    }
+  }
+}
