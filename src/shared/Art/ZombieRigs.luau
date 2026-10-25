@@ -12,7 +12,7 @@ local Types = require(script.Parent.Parent.Types)
 local ZombieRigs = {}
 
 export type Role = "Body" | "Head" | "ArmL" | "ArmR" | "LegL" | "LegR"
-export type Tone = "skin" | "shirt" | "pants" | "eyes" | "dark" | "accent" | "glow"
+export type Tone = "skin" | "shirt" | "pants" | "eyes" | "dark" | "accent" | "glow" | "fixed"
 
 export type PartSpec = {
 	name: string,
@@ -21,6 +21,12 @@ export type PartSpec = {
 	size: Vector3,
 	offset: Vector3,
 	shape: Enum.PartType?,
+	-- Hero rigs (Art/HeroRigs): the Blender mesh to use, its own colour for tone "fixed",
+	-- and whether it glows (flashes red on a Creeper's fuse).
+	mesh: string?,
+	color: Color3?,
+	material: Enum.Material?,
+	glow: boolean?,
 }
 
 export type Variant = { skin: Color3, shirt: Color3, pants: Color3 }
@@ -192,6 +198,11 @@ function ZombieRigs.variant(kind: Types.ZombieKind, seed: number): Variant
 		shirt = RUNNER_SHIRTS[(seed // 3) % #RUNNER_SHIRTS + 1],
 		pants = RUNNER_PANTS[(seed // 7) % #RUNNER_PANTS + 1],
 	}
+end
+
+-- Colour of one rig part for one zombie's outfit.
+function ZombieRigs.partColor(part: PartSpec, variant: Variant, kind: Types.ZombieKind): Color3
+	return part.color or ZombieRigs.color(part.tone, variant, kind)
 end
 
 function ZombieRigs.color(tone: Tone, variant: Variant, kind: Types.ZombieKind): Color3

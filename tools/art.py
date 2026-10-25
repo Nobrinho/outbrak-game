@@ -43,6 +43,9 @@ def main():
             "--python", str(ROOT / "tools/blender" / script),
             "--", str(ROOT),
         ], check=True, cwd=ROOT)
+        stylua = shutil.which("stylua")
+        if args.command == "heroes" and stylua:  # heroes also writes src/shared/Art/HeroRigs.luau
+            subprocess.run([stylua, "src/shared/Art/HeroRigs.luau"], check=True, cwd=ROOT)
 
 
 if __name__ == "__main__":

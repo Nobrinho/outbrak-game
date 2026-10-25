@@ -182,3 +182,20 @@ Validação em 24/10/2026: import real (100×, eixos certos). No Play, o mapa mo
 `FarmMap` ganhou `TractorMeshes`, `TruckMeshes` e `CrateMeshes`, com as 20 peças originais
 invisíveis e só os aros dos tambores em `PropDetails`; de perto, trator, picape (com a
 inclinação de 4°) e as pilhas de caixotes ficam no lugar e com a frente certa.
+
+## Zumbis herói (Tank, Toxic, Armored, Runner)
+
+`python3 tools/art.py heroes` gera os 4 modelos completos (`tools/blender/zombie_heroes.py`):
+`assets/source/zombie_heroes.blend`, `assets/export/zombie_heroes.fbx`, `.json` e
+`.preview.png` (Cycles, glow por Glare no compositor). Mapeamento para o jogo:
+Tank → Brute, Toxic → Creeper, Armored → Bull, Runner → Runner.
+
+Cada herói sai em MeshParts por papel de animação (Body, Head, ArmL/R, LegL/R) e material,
+nomeados `Hero_<Kind>_<Role>_<material>`, com a origem no centro do bounding box. O script
+também escreve `src/shared/Art/HeroRigs.luau` (tamanhos, offsets, pivôs e cores em studs na
+escala 1 do tipo); ele roda StyLua nesse arquivo. Não editar à mão.
+
+Importar o FBX pelo Studio e mover os MeshParts para `ReplicatedStorage.Assets.Heroes`.
+`ZombieRenderer` usa o rig herói de um tipo só quando todas as malhas dele existem; sem
+isso mantém o rig em blocos. Movimento e ataque seguem os estados do `HordeService`
+(WALK, ATTACK, CHARGE, WINDUP, FUSE, PILE, CLIMB) com a animação procedural existente.

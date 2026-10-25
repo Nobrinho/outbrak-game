@@ -20,6 +20,7 @@ local Net = require(Shared.Net)
 local Types = require(Shared.Types)
 local ZombiePacket = require(Shared.ZombiePacket)
 local ZombieRigs = require(Shared.Art.ZombieRigs)
+local HeroRigs = require(Shared.Art.HeroRigs)
 local Signal = require(Shared.Util.Signal)
 local Effects = require(script.Parent.Parent.Effects)
 
@@ -30,7 +31,12 @@ local HIDDEN = CFrame.new(0, -1000, 0)
 type Tier = "none" | "mid" | "near"
 
 -- A pooled set of parts for one kind; `specs` says how each part is posed and painted.
-type Rig = { kind: Types.ZombieKind, parts: { BasePart }, specs: { ZombieRigs.PartSpec } }
+type Rig = {
+	kind: Types.ZombieKind,
+	parts: { BasePart },
+	specs: { ZombieRigs.PartSpec },
+	pivots: { [ZombieRigs.Role]: Vector3 },
+}
 
 local FLINCH_TIME = 0.18
 local FLINCH_ANGLE = math.rad(22)
@@ -122,22 +128,46 @@ local MESH_ALIASES: { [string]: string } = {
 	PustuleC = "Pustule",
 }
 
+-- Hero meshes (tools/blender/zombie_heroes.py), imported into Assets.Heroes. A kind uses its
+-- hero rig only when every part's mesh is present; otherwise the block/part rig above.
+local heroTemplates: { [string]: MeshPart } = {}
+local heroKinds: { [Types.ZombieKind]: boolean } = {}
+
 local function loadMeshTemplates()
 	local assets = game:GetService("ReplicatedStorage"):FindFirstChild("Assets")
 	local folder = assets and assets:FindFirstChild("Zombies")
-	if not folder then
-		return
-	end
-	for _, d in folder:GetDescendants() do
-		if d:IsA("MeshPart") then
-			meshTemplates[d.Name] = d
+	if folder then
+		for _, d in folder:GetDescendants() do
+			if d:IsA("MeshPart") then
+				meshTemplates[d.Name] = d
+			end
 		end
+	end
+	local heroes = assets and assets:FindFirstChild("Heroes")
+	if heroes then
+		for _, d in heroes:GetDescendants() do
+			if d:IsA("MeshPart") then
+				heroTemplates[d.Name] = d
+			end
+		end
+	end
+	for kind, rig in HeroRigs.RIGS do
+		local complete = true
+		for _, spec in rig.parts do
+			if not heroTemplates[spec.mesh :: string] then
+				complete = false
+				break
+			end
+		end
+		heroKinds[kind] = complete
 	end
 end
 
 -- A pooled rig part: the Blender mesh for this spec if imported, else a block/ball.
 local function rigPart(spec: ZombieRigs.PartSpec): BasePart
-	local template = meshTemplates["Zombie_" .. (MESH_ALIASES[spec.name] or spec.name)]
+	local template = if spec.mesh
+		then heroTemplates[spec.mesh]
+		else meshTemplates["Zombie_" .. (MESH_ALIASES[spec.name] or spec.name)]
 	if not template then
 		return newPart(
 			spec.name,
@@ -153,7 +183,7 @@ local function rigPart(spec: ZombieRigs.PartSpec): BasePart
 	end
 	p.Name = spec.name
 	p.Size = spec.size
-	p.Material = ZombieRigs.material(spec.tone)
+	p.Material = spec.material or ZombieRigs.material(spec.tone)
 	p.Anchored = true
 	p.CanCollide = false
 	p.CanTouch = false
@@ -174,12 +204,18 @@ local function acquireNear(kind: Types.ZombieKind): Rig
 	if rig then
 		return rig
 	end
-	local specs = ZombieRigs.RIGS[kind]
+	local hero = if heroKinds[kind] then HeroRigs.RIGS[kind] else nil
+	local specs = if hero then hero.parts else ZombieRigs.RIGS[kind]
 	local parts = table.create(#specs) :: { BasePart }
 	for _, spec in specs do
 		table.insert(parts, rigPart(spec))
 	end
-	return { kind = kind, parts = parts, specs = specs }
+	return {
+		kind = kind,
+		parts = parts,
+		specs = specs,
+		pivots = if hero then hero.pivots else ZombieRigs.PIVOTS,
+	}
 end
 
 local function releaseRig(rig: Rig)
@@ -198,7 +234,7 @@ end
 -- Rigs are reused between zombies of a kind, so each is repainted with its new owner's outfit.
 local function paintRig(rig: Rig, variant: ZombieRigs.Variant)
 	for i, spec in rig.specs do
-		rig.parts[i].Color = ZombieRigs.color(spec.tone, variant, rig.kind)
+		rig.parts[i].Color = ZombieRigs.partColor(spec, variant, rig.kind)
 	end
 end
 
@@ -348,7 +384,7 @@ local function assignLods()
 	local animated = 0
 	for _, item in sorted do
 		local tier: Tier = "none"
-		if item.dist <= LOD.NEAR_DISTANCE and animated < LOD.MAX_ANIMATED then
+		if item.dist <= LOD.NEAR_DISTANCE and animated < budget then
 			tier = "near"
 			animated += 1
 		elseif item.dist <= LOD.FAR_DISTANCE then
@@ -439,7 +475,7 @@ local function poseRig(
 		if role == "Body" or role == "Head" then
 			cf = base * lift * CFrame.new(offset)
 		else
-			local pivot = ZombieRigs.PIVOTS[role] * scale
+			local pivot = rig.pivots[role] * scale
 			local angle: number
 			if role == "LegL" then
 				angle = legSwing
@@ -505,10 +541,10 @@ local function poseNear(entry: Entry, rig: Rig, root: CFrame, t: number)
 		armRaise = 0.4
 		local flash = math.sin(t * 30) > 0
 		for i, spec in rig.specs do
-			if spec.tone == "glow" or spec.name == "Belly" then
+			if spec.tone == "glow" or spec.glow or spec.name == "Belly" then
 				rig.parts[i].Color = if flash
 					then ZombieRigs.FUSE_COLOR
-					else ZombieRigs.color(spec.tone, entry.variant, rig.kind)
+					else ZombieRigs.partColor(spec, entry.variant, rig.kind)
 			end
 		end
 	end
