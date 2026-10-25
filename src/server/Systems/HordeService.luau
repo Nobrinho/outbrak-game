@@ -381,10 +381,13 @@ local function separation(z: Zombie, hash: { [number]: { Zombie } }): Vector3
 			if bucket then
 				for _, other in bucket do
 					if other ~= z then
+						-- Flat only: a neighbour standing on a pile above must not push this
+						-- one up or down (that fed back and launched crowds into the sky).
 						local offset = z.position - other.position
-						local distSq = offset.X * offset.X + offset.Z * offset.Z
+						local flat = Vector3.new(offset.X, 0, offset.Z)
+						local distSq = flat.X * flat.X + flat.Z * flat.Z
 						if distSq < SEPARATION_SQ and distSq > 1e-4 then
-							push += offset.Unit * (1 - math.sqrt(distSq) / HORDE.SEPARATION_RADIUS)
+							push += flat.Unit * (1 - math.sqrt(distSq) / HORDE.SEPARATION_RADIUS)
 						end
 					end
 				end
@@ -617,6 +620,10 @@ local function stepZombie(z: Zombie, hash: { [number]: { Zombie } }, now: number
 	end
 	if Piles.isBusy(z) then
 		return -- position is driven by Piles.step
+	end
+	-- Off a pile every zombie walks on the ground (y = 0 across the map).
+	if z.position.Y ~= 0 then
+		z.position = Vector3.new(z.position.X, 0, z.position.Z)
 	end
 	local stats = Config.ZOMBIES[z.kindName]
 
