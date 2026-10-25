@@ -396,7 +396,7 @@ return table.freeze({
 	-- and extractions; shop items unlock by account level.
 	PROGRESSION = table.freeze({
 		xpPerKill = table.freeze({ Runner = 2, Creeper = 5, Bull = 15, Brute = 100 }) :: { [Types.ZombieKind]: number },
-		xpWaveCleared = 50,
+		xpWaveCleared = 30, -- 9 regular waves per match since the 10-wave update
 		xpMatchPlayed = 25,
 		xpExtraction = 200,
 		-- Level n needs this much XP to advance to n + 1.
@@ -414,7 +414,7 @@ return table.freeze({
 	}),
 
 	-- Shown on the HUD so testers can say which build they played.
-	BUILD = "0.11.0-teste",
+	BUILD = "0.12.0-teste",
 	-- Test switches. ALL must be false before publishing.
 	DEBUG = table.freeze({
 		combatLog = false, -- prints why shots are accepted/rejected to the server Output

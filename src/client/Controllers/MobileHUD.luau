@@ -129,11 +129,13 @@ local function bindHold(button: GuiObject, onDown: () -> (), onUp: () -> (), pas
 	end)
 end
 
+-- Changes state directly: setting Humanoid.Jump is overwritten every frame by the default
+-- ControlModule (whose own jump button we hide), so the jump never happened.
 local function jump()
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		humanoid.Jump = true
+	if humanoid and humanoid.Health > 0 and humanoid.FloorMaterial ~= Enum.Material.Air then
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
 end
 

@@ -1190,6 +1190,27 @@ local function buildLights()
 	)
 end
 
+-- One effect of each class: reuses whatever the place file already holds (a saved place can
+-- carry copies from earlier sessions) and removes the extras, so effects never stack.
+local function lightingEffect(className: string): Instance
+	local found: Instance? = nil
+	for _, child in Lighting:GetChildren() do
+		if child.ClassName == className then
+			if found then
+				child:Destroy()
+			else
+				found = child
+			end
+		end
+	end
+	if found then
+		return found
+	end
+	local created = Instance.new(className)
+	created.Parent = Lighting
+	return created
+end
+
 -- Apocalyptic dusk: the sun is just down, so the practical lights read clearly; red-grey haze
 -- hides the far corn. No rain (particles cost).
 local function buildLighting()
@@ -1201,27 +1222,24 @@ local function buildLighting()
 	Lighting.EnvironmentDiffuseScale = 0.3
 	Lighting.EnvironmentSpecularScale = 0.2
 
-	local atmosphere = Instance.new("Atmosphere")
+	local atmosphere = lightingEffect("Atmosphere") :: Atmosphere
 	atmosphere.Density = 0.36
 	atmosphere.Offset = 0.05
 	atmosphere.Color = Color3.fromRGB(160, 105, 90)
 	atmosphere.Decay = Color3.fromRGB(80, 55, 60)
 	atmosphere.Glare = 0.3
 	atmosphere.Haze = 1.6
-	atmosphere.Parent = Lighting
 
-	local grade = Instance.new("ColorCorrectionEffect")
+	local grade = lightingEffect("ColorCorrectionEffect") :: ColorCorrectionEffect
 	grade.Saturation = -0.2
 	grade.Contrast = 0.12
 	grade.TintColor = Color3.fromRGB(255, 236, 226)
-	grade.Parent = Lighting
 
 	-- Gentle glow on lamps and neon; Roblox drops post effects on low graphics levels.
-	local bloom = Instance.new("BloomEffect")
+	local bloom = lightingEffect("BloomEffect") :: BloomEffect
 	bloom.Intensity = 0.6
 	bloom.Size = 28
 	bloom.Threshold = 1.6
-	bloom.Parent = Lighting
 end
 
 function FarmMap.init()

@@ -359,6 +359,8 @@ end
 -- Picks tiers: nearest MAX_ANIMATED inside NEAR_DISTANCE get rigs, the rest within
 -- FAR_DISTANCE get blocks. Also drops entries the server stopped sending.
 local function assignLods()
+	-- Fewer full rigs while the frame rate is low (Effects.quality drops to 0.5 below 40 FPS).
+	local budget = math.floor(LOD.MAX_ANIMATED * Effects.quality)
 	local now = os.clock()
 	local viewer = viewerPosition()
 	local sorted: { { entry: Entry, dist: number } } = {}

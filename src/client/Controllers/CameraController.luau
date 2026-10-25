@@ -34,7 +34,8 @@ local function onCharacter(character: Model)
 	root = character:WaitForChild("HumanoidRootPart") :: BasePart
 	h.AutoRotate = false
 	h.CameraOffset = SHOULDER_OFFSET
-	workspace.CurrentCamera.CameraSubject = h
+	local camera = workspace.CurrentCamera
+	camera.CameraSubject = h
 	h.Died:Once(function()
 		humanoid = nil
 		root = nil
@@ -78,7 +79,8 @@ local function updateSpectate()
 				and other.Character:FindFirstChildOfClass("Humanoid")
 			if h and isAlive(h) then
 				spectating = h
-				workspace.CurrentCamera.CameraSubject = h
+				local camera = workspace.CurrentCamera
+				camera.CameraSubject = h
 				spectateLabel.Text = "OBSERVANDO: " .. other.DisplayName
 				break
 			end
