@@ -24,6 +24,6 @@ export type WeaponState = {
 }
 
 -- Match flow (MatchService); replicated as attributes on ReplicatedStorage.Match.
-export type MatchPhase = "Waiting" | "Prep" | "Wave" | "Final" | "Extract" | "Result"
+export type MatchPhase = "Waiting" | "Lobby" | "Prep" | "Wave" | "Final" | "Extract" | "Result"
 
 return nil

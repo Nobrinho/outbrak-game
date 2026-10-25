@@ -1,7 +1,7 @@
 --!strict
--- Class picker and ability trigger. The picker opens on its own at the first Prep of every
--- match (the current class is highlighted) and can be reopened with the CLASSE button while
--- any Prep lasts. The ability key/button sends the camera direction (the molotov uses it).
+-- Class picker and ability trigger. The picker opens on its own in the lobby before every
+-- match (the current class is highlighted) and can be reopened with the CLASSE button there
+-- and, for players in the match, while any Prep lasts. The ability key/button sends the camera direction (the molotov uses it).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -151,14 +151,19 @@ local function buildPicker()
 	end)
 end
 
+-- The picker opens in the lobby (pick or confirm a class before PRONTO) and can be reopened
+-- there or, for players in the match, during any Prep.
+local function canPick(phase: unknown): boolean
+	return phase == "Lobby" or (phase == "Prep" and player:GetAttribute("InMatch") == true)
+end
+
 local function onPhaseChanged(match: Instance)
 	local phase = match:GetAttribute("Phase")
-	local wave = match:GetAttribute("Wave")
-	reopenButton.Visible = phase == "Prep"
-	if phase == "Prep" and wave == 0 then
-		setOpen(true) -- new match: pick (or confirm) a class
-	elseif phase ~= "Prep" and picker.Visible then
-		setOpen(false)
+	reopenButton.Visible = canPick(phase)
+	if phase == "Lobby" then
+		setOpen(true)
+	elseif picker.Visible then
+		setOpen(false) -- the match started (or left Prep): CLASSE reopens it while allowed
 	end
 end
 
@@ -178,6 +183,9 @@ function ClassController.start()
 	local match = ReplicatedStorage:WaitForChild("Match")
 	match:GetAttributeChangedSignal("Phase"):Connect(function()
 		onPhaseChanged(match)
+	end)
+	player:GetAttributeChangedSignal("InMatch"):Connect(function()
+		reopenButton.Visible = canPick(match:GetAttribute("Phase"))
 	end)
 	onPhaseChanged(match)
 

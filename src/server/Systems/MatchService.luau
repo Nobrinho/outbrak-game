@@ -1,21 +1,29 @@
 --!strict
--- Match flow (docs/DEFINICOES.md §4): Prep → Wave 1 → Prep → Wave 2 → Prep → Final wave with
--- the Brute (survive finalDuration) → Extract (reach the helicopter) → Result → new match.
+-- Match flow (docs/DEFINICOES.md §4): Lobby (pick a class, press PRONTO) → Prep → Wave 1 → … →
+-- Prep → Final wave with the Brute (survive finalDuration) → Extract (reach the helicopter) →
+-- Result → Lobby.
 --
--- State is published as attributes on ReplicatedStorage.Match (Phase, Wave, EndsAt in server
--- time, Remaining, BossHealth/BossMaxHealth, Outcome) so the HUD needs no remotes. Players who
--- die during combat stay down until the next Prep; if everyone is down, the match is lost.
+-- Only the players in the lobby when the match starts take part (up to MATCH.maxPlayers; their
+-- `InMatch` attribute is true). Anyone who joins later has no character and spectates until
+-- the next lobby. In a portal group's reserved server (the normal case once the hub is live)
+-- the lobby waits for the whole party from the teleport data, and after the result everyone
+-- flies back to the camp hub. State is published as attributes on ReplicatedStorage.Match (Phase, Wave,
+-- EndsAt in server time, Remaining, BossHealth/BossMaxHealth, Outcome, LobbyCount,
+-- ReadyCount) so the HUD needs no remotes. Participants who die during combat stay down until
+-- the next Prep; if every participant is down or gone, the match is lost.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
 local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage.Shared
 local Config = require(Shared.Config)
 local Tags = require(Shared.Tags)
 local Types = require(Shared.Types)
+local Net = require(Shared.Net)
 local Signal = require(Shared.Util.Signal)
 local BarricadeService = require(script.Parent.BarricadeService)
 local ClassService = require(script.Parent.ClassService)
@@ -44,10 +52,13 @@ local spawnAccumulator = 0
 local queueEmptiedAt = 0
 local boss: HordeService.Zombie? = nil
 local helicopter: Model? = nil
-
-local function inCombat(): boolean
-	return phase == "Wave" or phase == "Final" or phase == "Extract"
-end
+local participants: { [Player]: boolean } = {}
+-- A hub portal group's private server (or Studio simulating one): wait for `party`, then
+-- send everyone back to the hub after the result.
+local reserved = (game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0)
+	or (RunService:IsStudio() and Config.DEBUG.simulateReserved)
+local party: { number }? = nil
+local notifyRemote: RemoteEvent
 
 local function setPhase(newPhase: Types.MatchPhase, duration: number?)
 	phase = newPhase
@@ -59,9 +70,21 @@ local function setPhase(newPhase: Types.MatchPhase, duration: number?)
 	state:SetAttribute("Phase", newPhase)
 end
 
+function MatchService.isParticipant(player: Player): boolean
+	return participants[player] == true
+end
+
+local function participantCount(): number
+	local count = 0
+	for _ in participants do
+		count += 1
+	end
+	return count
+end
+
 local function aliveHumanoids(): { [Player]: BasePart }
 	local alive = {}
-	for _, player in Players:GetPlayers() do
+	for player in participants do
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -73,7 +96,7 @@ local function aliveHumanoids(): { [Player]: BasePart }
 end
 
 local function loadMissingCharacters()
-	for _, player in Players:GetPlayers() do
+	for player in participants do
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		if not humanoid or humanoid.Health <= 0 then
@@ -83,7 +106,7 @@ local function loadMissingCharacters()
 end
 
 local function playerScale(): number
-	return 1 + MATCH.extraPlayerScale * math.max(0, #Players:GetPlayers() - 1)
+	return 1 + MATCH.extraPlayerScale * math.max(0, participantCount() - 1)
 end
 
 local function buildQueue(composition: { [string]: number }): { Types.ZombieKind }
@@ -212,33 +235,98 @@ local function finish(outcome: "Victory" | "Defeat", extracted: { Player }?)
 	setPhase("Result", MATCH.resultTime)
 end
 
-local function resetMatch()
+-- Back to the lobby: a clean farm, everyone (participants and spectators) on their feet and
+-- free to pick a class, nobody ready yet.
+local function enterLobby()
 	HordeService.clear()
 	BarricadeService.resetAll()
 	TurretService.clear()
-	ClassService.reset()
-	EconomyService.resetAll()
+	spawnQueue = {}
+	boss = nil
 	if helicopter then
 		helicopter:Destroy()
 		helicopter = nil
 	end
+	table.clear(participants)
+	wave = 0
+	state:SetAttribute("Outcome", "")
+	state:SetAttribute("Remaining", 0)
+	state:SetAttribute("BossHealth", 0)
+	state:SetAttribute("BossMaxHealth", 0)
 	for _, player in Players:GetPlayers() do
+		player:SetAttribute("InMatch", false)
+		player:SetAttribute("Ready", false)
+		task.spawn(player.LoadCharacter, player)
+	end
+	setPhase("Lobby", if reserved then MATCH.reservedLobbyTime else MATCH.lobbyTime)
+end
+
+-- Teleports `players` to the camp hub. Returns false when it can't (no hub, Studio, failure).
+local function sendToHub(players: { Player }): boolean
+	local hub = Config.PLACES.hub
+	if #players == 0 or hub <= 0 or hub == game.PlaceId then
+		return false
+	end
+	if RunService:IsStudio() then
+		for _, player in players do
+			notifyRemote:FireClient(player, "(Studio) teleporte simulado para o acampamento")
+		end
+		return false
+	end
+	local ok, err = pcall(TeleportService.TeleportAsync, TeleportService, hub, players)
+	if not ok then
+		warn(`[Match] teleport back to the hub failed: {err}`)
+	end
+	return ok
+end
+
+-- The players in the lobby (up to maxPlayers, earliest first) become the match roster.
+local function startMatch()
+	ClassService.reset()
+	EconomyService.resetAll()
+	for _, player in Players:GetPlayers() do
+		local joins = participantCount() < MATCH.maxPlayers
+		participants[player] = if joins then true else nil
+		player:SetAttribute("InMatch", joins)
+		player:SetAttribute("Ready", false)
 		local leaderstats = player:FindFirstChild("leaderstats")
 		local kills = leaderstats and leaderstats:FindFirstChild("Abates")
 		if kills and kills:IsA("IntValue") then
 			kills.Value = 0
 		end
-	end
-	wave = 0
-	state:SetAttribute("Outcome", "")
-	state:SetAttribute("BossHealth", 0)
-	state:SetAttribute("BossMaxHealth", 0)
-	-- Fresh characters: full health and a reset loadout (CombatService resets on spawn).
-	for _, player in Players:GetPlayers() do
-		task.spawn(player.LoadCharacter, player)
+		if joins then
+			-- Fresh characters: full health and a reset loadout (CombatService resets on spawn).
+			task.spawn(player.LoadCharacter, player)
+		elseif player.Character then
+			player.Character:Destroy() -- over the cap: watch this match, play the next
+		end
 	end
 	setPhase("Prep", MATCH.prepTimes[1])
 	MatchService.started:fire()
+end
+
+local function updateLobby(now: number)
+	local present, ready = 0, 0
+	for _, player in Players:GetPlayers() do
+		present += 1
+		if player:GetAttribute("Ready") == true then
+			ready += 1
+		end
+	end
+	state:SetAttribute("LobbyCount", present)
+	state:SetAttribute("ReadyCount", ready)
+	-- A portal group waits for its stragglers still loading in (up to the lobby timer).
+	local expected = if party then #party else 0
+	-- Everyone ready: start shortly instead of waiting out the lobby timer.
+	if
+		present > 0
+		and present >= expected
+		and ready == present
+		and phaseEndsAt - now > MATCH.readyStartDelay
+	then
+		phaseEndsAt = now + MATCH.readyStartDelay
+		state:SetAttribute("EndsAt", workspace:GetServerTimeNow() + MATCH.readyStartDelay)
+	end
 end
 
 -- Tick ---------------------------------------------------------------------------------------
@@ -261,19 +349,43 @@ local function tick(dt: number)
 
 	if phase == "Waiting" then
 		if #Players:GetPlayers() > 0 then
-			resetMatch()
+			enterLobby()
+		end
+		return
+	elseif phase == "Lobby" then
+		if #Players:GetPlayers() == 0 then
+			setPhase("Waiting")
+		else
+			updateLobby(now)
+			if now >= phaseEndsAt then
+				startMatch()
+			end
 		end
 		return
 	elseif phase == "Result" then
 		if timeUp then
-			if #Players:GetPlayers() > 0 then
-				resetMatch()
-			else
+			if #Players:GetPlayers() == 0 then
 				setPhase("Waiting")
+			elseif reserved and sendToHub(Players:GetPlayers()) then
+				setPhase("Waiting", nil) -- everyone is on the way out
+			else
+				enterLobby()
 			end
 		end
 		return
-	elseif phase == "Prep" then
+	end
+
+	-- A match is on. Everyone who played it left: back to the lobby (or Waiting if empty).
+	if next(participants) == nil then
+		if #Players:GetPlayers() > 0 then
+			enterLobby()
+		else
+			setPhase("Waiting")
+		end
+		return
+	end
+
+	if phase == "Prep" then
 		if timeUp then
 			if wave < #MATCH.waves then
 				startWave()
@@ -346,21 +458,68 @@ end
 
 -- Players ------------------------------------------------------------------------------------
 
+-- The party a portal sent here, from the first arrival's teleport data.
+local function readParty(player: Player)
+	if party or not reserved then
+		return
+	end
+	local ok, data = pcall(function()
+		return player:GetJoinData().TeleportData
+	end)
+	local list = ok and typeof(data) == "table" and (data :: any).party
+	if typeof(list) == "table" then
+		local ids = {}
+		for _, id in list do
+			if typeof(id) == "number" then
+				table.insert(ids, id)
+			end
+		end
+		party = ids
+	end
+end
+
+local lastReturn: { [Player]: number } = {}
+local function onReturnToHub(player: Player)
+	local now = os.clock()
+	if now - (lastReturn[player] or 0) < 5 then
+		return
+	end
+	lastReturn[player] = now
+	-- Mid-match players stay: only the lobby, spectators and the result screen can leave.
+	if participants[player] and phase ~= "Lobby" and phase ~= "Result" then
+		return
+	end
+	sendToHub({ player })
+end
+
 local function onPlayerAdded(player: Player)
+	readParty(player)
+	player:SetAttribute("InMatch", false)
+	player:SetAttribute("Ready", false)
 	player.CharacterAdded:Connect(function(character)
 		local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 		humanoid.Died:Connect(function()
-			-- During Prep you're back quickly; in combat you wait for the next Prep, and after
-			-- the result the new match reloads everyone.
+			-- In the lobby and in Prep you're back quickly; in combat you wait for the next
+			-- Prep, and after the result the lobby reloads everyone.
 			task.delay(RESPAWN_DELAY, function()
-				if player.Parent and phase == "Prep" and player.Character == character then
+				if not player.Parent or player.Character ~= character then
+					return
+				end
+				if phase == "Lobby" or (phase == "Prep" and participants[player]) then
 					player:LoadCharacter()
 				end
 			end)
 		end)
 	end)
-	if not inCombat() and phase ~= "Waiting" then
+	-- Joining mid-match: no character, spectate until the next lobby.
+	if phase == "Lobby" then
 		player:LoadCharacter()
+	end
+end
+
+local function onSetReady(player: Player, ready: unknown)
+	if typeof(ready) == "boolean" and phase == "Lobby" then
+		player:SetAttribute("Ready", ready)
 	end
 end
 
@@ -376,7 +535,12 @@ function MatchService.init()
 	state:SetAttribute("BossHealth", 0)
 	state:SetAttribute("BossMaxHealth", 0)
 	state:SetAttribute("Outcome", "")
+	state:SetAttribute("LobbyCount", 0)
+	state:SetAttribute("ReadyCount", 0)
 	state.Parent = ReplicatedStorage
+	Net.setReady()
+	Net.returnToHub()
+	notifyRemote = Net.notify()
 end
 
 function MatchService.start()
@@ -384,6 +548,12 @@ function MatchService.start()
 	for _, player in Players:GetPlayers() do
 		task.spawn(onPlayerAdded, player)
 	end
+	Players.PlayerRemoving:Connect(function(player)
+		participants[player] = nil
+		lastReturn[player] = nil
+	end)
+	Net.returnToHub().OnServerEvent:Connect(onReturnToHub)
+	Net.setReady().OnServerEvent:Connect(onSetReady)
 	RunService.Heartbeat:Connect(tick)
 end
 

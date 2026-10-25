@@ -50,8 +50,8 @@ local function onSelectClass(player: Player, classId: unknown)
 	if typeof(classId) ~= "string" or Config.CLASSES[classId :: Types.ClassId] == nil then
 		return
 	end
-	-- Only between waves, so nobody swaps loadouts mid-fight.
-	if phase() ~= "Prep" and phase() ~= "Waiting" then
+	-- Only in the lobby or between waves, so nobody swaps loadouts mid-fight.
+	if phase() ~= "Prep" and phase() ~= "Lobby" and phase() ~= "Waiting" then
 		return
 	end
 	if player:GetAttribute("Class") ~= classId then

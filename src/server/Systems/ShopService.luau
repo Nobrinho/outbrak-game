@@ -91,6 +91,11 @@ local function onPurchase(player: Player, itemId: unknown)
 	end
 	lastPurchase[player] = now
 
+	-- Credits and loadouts belong to a match: nothing to buy in the lobby.
+	if player:GetAttribute("InMatch") ~= true then
+		notify(player, "A loja abre quando a partida começa")
+		return
+	end
 	if not atShop(player) then
 		notify(player, "Chegue mais perto da loja")
 		return

@@ -124,6 +124,9 @@ export type ClassStats = {
 	ability: AbilityStats,
 }
 
+-- placeId: 0 = map not published yet, -1 = coming soon (no place at all).
+export type MapInfo = { id: string, name: string, placeId: number, maxPlayers: number }
+
 export type ShopItem = {
 	id: string,
 	kind: "gun" | "melee" | "grenade" | "turret" | "heal",
@@ -362,6 +365,12 @@ return table.freeze({
 			table.freeze({ Runner = 105, Creeper = 10, Bull = 3 }),
 			table.freeze({ Runner = 120, Creeper = 12, Bull = 4 }),
 		}),
+		-- Lobby between matches: starts after lobbyTime, or readyStartDelay after everyone in
+		-- the lobby pressed PRONTO. Up to maxPlayers join; anyone else watches until the next.
+		lobbyTime = 45,
+		reservedLobbyTime = 30, -- a portal group's own server: starts once all arrived and are ready
+		readyStartDelay = 3,
+		maxPlayers = 4,
 		spawnInterval = 0.2,
 		extraPlayerScale = 0.35, -- each player beyond the first adds 35% to wave sizes
 		waveTimeout = 150, -- after everything spawned, leftovers are despawned
@@ -404,6 +413,24 @@ return table.freeze({
 		levelExponent = 1.5,
 		unlocks = table.freeze({ Bat = 2, Rifle = 3, Turret = 4, AK47 = 5 }) :: { [string]: number },
 	}),
+	-- Places of the experience. The start place is the camp hub; each map is its own place,
+	-- played in reserved servers the hub's portals create. A placeId of 0 means "not
+	-- published yet": its portal shows INDISPONÍVEL and teleports nobody.
+	PLACES = table.freeze({
+		hub = 77549309919854,
+	}),
+	MAPS = table.freeze({
+		table.freeze({ id = "Farm", name = "FAZENDA SANTA LUZIA", placeId = 0, maxPlayers = 4 }),
+		table.freeze({ id = "Soon1", name = "EM BREVE", placeId = -1, maxPlayers = 4 }),
+		table.freeze({ id = "Soon2", name = "EM BREVE", placeId = -1, maxPlayers = 4 }),
+	}) :: { MapInfo },
+	-- Hub portals: the group leaves `countdown` seconds after the first player steps on the
+	-- helipad, or `fullCountdown` once it's full.
+	PORTAL = table.freeze({
+		countdown = 15,
+		fullCountdown = 3,
+		scanInterval = 0.25,
+	}),
 	-- Monetization (docs/DEFINICOES.md §6): cosmetic pass + XP boost only, never power. Ids come
 	-- from the Creator Hub after publishing; 0 means "not set up yet" (the offer is hidden).
 	MONETIZATION = table.freeze({
@@ -421,6 +448,7 @@ return table.freeze({
 		godMode = false, -- players take no damage (invisible ForceField)
 		infiniteAmmo = false, -- magazine and grenades never run out
 		richStart = false, -- start every match with 5000 credits to try the shop
+		simulateReserved = false, -- Studio: behave like a portal group's reserved server
 	}),
 	AIM_ASSIST_DEGREES = 4, -- touch only: near-misses inside this cone count as body hits
 

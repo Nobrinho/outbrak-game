@@ -80,6 +80,16 @@ function Net.selectClass(): RemoteEvent
 	return get("SelectClass", "RemoteEvent") :: RemoteEvent
 end
 
+-- Client → server: leave this map for the camp hub (no arguments).
+function Net.returnToHub(): RemoteEvent
+	return get("ReturnToHub", "RemoteEvent") :: RemoteEvent
+end
+
+-- Client → server: PRONTO toggled in the lobby (boolean).
+function Net.setReady(): RemoteEvent
+	return get("SetReady", "RemoteEvent") :: RemoteEvent
+end
+
 -- Client → server: (aim: Vector3, unit camera direction for thrown abilities).
 function Net.useAbility(): RemoteEvent
 	return get("UseAbility", "RemoteEvent") :: RemoteEvent

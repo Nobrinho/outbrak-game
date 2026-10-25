@@ -1,7 +1,8 @@
 --!strict
--- Account XP and levels (Config.PROGRESSION). XP is earned per kill, per cleared wave, per
--- match and for extracting, doubled while an XP boost is active. The level is derived from
--- lifetime XP; levels unlock shop items (ShopService enforces it).
+-- Account XP and levels (Config.PROGRESSION), shared by every place (the camp hub and the
+-- maps). XP is awarded through award() — MatchRewards does it for kills, waves, matches and
+-- extractions — doubled while an XP boost is active. The level is derived from lifetime XP;
+-- levels unlock shop items (ShopService enforces it).
 --
 -- Mirrored to the client as player attributes: Level, LevelXP (progress inside the level),
 -- LevelXPNeeded, MatchXP (earned this match) and BoostUntil (os.time()).
@@ -12,8 +13,6 @@ local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
 local Net = require(Shared.Net)
 local DataService = require(script.Parent.DataService)
-local HordeService = require(script.Parent.HordeService)
-local MatchService = require(script.Parent.MatchService)
 
 local ProgressionService = {}
 
@@ -109,7 +108,13 @@ end
 function ProgressionService.start()
 	local function onLoaded(player: Player)
 		player:SetAttribute("MatchXP", 0)
-		local leaderstats = player:WaitForChild("leaderstats", 10)
+		-- Maps get leaderstats from EconomyService; the hub has none, so make our own.
+		local leaderstats = player:WaitForChild("leaderstats", 5)
+		if not leaderstats and player.Parent then
+			leaderstats = Instance.new("Folder")
+			leaderstats.Name = "leaderstats"
+			leaderstats.Parent = player
+		end
 		if leaderstats and not leaderstats:FindFirstChild("Nível") then
 			local level = Instance.new("IntValue")
 			level.Name = "Nível"
@@ -126,43 +131,6 @@ function ProgressionService.start()
 			task.spawn(onLoaded, player)
 		end
 	end
-
-	HordeService.killed:connect(function(zombie, attacker)
-		if attacker and attacker.Parent then
-			local profile = DataService.get(attacker)
-			if profile then
-				profile.kills += 1
-			end
-			ProgressionService.award(attacker, P.xpPerKill[zombie.kindName] or 0)
-		end
-	end)
-
-	MatchService.started:connect(function()
-		for _, player in Players:GetPlayers() do
-			player:SetAttribute("MatchXP", 0)
-		end
-	end)
-	MatchService.waveCleared:connect(function()
-		for _, player in Players:GetPlayers() do
-			ProgressionService.award(player, P.xpWaveCleared)
-		end
-	end)
-	MatchService.finished:connect(function(_outcome, extracted)
-		for _, player in Players:GetPlayers() do
-			local profile = DataService.get(player)
-			if profile then
-				profile.matches += 1
-			end
-			ProgressionService.award(player, P.xpMatchPlayed)
-		end
-		for _, player in extracted do
-			local profile = DataService.get(player)
-			if profile then
-				profile.extractions += 1
-			end
-			ProgressionService.award(player, P.xpExtraction)
-		end
-	end)
 end
 
 -- Re-publishes attributes after something outside changed the profile (e.g. a boost).

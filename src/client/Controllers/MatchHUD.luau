@@ -1,13 +1,18 @@
 --!strict
 -- Match HUD: a top-center banner (phase, wave, timer or zombies left), the Brute's health bar,
--- a big announcement on every phase change, the "you're down" notice and the result screen.
--- Everything is read from the attributes MatchService sets on ReplicatedStorage.Match.
+-- a big announcement on every phase change, the "you're down" notice, the result screen, the
+-- lobby's PRONTO button and the notice for players who joined a match already under way.
+-- Everything is read from the attributes MatchService sets on ReplicatedStorage.Match (and the
+-- player's own InMatch / Ready attributes).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
 local TweenService = game:GetService("TweenService")
 
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
 local Theme = require(script.Parent.Parent.UI.Theme)
 
 local MatchHUD = {}
@@ -30,6 +35,10 @@ local downLabel: TextLabel
 local result: Frame
 local resultTitle: TextLabel
 local resultStats: TextLabel
+local lobbyScreen: ScreenGui
+local readyButton: TextButton
+local hubButton: TextButton
+local lateLabel: TextLabel
 
 local function attr<T>(name: string, default: T): T
 	local value = state:GetAttribute(name)
@@ -108,6 +117,52 @@ local function build()
 		TextColor3 = COLOR_DANGER,
 		Visible = false,
 	})
+
+	lateLabel = text(screen, {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.62),
+		Size = UDim2.fromScale(0.7, 0.05),
+		TextColor3 = COLOR_WARN,
+		Visible = false,
+	})
+
+	-- Its own ScreenGui above the class picker, so PRONTO stays reachable with it open.
+	lobbyScreen = Instance.new("ScreenGui")
+	lobbyScreen.Name = "LobbyUI"
+	lobbyScreen.ResetOnSpawn = false
+	lobbyScreen.IgnoreGuiInset = true
+	lobbyScreen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+	lobbyScreen.DisplayOrder = 6
+	readyButton = Instance.new("TextButton")
+	readyButton.Name = "Ready"
+	readyButton.AnchorPoint = Vector2.new(0.5, 1)
+	readyButton.Position = UDim2.new(0.5, 0, 1, -16)
+	readyButton.Size = UDim2.fromScale(0.22, 0.1)
+	readyButton.Visible = false
+	Theme.button(readyButton)
+	readyButton.Parent = lobbyScreen
+	local readyAspect = Instance.new("UIAspectRatioConstraint")
+	readyAspect.AspectRatio = 3.2
+	readyAspect.Parent = readyButton
+	readyButton.Activated:Connect(function()
+		Net.setReady():FireServer(player:GetAttribute("Ready") ~= true)
+	end)
+
+	-- Back to the camp hub: in the lobby, while spectating, or on the result screen.
+	hubButton = Instance.new("TextButton")
+	hubButton.Name = "BackToHub"
+	hubButton.AnchorPoint = Vector2.new(0.5, 1)
+	hubButton.Position = UDim2.new(0.5, 0, 0.88, -24)
+	hubButton.Size = UDim2.fromScale(0.24, 0.055)
+	hubButton.Text = "VOLTAR AO ACAMPAMENTO"
+	hubButton.Visible = false
+	Theme.button(hubButton)
+	hubButton.BackgroundColor3 = COLOR_PANEL
+	hubButton.TextColor3 = COLOR_TEXT
+	hubButton.Parent = lobbyScreen
+	hubButton.Activated:Connect(function()
+		Net.returnToHub():FireServer()
+	end)
 
 	result = Instance.new("Frame")
 	result.Name = "Result"
@@ -196,6 +251,26 @@ local function onPhaseChanged()
 	end
 end
 
+-- Shown by Roblox while the teleport back to the camp loads.
+local function teleportScreen(): ScreenGui
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "TeleportScreen"
+	gui.IgnoreGuiInset = true
+	local back = Instance.new("Frame")
+	back.Size = UDim2.fromScale(1, 1)
+	back.BackgroundColor3 = Color3.fromRGB(14, 12, 12)
+	back.Parent = gui
+	text(back, {
+		FontFace = Theme.FONT.display,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(0.6, 0.1),
+		Text = "VOLTANDO AO ACAMPAMENTO…",
+		TextColor3 = COLOR_WARN,
+	})
+	return gui
+end
+
 local function timeLeft(): number
 	local endsAt = attr("EndsAt", 0)
 	if endsAt <= 0 then
@@ -215,7 +290,15 @@ local function update()
 	local waves = attr("Waves", 10)
 	local left = timeLeft()
 
-	if phase == "Prep" then
+	if phase == "Lobby" then
+		titleLabel.Text = "LOBBY"
+		detailLabel.Text = string.format(
+			"Começa em %s — %d/%d prontos",
+			clock(left),
+			attr("ReadyCount", 0),
+			attr("LobbyCount", 0)
+		)
+	elseif phase == "Prep" then
 		titleLabel.Text = "PREPARAÇÃO"
 		detailLabel.Text = "Repare barricadas e reabasteça — " .. clock(left)
 	elseif phase == "Wave" then
@@ -242,10 +325,29 @@ local function update()
 		bossFill.Size = UDim2.fromScale(math.clamp(bossHealth / bossMax, 0, 1), 1)
 	end
 
+	local ready = player:GetAttribute("Ready") == true
+	readyButton.Visible = phase == "Lobby"
+	readyButton.Text = if ready then "PRONTO ✓" else "PRONTO"
+	readyButton.BackgroundColor3 = if ready then COLOR_GOOD else COLOR_WARN
+
+	local inMatch = player:GetAttribute("InMatch") == true
+	local underWay = phase ~= "Lobby" and phase ~= "Waiting" and phase ~= "Result"
+	hubButton.Visible = Config.PLACES.hub > 0
+		and Config.PLACES.hub ~= game.PlaceId
+		and (phase == "Lobby" or phase == "Result" or (underWay and not inMatch))
+	lateLabel.Visible = underWay and not inMatch
+	if lateLabel.Visible then
+		lateLabel.Text = string.format(
+			"PARTIDA EM ANDAMENTO (ONDA %d/%d) — VOCÊ ENTRA NA PRÓXIMA",
+			math.max(wave, 1),
+			waves
+		)
+	end
+
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	local inCombat = phase == "Wave" or phase == "Final" or phase == "Extract"
-	downLabel.Visible = inCombat and (not humanoid or humanoid.Health <= 0)
+	downLabel.Visible = inMatch and inCombat and (not humanoid or humanoid.Health <= 0)
 end
 
 function MatchHUD.init()
@@ -264,6 +366,8 @@ function MatchHUD.start()
 	-- Timers tick every frame; cheap (a few text writes).
 	RunService.RenderStepped:Connect(update)
 	screen.Parent = player:WaitForChild("PlayerGui")
+	lobbyScreen.Parent = screen.Parent
+	TeleportService:SetTeleportGui(teleportScreen())
 end
 
 return MatchHUD
