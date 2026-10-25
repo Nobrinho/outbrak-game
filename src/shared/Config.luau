@@ -420,7 +420,12 @@ return table.freeze({
 		hub = 77549309919854,
 	}),
 	MAPS = table.freeze({
-		table.freeze({ id = "Farm", name = "FAZENDA SANTA LUZIA", placeId = 0, maxPlayers = 4 }),
+		table.freeze({
+			id = "Farm",
+			name = "FAZENDA SANTA LUZIA",
+			placeId = 99300600626141,
+			maxPlayers = 4,
+		}),
 		table.freeze({ id = "Soon1", name = "EM BREVE", placeId = -1, maxPlayers = 4 }),
 		table.freeze({ id = "Soon2", name = "EM BREVE", placeId = -1, maxPlayers = 4 }),
 	}) :: { MapInfo },

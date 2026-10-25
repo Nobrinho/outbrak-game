@@ -29,9 +29,12 @@
           },
           "PortalService": {
             "$path": "src/hub/Systems/PortalService.luau"
-          }
-        }
-      }
+          },
+          "$ignoreUnknownInstances": false
+        },
+        "$ignoreUnknownInstances": false
+      },
+      "$ignoreUnknownInstances": false
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
@@ -50,9 +53,12 @@
             },
             "PortalHUD": {
               "$path": "src/hub/Controllers/PortalHUD.luau"
-            }
-          }
-        }
+            },
+            "$ignoreUnknownInstances": false
+          },
+          "$ignoreUnknownInstances": false
+        },
+        "$ignoreUnknownInstances": false
       }
     },
     "Workspace": {
