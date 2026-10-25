@@ -431,46 +431,60 @@ local function helipad(info: Config.MapInfo, x: number, parent: Instance)
 	zone.Transparency = 1
 	zone:SetAttribute("MapId", info.id)
 
-	-- Sign on a post at the front edge of the pad.
-	local post = part(
-		"SignPost",
-		Vector3.new(0.4, 9, 0.4),
-		center * CFrame.new(PAD_RADIUS + 1, 4.5, PAD_RADIUS - 1),
-		COLOR.metal,
-		Enum.Material.Metal,
-		pad
-	)
+	-- Billboard on two posts at the back of the pad, above the helicopter, facing the camp:
+	-- readable from the fire, never in the way up close. A lamp under it lights the pad.
+	for _, side in { -1, 1 } do
+		part(
+			"SignPost",
+			Vector3.new(0.5, 15, 0.5),
+			center * CFrame.new(side * 7.5, 7.5, -PAD_RADIUS - 1.5),
+			COLOR.metal,
+			Enum.Material.Metal,
+			pad
+		)
+	end
 	local board = part(
 		"Sign",
-		Vector3.new(8, 3, 0.3),
-		post.CFrame * CFrame.new(-4, 3.2, 0),
+		Vector3.new(17, 4.6, 0.3),
+		center * CFrame.new(0, 13, -PAD_RADIUS - 1.5),
 		Color3.fromRGB(28, 30, 32),
 		Enum.Material.Metal,
 		pad
 	)
-	local gui = Instance.new("BillboardGui")
+	local lamp = deco(
+		part(
+			"PadLamp",
+			Vector3.new(6, 0.3, 0.6),
+			center * CFrame.new(0, 10.4, -PAD_RADIUS - 1.2),
+			Color3.fromRGB(255, 240, 210),
+			Enum.Material.Neon,
+			pad
+		)
+	)
+	light(lamp, Color3.fromRGB(255, 236, 210), 28, 2.5)
+	local gui = Instance.new("SurfaceGui")
 	gui.Name = "Board"
-	gui.Size = UDim2.fromScale(12, 4) -- studs: reads like a real sign, not a HUD
-	gui.StudsOffset = Vector3.new(0, 3, 0)
+	gui.Face = Enum.NormalId.Back -- +Z: towards the camp
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 40
 	gui.LightInfluence = 0
-	gui.MaxDistance = 140
+	gui.MaxDistance = 160
 	gui.Parent = board
 	local function label(name: string, y: number, h: number, color: Color3): TextLabel
 		local l = Instance.new("TextLabel")
 		l.Name = name
 		l.BackgroundTransparency = 1
-		l.Position = UDim2.fromScale(0, y)
-		l.Size = UDim2.fromScale(1, h)
+		l.Position = UDim2.fromScale(0.04, y)
+		l.Size = UDim2.fromScale(0.92, h)
 		l.Font = Enum.Font.GothamBlack
 		l.TextScaled = true
 		l.TextColor3 = color
-		l.TextStrokeTransparency = 0.4
 		l.Parent = gui
 		return l
 	end
-	label("Title", 0, 0.5, if active then COLOR.marking else Color3.fromRGB(180, 180, 180)).Text =
+	label("Title", 0.08, 0.46, if active then COLOR.marking else Color3.fromRGB(180, 180, 180)).Text =
 		info.name
-	label("Status", 0.52, 0.42, Color3.fromRGB(240, 240, 240)).Text = ""
+	label("Status", 0.58, 0.32, Color3.fromRGB(240, 240, 240)).Text = ""
 end
 
 local function buildHelipads()
@@ -502,11 +516,11 @@ local function effect(className: string): Instance
 end
 
 local function buildLighting()
-	Lighting.ClockTime = 17.9
+	Lighting.ClockTime = 17.3
 	Lighting.Brightness = 1.2
 	Lighting.ExposureCompensation = 0.2
-	Lighting.Ambient = Color3.fromRGB(78, 66, 66)
-	Lighting.OutdoorAmbient = Color3.fromRGB(110, 92, 90)
+	Lighting.Ambient = Color3.fromRGB(96, 84, 82)
+	Lighting.OutdoorAmbient = Color3.fromRGB(140, 120, 112)
 	local atmosphere = effect("Atmosphere") :: Atmosphere
 	atmosphere.Density = 0.3
 	atmosphere.Offset = 0.05

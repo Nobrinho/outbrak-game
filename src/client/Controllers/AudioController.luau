@@ -103,7 +103,7 @@ end
 local function onPhase(match: Instance)
 	local phase = match:GetAttribute("Phase")
 	local drone, tension = Sounds.MusicDrone.volume, Sounds.MusicTension.volume
-	if phase == "Prep" then
+	if phase == "Prep" or phase == "Lobby" then
 		fadeTo("MusicDrone", drone)
 		fadeTo("MusicTension", 0)
 		fadeTo("Helicopter", 0)

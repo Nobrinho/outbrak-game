@@ -42,6 +42,7 @@ MatchService.finished = Signal.new() :: Signal.Signal<"Victory" | "Defeat", { Pl
 local MATCH = Config.MATCH
 local EXTRACT_TIME = 25
 local RESPAWN_DELAY = 3 -- outside combat
+local LEAVE_GRACE = 30 -- after sending everyone to the hub, don't reopen the lobby this long
 
 local state: Configuration
 local phase: Types.MatchPhase = "Waiting"
@@ -59,6 +60,7 @@ local reserved = (game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0)
 	or (RunService:IsStudio() and Config.DEBUG.simulateReserved)
 local party: { number }? = nil
 local notifyRemote: RemoteEvent
+local leavingUntil = 0 -- os.clock(); the group is on its way back to the hub
 
 local function setPhase(newPhase: Types.MatchPhase, duration: number?)
 	phase = newPhase
@@ -348,7 +350,7 @@ local function tick(dt: number)
 	local timeUp = phaseEndsAt > 0 and now >= phaseEndsAt
 
 	if phase == "Waiting" then
-		if #Players:GetPlayers() > 0 then
+		if #Players:GetPlayers() > 0 and now >= leavingUntil then
 			enterLobby()
 		end
 		return
@@ -366,8 +368,17 @@ local function tick(dt: number)
 		if timeUp then
 			if #Players:GetPlayers() == 0 then
 				setPhase("Waiting")
-			elseif reserved and sendToHub(Players:GetPlayers()) then
-				setPhase("Waiting", nil) -- everyone is on the way out
+			elseif reserved then
+				-- TeleportAsync yields: wait in Waiting (not here, where every frame would
+				-- teleport again) and reopen the lobby only if the trip can't happen.
+				leavingUntil = now + LEAVE_GRACE
+				setPhase("Waiting")
+				local leaving = Players:GetPlayers()
+				task.spawn(function()
+					if not sendToHub(leaving) then
+						leavingUntil = 0
+					end
+				end)
 			else
 				enterLobby()
 			end
@@ -553,6 +564,10 @@ function MatchService.start()
 		lastReturn[player] = nil
 	end)
 	Net.returnToHub().OnServerEvent:Connect(onReturnToHub)
+	TeleportService.TeleportInitFailed:Connect(function(player, _result, message)
+		warn(`[Match] teleport of {player.Name} failed: {message}`)
+		notifyRemote:FireClient(player, "Falha ao voltar ao acampamento — tente o botão de novo")
+	end)
 	Net.setReady().OnServerEvent:Connect(onSetReady)
 	RunService.Heartbeat:Connect(tick)
 end
