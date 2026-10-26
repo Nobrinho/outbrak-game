@@ -1,11 +1,16 @@
 --!strict
--- Ammo panel (top-right, clear of the touch cluster), the crosshair with its reload notice,
--- and a hitmarker that flashes white on body hits and orange on headshots. The crosshair
--- layer ignores every inset so its center is exactly the camera ray's center.
+-- Combat HUD, one job per corner so it reads at a glance on a phone:
+--   top-left  — health bar with its number, credits under it;
+--   top-right — ammo (big magazine count), weapon, grenades and, on keyboards, the ability;
+--   centre    — a ring crosshair, a reload bar under it and a hitmarker that flashes white on
+--               body hits and orange on headshots.
+-- On touch the grenade count and the ability cooldown live on their buttons (MobileHUD). The
+-- crosshair layer ignores every inset so its center is exactly the camera ray's center.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
@@ -27,13 +32,14 @@ local reserveLabel: TextLabel
 local gunLabel: TextLabel
 local grenadeLabel: TextLabel
 local creditsLabel: TextLabel
-local statusPanel: Frame
 local healthFill: Frame
 local healthLabel: TextLabel
 local vignette: { Frame } = {}
 local damageFlash = 0 -- 0..1, decays every frame
 local abilityLabel: TextLabel
-local reloadLabel: TextLabel
+local reloadBar: Frame
+local reloadFill: Frame
+local reloadStartedAt = 0
 local hitmarker: Frame
 local hitTicks: { Frame } = {}
 local hitTween: Tween? = nil
@@ -52,90 +58,117 @@ local function label(parent: Instance, props: { [string]: any }): TextLabel
 	return l
 end
 
-local function buildAmmoPanel(): Frame
+local function buildAmmoPanel()
 	local panel = Instance.new("Frame")
 	panel.Name = "Ammo"
 	panel.AnchorPoint = Vector2.new(1, 0)
 	panel.Position = UDim2.new(1, -16, 0, 16)
-	panel.Size = UDim2.fromScale(0.2, 0.14)
+	panel.Size = UDim2.fromScale(0.24, 0.2)
 	Theme.panel(panel)
 	panel.Parent = screen
-
 	local aspect = Instance.new("UIAspectRatioConstraint")
-	aspect.AspectRatio = 2.2
+	aspect.AspectRatio = 2.1
 	aspect.Parent = panel
 
-	gunLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.06),
-		Size = UDim2.fromScale(0.88, 0.22),
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextTransparency = 0.2,
-	})
 	magLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.3),
-		Size = UDim2.fromScale(0.42, 0.5),
+		Position = UDim2.fromScale(0.05, 0.02),
+		Size = UDim2.fromScale(0.5, 0.5),
 		TextXAlignment = Enum.TextXAlignment.Right,
 	})
 	reserveLabel = label(panel, {
-		Position = UDim2.fromScale(0.52, 0.42),
-		Size = UDim2.fromScale(0.42, 0.3),
+		Position = UDim2.fromScale(0.57, 0.18),
+		Size = UDim2.fromScale(0.4, 0.28),
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextTransparency = 0.3,
 	})
-	grenadeLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.8),
-		Size = UDim2.fromScale(0.88, 0.16),
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextTransparency = 0.2,
-	})
-	return panel
-end
-
--- Credits and ability cooldown, in a strip right under the ammo panel.
-local function buildStatusPanel(ammo: Frame)
-	local panel = Instance.new("Frame")
-	panel.Name = "Status"
-	panel.AnchorPoint = Vector2.new(1, 0)
-	Theme.panel(panel)
-	panel.Parent = screen
-	local function place()
-		local size = ammo.AbsoluteSize
-		panel.Size = UDim2.fromOffset(size.X, size.Y * 0.62)
-		panel.Position = UDim2.new(1, -16, 0, 16 + size.Y + 6)
-	end
-	ammo:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
-	place()
-
-	statusPanel = panel
-	creditsLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.06),
-		Size = UDim2.fromScale(0.88, 0.3),
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextColor3 = Theme.COLOR.accent,
-	})
-	abilityLabel = label(panel, {
-		Position = UDim2.fromScale(0.06, 0.38),
-		Size = UDim2.fromScale(0.88, 0.26),
-		TextXAlignment = Enum.TextXAlignment.Left,
+	gunLabel = label(panel, {
+		Position = UDim2.fromScale(0.05, 0.52),
+		Size = UDim2.fromScale(0.9, 0.2),
+		TextXAlignment = Enum.TextXAlignment.Right,
 		TextTransparency = 0.15,
 	})
-	-- Health bar along the bottom of the strip.
+	-- Keyboards only: on touch these live on the grenade and ability buttons.
+	local keyboard = not UserInputService.TouchEnabled or UserInputService.KeyboardEnabled
+	grenadeLabel = label(panel, {
+		Position = UDim2.fromScale(0.05, 0.74),
+		Size = UDim2.fromScale(0.9, 0.2),
+		TextXAlignment = Enum.TextXAlignment.Right,
+		TextColor3 = Theme.COLOR.muted,
+		Visible = keyboard,
+	})
+	abilityLabel = label(screen, {
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(1, -16, 0, 16),
+		Size = UDim2.fromOffset(260, 20),
+		TextXAlignment = Enum.TextXAlignment.Right,
+		Visible = keyboard,
+	})
+	-- Sits right under the ammo panel.
+	local function place()
+		abilityLabel.Position = UDim2.new(1, -16, 0, 16 + panel.AbsoluteSize.Y + 6)
+	end
+	panel:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
+	place()
+end
+
+-- Health bar with its number and, under it, the credits: the two things you check most.
+local function buildVitals()
+	local vitals = Instance.new("Frame")
+	vitals.Name = "Vitals"
+	vitals.Position = UDim2.fromOffset(16, 16)
+	vitals.Size = UDim2.fromScale(0.3, 0.1)
+	Theme.panel(vitals)
+	vitals.Parent = screen
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 8)
+	pad.PaddingRight = UDim.new(0, 8)
+	pad.PaddingTop = UDim.new(0, 4)
+	pad.PaddingBottom = UDim.new(0, 4)
+	pad.Parent = vitals
+	local aspect = Instance.new("UIAspectRatioConstraint")
+	aspect.AspectRatio = 4.2
+	aspect.Parent = vitals
+	-- Thumb-readable on small phones, not oversized on monitors; the CLASSE/level/VIP column
+	-- starts below the max height (ClassController, ProgressionHUD).
+	local limits = Instance.new("UISizeConstraint")
+	limits.MinSize = Vector2.new(220, 52)
+	limits.MaxSize = Vector2.new(380, 90)
+	limits.Parent = vitals
+
+	label(vitals, {
+		Position = UDim2.fromScale(0, 0),
+		Size = UDim2.fromScale(0.16, 0.48),
+		Text = "VIDA",
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
 	local back = Instance.new("Frame")
-	back.Position = UDim2.fromScale(0.06, 0.7)
-	back.Size = UDim2.fromScale(0.88, 0.22)
+	back.Position = UDim2.fromScale(0.18, 0.06)
+	back.Size = UDim2.fromScale(0.62, 0.36)
 	back.BackgroundColor3 = Color3.new(0, 0, 0)
-	back.BackgroundTransparency = 0.4
+	back.BackgroundTransparency = 0.35
 	back.BorderSizePixel = 0
-	back.Parent = panel
+	back.Parent = vitals
+	local backCorner = Instance.new("UICorner")
+	backCorner.CornerRadius = UDim.new(0, 4)
+	backCorner.Parent = back
 	healthFill = Instance.new("Frame")
 	healthFill.Size = UDim2.fromScale(1, 1)
 	healthFill.BackgroundColor3 = Theme.COLOR.player
 	healthFill.BorderSizePixel = 0
 	healthFill.Parent = back
-	healthLabel = label(back, {
-		Size = UDim2.fromScale(1, 1),
-		FontFace = Theme.FONT.heavy,
-		ZIndex = 3,
+	local fillCorner = Instance.new("UICorner")
+	fillCorner.CornerRadius = UDim.new(0, 4)
+	fillCorner.Parent = healthFill
+	healthLabel = label(vitals, {
+		Position = UDim2.fromScale(0.82, 0),
+		Size = UDim2.fromScale(0.18, 0.48),
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
+	creditsLabel = label(vitals, {
+		Position = UDim2.fromScale(0, 0.54),
+		Size = UDim2.fromScale(0.6, 0.46),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = Theme.COLOR.accent,
 	})
 end
 
@@ -208,15 +241,14 @@ end
 -- "+N" that rises from the credits line whenever credits go up.
 local function creditPopup(amount: number)
 	local popup = label(screen, {
-		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.fromOffset(
-			statusPanel.AbsolutePosition.X - 8,
-			statusPanel.AbsolutePosition.Y
+			creditsLabel.AbsolutePosition.X + creditsLabel.TextBounds.X + 10,
+			creditsLabel.AbsolutePosition.Y
 		),
-		Size = UDim2.fromOffset(90, 26),
+		Size = UDim2.fromOffset(90, creditsLabel.AbsoluteSize.Y),
 		Text = "+" .. amount,
 		TextColor3 = Theme.COLOR.accent,
-		TextXAlignment = Enum.TextXAlignment.Right,
+		TextXAlignment = Enum.TextXAlignment.Left,
 	})
 	local info = TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	TweenService:Create(popup, info, {
@@ -237,34 +269,63 @@ local function refreshStatus()
 		or Config.CLASSES[Config.DEFAULT_CLASS]
 	local readyAt = player:GetAttribute("AbilityReadyAt")
 	local left = if typeof(readyAt) == "number" then readyAt - workspace:GetServerTimeNow() else 0
-	abilityLabel.Text = Text.upper(class.ability.name)
+	abilityLabel.Text = "[Q] "
+		.. Text.upper(class.ability.name)
 		.. (if left > 0 then string.format(" — %ds", math.ceil(left)) else " — PRONTA")
+	abilityLabel.TextColor3 = if left > 0 then Theme.COLOR.muted else Theme.COLOR.player
+
+	local view = WeaponController.view
+	reloadBar.Visible = view.reloading
+	if view.reloading then
+		local duration = Config.GUNS[view.gun].reloadTime
+		reloadFill.Size = UDim2.fromScale(
+			math.clamp((os.clock() - reloadStartedAt) / math.max(duration, 0.05), 0, 1),
+			1
+		)
+	end
 end
 
 local function buildCenter()
-	local dot = Instance.new("Frame")
-	dot.Name = "Crosshair"
-	dot.AnchorPoint = Vector2.new(0.5, 0.5)
-	dot.Position = UDim2.fromScale(0.5, 0.5)
-	dot.Size = UDim2.fromOffset(6, 6)
-	dot.BackgroundColor3 = COLOR_TEXT
-	dot.BorderSizePixel = 0
+	-- A thin ring reads better than a dot on a busy, dark screen and leaves the target visible.
+	local ring = Instance.new("Frame")
+	ring.Name = "Crosshair"
+	ring.AnchorPoint = Vector2.new(0.5, 0.5)
+	ring.Position = UDim2.fromScale(0.5, 0.5)
+	ring.Size = UDim2.fromOffset(20, 20)
+	ring.BackgroundTransparency = 1
 	local round = Instance.new("UICorner")
 	round.CornerRadius = UDim.new(1, 0)
-	round.Parent = dot
+	round.Parent = ring
 	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.new(0, 0, 0)
-	stroke.Thickness = 1
-	stroke.Parent = dot
+	stroke.Color = COLOR_TEXT
+	stroke.Thickness = 2
+	stroke.Transparency = 0.1
+	stroke.Parent = ring
+	ring.Parent = center
+	local dot = Instance.new("Frame")
+	dot.AnchorPoint = Vector2.new(0.5, 0.5)
+	dot.Position = UDim2.fromScale(0.5, 0.5)
+	dot.Size = UDim2.fromOffset(3, 3)
+	dot.BackgroundColor3 = COLOR_TEXT
+	dot.BorderSizePixel = 0
 	dot.Parent = center
 
-	reloadLabel = label(center, {
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0.5, 28),
-		Size = UDim2.fromOffset(220, 22),
-		Text = "RECARREGANDO...",
-		Visible = false,
-	})
+	-- Reload progress: a short bar under the crosshair that fills over the reload time.
+	reloadBar = Instance.new("Frame")
+	reloadBar.Name = "Reload"
+	reloadBar.AnchorPoint = Vector2.new(0.5, 0)
+	reloadBar.Position = UDim2.new(0.5, 0, 0.5, 22)
+	reloadBar.Size = UDim2.fromOffset(70, 6)
+	reloadBar.BackgroundColor3 = Color3.new(0, 0, 0)
+	reloadBar.BackgroundTransparency = 0.35
+	reloadBar.BorderSizePixel = 0
+	reloadBar.Visible = false
+	reloadBar.Parent = center
+	reloadFill = Instance.new("Frame")
+	reloadFill.BackgroundColor3 = Theme.COLOR.accent
+	reloadFill.BorderSizePixel = 0
+	reloadFill.Size = UDim2.fromScale(0, 1)
+	reloadFill.Parent = reloadBar
 
 	-- Four short diagonal ticks around the crosshair.
 	hitmarker = Instance.new("Frame")
@@ -297,8 +358,7 @@ local function refresh()
 	magLabel.Text = tostring(view.mag)
 	magLabel.TextColor3 = if view.mag <= gun.magSize * 0.25 then COLOR_LOW else COLOR_TEXT
 	reserveLabel.Text = if Config.DEBUG.infiniteAmmo then "/ ∞" else "/ " .. view.reserve
-	grenadeLabel.Text = "GRANADAS x" .. view.grenades
-	reloadLabel.Visible = view.reloading
+	grenadeLabel.Text = "GRANADAS: " .. view.grenades
 end
 
 local function flashHit(head: boolean)
@@ -332,7 +392,8 @@ function CombatHUD.init()
 	center.ResetOnSpawn = false
 	center.ScreenInsets = Enum.ScreenInsets.None
 
-	buildStatusPanel(buildAmmoPanel())
+	buildAmmoPanel()
+	buildVitals()
 	buildCenter()
 	buildVignette()
 end
@@ -341,6 +402,9 @@ function CombatHUD.start()
 	refresh()
 	WeaponController.changed:connect(refresh)
 	WeaponController.hit:connect(flashHit)
+	WeaponController.reloadStarted:connect(function()
+		reloadStartedAt = os.clock()
+	end)
 	-- Credits, cooldown and health change constantly; a few writes per frame are cheap.
 	RunService.RenderStepped:Connect(function(dt)
 		refreshStatus()

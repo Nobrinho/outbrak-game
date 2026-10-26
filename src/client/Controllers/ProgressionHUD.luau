@@ -6,9 +6,10 @@
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Shared = game:GetService("ReplicatedStorage").Shared
+local Shared = ReplicatedStorage.Shared
 local Config = require(Shared.Config)
 local InputController = require(script.Parent.InputController)
 local Theme = require(script.Parent.Parent.UI.Theme)
@@ -19,6 +20,8 @@ local M = Config.MONETIZATION
 
 local player = Players.LocalPlayer
 local screen: ScreenGui
+local badge: Frame
+local vipButton: TextButton
 local levelLabel: TextLabel
 local xpFill: Frame
 local boostLabel: TextLabel
@@ -32,9 +35,9 @@ local function number(name: string, default: number): number
 end
 
 local function buildBadge()
-	local badge = Instance.new("Frame")
+	badge = Instance.new("Frame")
 	badge.Name = "Level"
-	badge.Position = UDim2.fromOffset(16, 108)
+	badge.Position = UDim2.fromOffset(16, 160)
 	badge.Size = UDim2.fromOffset(170, 40)
 	Theme.panel(badge)
 	badge.Parent = screen
@@ -57,7 +60,7 @@ local function buildBadge()
 	xpFill.Parent = back
 
 	boostLabel = Theme.text(screen, "heavy", {
-		Position = UDim2.fromOffset(16, 152),
+		Position = UDim2.fromOffset(16, 204),
 		Size = UDim2.fromOffset(170, 18),
 		TextColor3 = Theme.COLOR.accent,
 		TextXAlignment = Enum.TextXAlignment.Left,
@@ -96,8 +99,9 @@ end
 
 local function buildVip()
 	local open = Instance.new("TextButton")
+	vipButton = open
 	open.Name = "VipButton"
-	open.Position = UDim2.fromOffset(16, 176)
+	open.Position = UDim2.fromOffset(16, 228)
 	open.Size = UDim2.fromOffset(110, 32)
 	open.Text = "★ VIP"
 	Theme.button(open)
@@ -172,7 +176,21 @@ local function clock(seconds: number): string
 	return if m >= 60 then string.format("%dh%02d", m // 60, m % 60) else `{m} min`
 end
 
+-- Level and VIP are for the lobby, the camp and the breaks between waves; in combat they're
+-- clutter next to health and ammo. Without a Match (the hub) they always show.
+local function outOfCombat(): boolean
+	local match = ReplicatedStorage:FindFirstChild("Match")
+	local phase = match and match:GetAttribute("Phase")
+	return phase ~= "Wave" and phase ~= "Final" and phase ~= "Extract"
+end
+
 local function update()
+	local calm = outOfCombat()
+	badge.Visible = calm
+	vipButton.Visible = calm
+	if not calm and vipPanel.Visible then
+		setVipOpen(false)
+	end
 	local level = number("Level", 1)
 	local progress = number("LevelXP", 0)
 	local needed = math.max(1, number("LevelXPNeeded", 100))
@@ -181,7 +199,7 @@ local function update()
 
 	-- BoostUntil is os.time() on the server; server time on the client is the same clock.
 	local boostLeft = number("BoostUntil", 0) - workspace:GetServerTimeNow()
-	boostLabel.Visible = boostLeft > 0
+	boostLabel.Visible = calm and boostLeft > 0
 	if boostLeft > 0 then
 		boostLabel.Text = "2x XP — " .. clock(boostLeft)
 	end

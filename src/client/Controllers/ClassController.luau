@@ -133,7 +133,7 @@ local function buildPicker()
 	reopenButton = Instance.new("TextButton")
 	reopenButton.Name = "ClassButton"
 	reopenButton.AnchorPoint = Vector2.new(0, 0)
-	reopenButton.Position = UDim2.new(0, 16, 0, 64)
+	reopenButton.Position = UDim2.new(0, 16, 0, 116) -- under CombatHUD's health and credits
 	reopenButton.Size = UDim2.fromOffset(110, 36)
 	reopenButton.BackgroundColor3 = COLOR_PANEL
 	reopenButton.BackgroundTransparency = 0.3
