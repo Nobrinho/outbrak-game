@@ -1,6 +1,8 @@
 --!strict
 -- Roblox Swarm: Outbreak server entry point. Two-phase bootstrap: init() all, then start() all.
 
+require(game:GetService("ReplicatedStorage").Shared.PlaceGuard).check("map")
+
 local Folder = script:FindFirstChild("Systems")
 
 local loaded: { [string]: any } = {}

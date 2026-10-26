@@ -1,6 +1,8 @@
 --!strict
 -- Hub (camp) server entry point, same two-phase bootstrap as the maps (src/server/init.server.luau).
 
+require(game:GetService("ReplicatedStorage").Shared.PlaceGuard).check("hub")
+
 local Folder = script:FindFirstChild("Systems")
 
 local loaded: { [string]: any } = {}
