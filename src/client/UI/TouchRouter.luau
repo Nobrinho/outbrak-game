@@ -22,6 +22,12 @@ function TouchRouter.new()
 		controls[held.name] = nil
 		held.release()
 	end
+	function router.releaseControl(name: string)
+		local touch = controls[name]
+		if touch then
+			router.release(touch)
+		end
+	end
 	function router.cancel()
 		for touch in table.clone(touches) do
 			router.release(touch)
