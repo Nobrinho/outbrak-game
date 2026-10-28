@@ -11,6 +11,9 @@ local Lighting = game:GetService("Lighting")
 
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 
+local KitModels = require(game:GetService("ReplicatedStorage").Shared.Art.KitModels)
+local AssetIds = require(game:GetService("ReplicatedStorage").Shared.Art.AssetIds)
+
 local HubMap = {}
 
 local PAD_Z = -34
@@ -51,6 +54,13 @@ local function part(
 	p.Color = color
 	p.Material = material or Enum.Material.SmoothPlastic
 	p.Parent = parent or root
+	if name == "Crate" then
+		local art =
+			KitModels.clone("SupplyCrate", cframe * CFrame.new(0, -size.Y / 2, 0), p, size.Y / 2.62)
+		if art then
+			p.Transparency = 1
+		end
+	end
 	return p
 end
 
@@ -104,10 +114,25 @@ local function sandbagWall(a: Vector3, b: Vector3, parent: Instance)
 	local count = math.max(1, math.floor(length / 2.2))
 	local step = offset / count
 	local cf = CFrame.lookAt(a, b)
+	local kit = game:GetService("ReplicatedStorage"):FindFirstChild("OutbreakKit")
+	local useKit = kit and kit:FindFirstChild("SandbagWall") ~= nil
+	if useKit then
+		local modules = math.ceil(length / 8.15)
+		local span = length / modules
+		for j = 0, modules - 1 do
+			local center = a:Lerp(b, (j + 0.5) / modules)
+			KitModels.clone(
+				"SandbagWall",
+				CFrame.new(center) * cf.Rotation * CFrame.Angles(0, math.pi / 2, 0),
+				parent,
+				span / 8.15
+			)
+		end
+	end
 	for i = 0, count - 1 do
 		for row = 0, 1 do
 			local at = a + step * (i + 0.5 + row * 0.5)
-			part(
+			local collider = part(
 				"Sandbag",
 				Vector3.new(1.4, 0.9, 2.2),
 				CFrame.new(at.X, 0.45 + row * 0.85, at.Z) * cf.Rotation,
@@ -115,6 +140,9 @@ local function sandbagWall(a: Vector3, b: Vector3, parent: Instance)
 				Enum.Material.Fabric,
 				parent
 			)
+			if useKit then
+				collider.Transparency = 1
+			end
 		end
 	end
 end
@@ -151,6 +179,7 @@ local function buildWalls()
 end
 
 local function tent(x: number, z: number, yaw: number, parent: Instance)
+	parent = folder("Tent", parent)
 	local base = CFrame.new(x, 0, z) * CFrame.Angles(0, math.rad(yaw), 0)
 	for _, side in { -1, 1 } do
 		local panel = part(
@@ -179,6 +208,14 @@ local function tent(x: number, z: number, yaw: number, parent: Instance)
 		Enum.Material.Wood,
 		parent
 	)
+	local art = KitModels.clone("FieldTent", base, parent)
+	if art then
+		for _, p in parent:GetChildren() do
+			if p:IsA("BasePart") then
+				p.Transparency = 1
+			end
+		end
+	end
 end
 
 local function buildCamp()
@@ -243,6 +280,7 @@ local function buildCamp()
 	flame.Transparency = 0.25
 	light(flame, COLOR.fire, 30, 3)
 	local emitter = Instance.new("ParticleEmitter")
+	emitter.Texture = "rbxassetid://" .. AssetIds["vfx.soft-particle"]
 	emitter.Color = ColorSequence.new(COLOR.fire, Color3.fromRGB(80, 30, 20))
 	emitter.LightEmission = 1
 	emitter.Size = NumberSequence.new(1.4, 0)
@@ -265,7 +303,7 @@ local function buildCamp()
 	-- Floodlights on poles at the corners of the yard.
 	for _, spot in { { -40, 40 }, { 40, 40 }, { -40, -10 }, { 40, -10 } } do
 		local x, z = spot[1], spot[2]
-		part(
+		local pole = part(
 			"LightPole",
 			Vector3.new(0.6, 12, 0.6),
 			CFrame.new(x, 6, z),
@@ -290,6 +328,18 @@ local function buildCamp()
 		beam.Brightness = 2
 		beam.Color = Color3.fromRGB(255, 236, 200)
 		beam.Parent = head
+		local at = CFrame.lookAt(Vector3.new(x, 0, z), Vector3.new(0, 0, 0))
+		local art = KitModels.clone("Floodlight", at, camp, 12 / 7)
+		if art then
+			head.Transparency = 1
+			-- Keep the old pole as collision, hidden behind the new pole.
+			pole.Transparency = 1
+			local lens = art:FindFirstChild("Lamp_Lens")
+			if lens and lens:IsA("BasePart") then
+				lens.Material = Enum.Material.Neon
+				light(lens, beam.Color, 28, 0.7)
+			end
+		end
 	end
 
 	local spawn = Instance.new("SpawnLocation")
@@ -359,6 +409,20 @@ local function helicopter(at: CFrame, parent: Instance)
 		)
 	end
 	model.PrimaryPart = body
+	local originals = model:GetChildren()
+	local art = KitModels.clone(
+		"UtilityHelicopter",
+		at * CFrame.new(0, -1.2, 0) * CFrame.Angles(0, math.pi, 0),
+		model,
+		1.7
+	)
+	if art then
+		for _, p in originals do
+			if p:IsA("BasePart") then
+				p.Transparency = 1
+			end
+		end
+	end
 	model.Parent = parent
 end
 
@@ -415,6 +479,21 @@ local function helipad(info: Config.MapInfo, x: number, parent: Instance)
 		)
 	end
 
+	local padArt = KitModels.clone("Helipad", center * CFrame.new(0, 0.17, 0), pad)
+	if padArt then
+		for _, p in pad:GetChildren() do
+			if p:IsA("BasePart") and (p.Name == "Pad" or p.Name == "H" or p.Name == "Ring") then
+				p.Transparency = 1
+			end
+		end
+		if not active then
+			for _, p in padArt:GetDescendants() do
+				if p:IsA("BasePart") and p.Name:match("^Pad_Ring") then
+					p.Color = mark
+				end
+			end
+		end
+	end
 	helicopter(center * CFrame.new(0, 0, -PAD_RADIUS - 8) * CFrame.Angles(0, math.rad(90), 0), pad)
 
 	-- What PortalService watches: standing inside this box queues you for the map.
@@ -470,6 +549,25 @@ local function helipad(info: Config.MapInfo, x: number, parent: Instance)
 	gui.LightInfluence = 0
 	gui.MaxDistance = 160
 	gui.Parent = board
+	local signArt = KitModels.clone(
+		"DestinationSign",
+		center * CFrame.new(0, -1.96, -PAD_RADIUS - 1.5) * CFrame.Angles(0, math.pi, 0),
+		pad,
+		3.4
+	)
+	if signArt then
+		local plate = signArt:FindFirstChild("Sign_Plate")
+		if plate and plate:IsA("BasePart") then
+			gui.Adornee = plate
+			gui.Face = Enum.NormalId.Front
+		end
+		board.Transparency = 1
+		for _, p in pad:GetChildren() do
+			if p:IsA("BasePart") and p.Name == "SignPost" then
+				p.Transparency = 1
+			end
+		end
+	end
 	local function label(name: string, y: number, h: number, color: Color3): TextLabel
 		local l = Instance.new("TextLabel")
 		l.Name = name

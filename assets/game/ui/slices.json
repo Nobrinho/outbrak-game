@@ -1,0 +1,167 @@
+[
+  {
+    "family": "primary",
+    "state": "normal",
+    "path": "assets/game/ui/buttons/primary-normal.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "primary",
+    "state": "hover",
+    "path": "assets/game/ui/buttons/primary-hover.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "primary",
+    "state": "pressed",
+    "path": "assets/game/ui/buttons/primary-pressed.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "primary",
+    "state": "disabled",
+    "path": "assets/game/ui/buttons/primary-disabled.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "primary",
+    "state": "focused",
+    "path": "assets/game/ui/buttons/primary-focused.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "secondary",
+    "state": "normal",
+    "path": "assets/game/ui/buttons/secondary-normal.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "secondary",
+    "state": "hover",
+    "path": "assets/game/ui/buttons/secondary-hover.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "secondary",
+    "state": "pressed",
+    "path": "assets/game/ui/buttons/secondary-pressed.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "secondary",
+    "state": "disabled",
+    "path": "assets/game/ui/buttons/secondary-disabled.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "secondary",
+    "state": "focused",
+    "path": "assets/game/ui/buttons/secondary-focused.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "touch",
+    "state": "normal",
+    "path": "assets/game/ui/buttons/touch-normal.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "touch",
+    "state": "hover",
+    "path": "assets/game/ui/buttons/touch-hover.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "touch",
+    "state": "pressed",
+    "path": "assets/game/ui/buttons/touch-pressed.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "touch",
+    "state": "disabled",
+    "path": "assets/game/ui/buttons/touch-disabled.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  },
+  {
+    "family": "touch",
+    "state": "focused",
+    "path": "assets/game/ui/buttons/touch-focused.png",
+    "sliceCenter": [
+      12,
+      12,
+      52,
+      52
+    ]
+  }
+]

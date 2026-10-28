@@ -5,20 +5,41 @@
 
 local UserInputService = game:GetService("UserInputService")
 
+local GuiService = game:GetService("GuiService")
+local ActionState = require(script.Parent.Parent.UI.ActionState)
+local Settings = require(script.Parent.Parent.UI.ControlSettings)
 local Signal = require(game:GetService("ReplicatedStorage").Shared.Util.Signal)
 
 export type Action = "Fire" | "Aim" | "Reload" | "Ability" | "Interact" | "Grenade" | "Melee" | "Jump"
 
 local InputController = {}
 
+InputController.modalChanged = Signal.new() :: Signal.Signal<boolean>
+InputController.panelRequested = Signal.new() :: Signal.Signal<string>
 InputController.actionChanged = Signal.new() :: Signal.Signal<Action, boolean>
 
 -- Auto-fire (fire when the crosshair is over a zombie) defaults on for touch; the targeting
 -- check itself lands with the weapon system in week 4.
 InputController.autoFire = false
 
-local down: { [Action]: boolean } = {}
+InputController.cancelled = Signal.new() :: Signal.Signal<string>
+local state = ActionState.new(function(action, pressed)
+	InputController.actionChanged:fire(action :: Action, pressed)
+end)
+function InputController.cancelAll(reason: string)
+	state.clear()
+	InputController.cancelled:fire(reason)
+end
 local modals: { [string]: boolean } = {}
+local closers: { [string]: () -> () } = {}
+
+function InputController.registerModal(name: string, close: () -> ())
+	closers[name] = close
+end
+
+function InputController.isTouch(): boolean
+	return UserInputService.PreferredInput == Enum.PreferredInput.Touch
+end
 
 local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 	[Enum.UserInputType.MouseButton1] = "Fire",
@@ -39,12 +60,18 @@ local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 
 -- Menus (shop, class picker) register while open: the mouse is freed and weapons hold fire.
 function InputController.setModal(name: string, open: boolean)
-	modals[name] = if open then true else nil
 	if open then
-		for action in down do
-			InputController.setAction(action, false)
+		for other in table.clone(modals) do
+			if other ~= name and closers[other] then
+				closers[other]()
+			end
 		end
 	end
+	modals[name] = if open then true else nil
+	if open then
+		InputController.cancelAll("modal")
+	end
+	InputController.modalChanged:fire(InputController.isModalOpen())
 end
 
 function InputController.isModalOpen(): boolean
@@ -52,15 +79,14 @@ function InputController.isModalOpen(): boolean
 end
 
 function InputController.isDown(action: Action): boolean
-	return down[action] == true
+	return state.isDown(action)
 end
 
-function InputController.setAction(action: Action, isDown: boolean)
-	if (down[action] == true) == isDown then
+function InputController.setAction(action: Action, pressed: boolean, source: any?)
+	if pressed and InputController.isModalOpen() then
 		return
 	end
-	down[action] = isDown
-	InputController.actionChanged:fire(action, isDown)
+	state.set(action, pressed, source or "legacy")
 end
 
 local function bindingFor(input: InputObject): Action?
@@ -68,8 +94,12 @@ local function bindingFor(input: InputObject): Action?
 end
 
 function InputController.init()
-	InputController.autoFire = UserInputService.TouchEnabled
-		and not UserInputService.KeyboardEnabled
+	InputController.autoFire = Settings.get("autoFire")
+	Settings.changed:connect(function(key)
+		if key == "autoFire" then
+			InputController.autoFire = Settings.get(key)
+		end
+	end)
 end
 
 function InputController.start()
@@ -79,7 +109,7 @@ function InputController.start()
 		end
 		local action = bindingFor(input)
 		if action then
-			InputController.setAction(action, true)
+			InputController.setAction(action, true, input)
 		end
 	end)
 
@@ -87,15 +117,24 @@ function InputController.start()
 	UserInputService.InputEnded:Connect(function(input)
 		local action = bindingFor(input)
 		if action then
-			InputController.setAction(action, false)
+			InputController.setAction(action, false, input)
 		end
 	end)
 
-	-- Losing focus (alt-tab, app backgrounded on mobile) releases everything.
 	UserInputService.WindowFocusReleased:Connect(function()
-		for action in down do
-			InputController.setAction(action, false)
-		end
+		InputController.cancelAll("focus")
+	end)
+	UserInputService:GetPropertyChangedSignal("PreferredInput"):Connect(function()
+		InputController.cancelAll("input-device")
+	end)
+	GuiService.MenuOpened:Connect(function()
+		InputController.setModal("Roblox", true)
+	end)
+	GuiService.MenuClosed:Connect(function()
+		InputController.setModal("Roblox", false)
+	end)
+	game:GetService("Players").LocalPlayer.CharacterRemoving:Connect(function()
+		InputController.cancelAll("character")
 	end)
 end
 

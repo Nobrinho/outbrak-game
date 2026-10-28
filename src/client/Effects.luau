@@ -8,6 +8,8 @@ local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local AssetIds = require(game:GetService("ReplicatedStorage").Shared.Art.AssetIds)
+
 local Effects = {}
 
 Effects.quality = 1
@@ -20,6 +22,10 @@ local bloodAttachment: Attachment? = nil
 local bloodEmitter: ParticleEmitter? = nil
 local smokeAttachment: Attachment? = nil
 local smokeEmitter: ParticleEmitter? = nil
+local flashAttachment: Attachment?
+local flashEmitter: ParticleEmitter?
+local sparkAttachment: Attachment?
+local sparkEmitter: ParticleEmitter?
 local trauma = 0 -- camera shake, 0..1
 
 local function container(): Folder
@@ -53,6 +59,7 @@ local function emitter(): (Attachment, ParticleEmitter)
 
 	local pe = Instance.new("ParticleEmitter")
 	pe.Enabled = false
+	pe.Texture = "rbxassetid://" .. AssetIds["vfx.soft-particle"]
 	pe.Color = ColorSequence.new(COLOR_BLOOD)
 	pe.Size = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 0.45),
@@ -84,7 +91,7 @@ local function smoke(): (Attachment, ParticleEmitter)
 	attachment.Parent = workspace.Terrain
 	local pe = Instance.new("ParticleEmitter")
 	pe.Enabled = false
-	pe.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	pe.Texture = "rbxassetid://" .. AssetIds["vfx.smoke"]
 	pe.Color = ColorSequence.new(Color3.fromRGB(70, 64, 60))
 	pe.Size = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 2),
@@ -105,9 +112,44 @@ local function smoke(): (Attachment, ParticleEmitter)
 	return attachment, pe
 end
 
+-- Two reusable emitters; one flash per shot and a bounded spark burst per explosion.
+local function catalogBurst(position: Vector3, sparks: boolean)
+	local attachment = if sparks then sparkAttachment else flashAttachment
+	local particle = if sparks then sparkEmitter else flashEmitter
+	if not attachment or not particle then
+		attachment = Instance.new("Attachment")
+		attachment.Name = if sparks then "CatalogSparks" else "CatalogMuzzle"
+		attachment.Parent = workspace.Terrain
+		particle = Instance.new("ParticleEmitter")
+		particle.Enabled = false
+		particle.Texture = "rbxassetid://"
+			.. AssetIds[if sparks then "vfx.spark" else "vfx.muzzle-flash"]
+		particle.Color =
+			ColorSequence.new(Color3.fromRGB(255, 190, 70), Color3.fromRGB(255, 100, 20))
+		particle.LightEmission = 1
+		particle.Size = NumberSequence.new(if sparks then 0.3 else 1.2, 0)
+		particle.Lifetime = if sparks
+			then NumberRange.new(0.2, 0.45)
+			else NumberRange.new(0.04, 0.07)
+		particle.Speed = if sparks then NumberRange.new(10, 24) else NumberRange.new(0)
+		particle.SpreadAngle = Vector2.new(180, 180)
+		particle.Acceleration = if sparks then Vector3.new(0, -35, 0) else Vector3.zero
+		particle.Parent = attachment
+		if sparks then
+			sparkAttachment, sparkEmitter = attachment, particle
+		else
+			flashAttachment, flashEmitter = attachment, particle
+		end
+	end
+	attachment.WorldPosition = position
+	particle:Emit(if sparks then math.max(2, math.round(10 * Effects.quality)) else 1)
+end
+
 -- Short-lived neon flash at the muzzle; a light too unless quality is reduced.
 function Effects.muzzleFlash(position: Vector3, direction: Vector3)
+	catalogBurst(position + direction * 0.4, false)
 	local flash = Instance.new("Part")
+	flash.Transparency = 1 -- visual is now the catalog texture; this anchor carries the brief light
 	flash.Anchored = true
 	flash.CanCollide = false
 	flash.CanQuery = false
@@ -130,6 +172,7 @@ end
 
 -- Fireball that swells and fades, a burst of smoke, and shake that falls off with distance.
 function Effects.explosion(position: Vector3, radius: number)
+	catalogBurst(position, true)
 	local ball = Instance.new("Part")
 	ball.Shape = Enum.PartType.Ball
 	ball.Anchored = true

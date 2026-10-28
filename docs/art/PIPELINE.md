@@ -199,3 +199,18 @@ Importar o FBX pelo Studio e mover os MeshParts para `ReplicatedStorage.Assets.H
 `ZombieRenderer` usa o rig herói de um tipo só quando todas as malhas dele existem; sem
 isso mantém o rig em blocos. Movimento e ataque seguem os estados do `HordeService`
 (WALK, ATTACK, CHARGE, WINDUP, FUSE, PILE, CLIMB) com a animação procedural existente.
+
+## Zumbi skinned (Runner, em andamento)
+
+`python3 tools/art.py skinned` roda `tools/blender/zombies_skinned.py`: um corpo contínuo do
+Runner (~800 triângulos) num esqueleto com nomes R15 (`LowerTorso`, `UpperTorso`, `Head`,
+`LeftUpperArm`…), dividido por tom em malhas skinned que compartilham a armadura
+(`Runner_Skin`, `_Shirt`, `_Pants`, `_Dark`, `_Eyes`) para o jogo continuar pintando as
+variações. Gera `assets/source/zombies_skinned.blend`, `assets/export/zombies_skinned.fbx`,
+`.json` e `.preview.png` (pose de descanso ao lado de uma pose de teste).
+
+- Mesmos eixos dos zumbis; os pesos são calculados no script (dois ossos mais próximos
+  entre os permitidos para cada peça), então o resultado é determinístico.
+- O FBX sai com `global_scale=0.01`, pelo 100× visto nos imports anteriores. Ainda não foi
+  importado no Studio; confirmar no import que 1 unidade do Blender vira 1 stud.
+- Ainda sem animações nem uso no `ZombieRenderer`; o rig em peças continua sendo o usado.

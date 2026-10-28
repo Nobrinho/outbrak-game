@@ -197,7 +197,7 @@ local function fire(me: Body)
 
 	local aiming = InputController.isDown("Aim")
 	local spread = gun.spread * (if aiming then 0.5 else 1)
-	local assist = InputController.autoFire and gun.pellets == 1
+	local assist = InputController.autoFire and InputController.isTouch() and gun.pellets == 1
 	local origin, center = centerRay()
 	local gunModel = me.root.Parent and me.root.Parent:FindFirstChild("Gun")
 	local muzzlePart = gunModel and gunModel:FindFirstChild("Muzzle")
@@ -305,7 +305,12 @@ local function step()
 	end
 
 	local wantsFire = InputController.isDown("Fire")
-		or (InputController.autoFire and view.mag > 0 and hasTarget(me))
+		or (
+			InputController.autoFire
+			and InputController.isTouch()
+			and view.mag > 0
+			and hasTarget(me)
+		)
 	if not wantsFire then
 		return
 	end

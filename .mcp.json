@@ -4,6 +4,11 @@
       "type": "stdio",
       "command": "/Applications/RobloxStudio.app/Contents/MacOS/StudioMCP",
       "args": []
+    },
+    "blender": {
+      "type": "stdio",
+      "command": "/Users/emersonnobre/Library/Application Support/Claude/Claude Extensions/ant.dir.gh.blender.blender-mcp/.venv/bin/blender-mcp",
+      "args": []
     }
   }
 }

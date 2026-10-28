@@ -1,0 +1,17 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "file": "marketing/outbreak-cover-v1.png",
+      "prompt": "Use case: ads-marketing. Asset type: landscape 16:9 game cover key art for Roblox Swarm: Outbreak, save local output. Primary request: polished original stylized low-poly cooperative zombie survival game cover. A nighttime abandoned farm, gray weathered farmhouse at left, red timber barn right of center, tall metal windmill between them, cylindrical silo on far right, muddy road converges on glowing orange barn doorway. Four distinctly readable blocky survivor silhouettes in foreground defending against a crowd of olive-gray low-poly zombies, distant rising horde, no gore. Blue moonlit fog, warm orange windows, graphite shadows, tiny cyan survivor details, yellow tactical accents. Faceted 3D game art with rich cinematic lighting and clean silhouettes, serious survival tone. Composition: cinematic widescreen, legible at thumbnail size, keep subjects away from crop edges. Exact text: OUTBREAK in large condensed cream lettering in upper left, with a small yellow corner marker; no other words. No Roblox logo, no real game branding, no watermarks, no screenshots claims."
+    },
+    {
+      "file": "backgrounds/hub-loading-v1.png",
+      "prompt": "Use case: stylized-concept. Asset type: 16:9 wide loading screen art for the safe camp hub of the original game Outbreak. Nighttime low-poly survival camp in a pine forest, a clearly readable circular helicopter landing pad at right with yellow perimeter markings, a grounded utility helicopter, canvas tents at left, wooden supply crates, sandbags, warm orange lamps and faint blue moonlit mist. No enemies, no shooting, no gore. Strong faceted geometry, stylized 3D Roblox-friendly proportions, serious cooperative survival mood. Graphite/blue shadows, olive tents, restrained yellow accents. Camera from slightly above human eye level, inviting path towards helipad, layered depth. Upper left has quiet dark negative space for dynamic UI text. No text, no logos, no interface, no border, no watermark. This is background illustration, not a screenshot of a finished map."
+    },
+    {
+      "file": "marketing/outbreak-icon-v1.png",
+      "prompt": "Use case: ads-marketing. Asset type: square 1:1 game discovery icon for original cooperative zombie survival game OUTBREAK. Stylized low-poly 3D portrait of one unmistakable menacing blocky olive-gray zombie, glowing orange eyes, broad faceted jaw, no gore, no blood, no exposed organs. Behind zombie a small red barn silhouette and cold blue full moon in nighttime fog. Head dominates center 70 percent of square and remains readable at tiny icon size. Graphite, midnight blue, desaturated olive, orange eye accents, small yellow cut-corner marker upper left. Strong rim lighting, serious survival tone, clean large shapes, polished game marketing art. No words, no letters, no watermark, no other game logos. Keep face within central 80% safe crop."
+    }
+  ]
+}

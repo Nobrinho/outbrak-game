@@ -13,6 +13,7 @@ local Config = require(Shared.Config)
 local Hitscan = require(Shared.Hitscan)
 local Net = require(Shared.Net)
 local Tags = require(Shared.Tags)
+local KitModels = require(Shared.Art.KitModels)
 local HordeService = require(script.Parent.HordeService)
 
 local TurretService = {}
@@ -121,6 +122,33 @@ local function buildModel(slot: BasePart): (Model, BasePart)
 		weld.Parent = attached
 	end
 	model.PrimaryPart = head
+	local originals = model:GetChildren()
+	local art =
+		KitModels.clone("Turret", CFrame.new(base + Vector3.new(0, HEAD_HEIGHT - 2.5, 0)), model)
+	if art then
+		for _, p in originals do
+			if p:IsA("BasePart") and p ~= lamp then
+				p.Transparency = 1
+			end
+		end
+		for _, p in art:GetDescendants() do
+			if
+				p:IsA("BasePart")
+				and (
+					p.Name:match("^Turret_Receiver")
+					or p.Name:match("^Turret_Barrel")
+					or p.Name:match("^Turret_Ammo")
+				)
+			then
+				p.Anchored = false
+				p.Massless = true
+				local weld = Instance.new("WeldConstraint")
+				weld.Part0 = head
+				weld.Part1 = p
+				weld.Parent = p
+			end
+		end
+	end
 	model.Parent = workspace
 	return model, head
 end

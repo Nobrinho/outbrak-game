@@ -11,6 +11,8 @@ local TweenService = game:GetService("TweenService")
 
 local Net = require(ReplicatedStorage.Shared.Net)
 local Theme = require(script.Parent.Parent.UI.Theme)
+local Layout = require(script.Parent.Parent.UI.Layout)
+local Input = require(script.Parent.InputController)
 
 local PortalHUD = {}
 
@@ -21,6 +23,9 @@ local mapLabel: TextLabel
 local groupLabel: TextLabel
 local toastLabel: TextLabel
 local toastToken = 0
+local campTitle: TextLabel
+local campHint: TextLabel
+local teleportOverlay: ScreenGui?
 
 local function clock(seconds: number): string
 	local s = math.max(0, math.ceil(seconds))
@@ -28,14 +33,14 @@ local function clock(seconds: number): string
 end
 
 local function build()
-	Theme.text(screen, "display", {
+	campTitle = Theme.text(screen, "display", {
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 14),
 		Size = UDim2.fromScale(0.4, 0.07),
 		Text = "ACAMPAMENTO",
 		TextColor3 = Theme.COLOR.accent,
 	})
-	Theme.text(screen, "label", {
+	campHint = Theme.text(screen, "label", {
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0.07, 18),
 		Size = UDim2.fromScale(0.5, 0.035),
@@ -53,10 +58,15 @@ local function build()
 	panel.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 4.2
-	aspect.Parent = panel
+	aspect:Destroy()
+	Theme.image(panel, "ui.icons.helicopter", {
+		Position = UDim2.fromScale(0.03, 0.1),
+		Size = UDim2.fromScale(0.09, 0.38),
+		ImageColor3 = Theme.COLOR.accent,
+	})
 	mapLabel = Theme.text(panel, "heavy", {
-		Position = UDim2.fromScale(0.05, 0.08),
-		Size = UDim2.fromScale(0.9, 0.4),
+		Position = UDim2.fromScale(0.14, 0.08),
+		Size = UDim2.fromScale(0.82, 0.4),
 		TextColor3 = Theme.COLOR.accent,
 	})
 	groupLabel = Theme.text(panel, "heavy", {
@@ -99,6 +109,18 @@ local function loadingScreen(): ScreenGui
 	back.Size = UDim2.fromScale(1, 1)
 	back.BackgroundColor3 = Color3.fromRGB(14, 12, 12)
 	back.Parent = gui
+	Theme.image(
+		back,
+		"backgrounds.hub-loading-v1",
+		{ Size = UDim2.fromScale(1, 1), ScaleType = Enum.ScaleType.Crop }
+	)
+	local shade = Instance.new("Frame")
+	shade.Name = "Readability"
+	shade.Size = UDim2.fromScale(1, 1)
+	shade.BackgroundColor3 = Theme.COLOR.panel
+	shade.BackgroundTransparency = 0.3
+	shade.BorderSizePixel = 0
+	shade.Parent = back
 	Theme.text(back, "display", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.45),
@@ -118,7 +140,11 @@ end
 
 local function update()
 	local map = player:GetAttribute("PortalMap")
-	panel.Visible = typeof(map) == "string"
+	local queued = typeof(map) == "string"
+	local visible = not Input.isModalOpen()
+	panel.Visible = queued and visible
+	campTitle.Visible = not queued and visible
+	campHint.Visible = campTitle.Visible
 	if not panel.Visible then
 		return
 	end
@@ -140,16 +166,36 @@ end
 function PortalHUD.init()
 	screen = Instance.new("ScreenGui")
 	screen.Name = "PortalHUD"
-	screen.ResetOnSpawn = false
-	screen.IgnoreGuiInset = true
-	screen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-	screen.DisplayOrder = 3
+	Layout.configure(screen, 10)
 	build()
 end
 
 function PortalHUD.start()
 	screen.Parent = player:WaitForChild("PlayerGui")
+	Layout.bind(screen, function(m)
+		campTitle.Position = UDim2.new(0.5, 0, 0, 12)
+		campTitle.Size = UDim2.fromOffset(math.min(320, m.size.X * 0.5), 36)
+		campHint.Position = UDim2.new(0.5, 0, 0, 52)
+		campHint.Size = UDim2.fromOffset(math.min(440, m.size.X * 0.7), 26)
+		panel.Size = UDim2.fromOffset(math.min(440, m.size.X * 0.48), 88)
+		panel.Position = UDim2.new(0.5, 0, 1, if not m.touch and m.size.X < 900 then -88 else -16)
+	end)
 	TeleportService:SetTeleportGui(loadingScreen())
+	player.OnTeleport:Connect(function(state)
+		if state == Enum.TeleportState.Started or state == Enum.TeleportState.InProgress then
+			if not teleportOverlay then
+				teleportOverlay = loadingScreen()
+				teleportOverlay.DisplayOrder = 80
+				teleportOverlay.Parent = player:WaitForChild("PlayerGui")
+			end
+		end
+	end)
+	TeleportService.TeleportInitFailed:Connect(function(failedPlayer)
+		if failedPlayer == player and teleportOverlay then
+			teleportOverlay:Destroy()
+			teleportOverlay = nil
+		end
+	end)
 	Net.notify().OnClientEvent:Connect(function(message: unknown)
 		if typeof(message) == "string" then
 			toast(message)

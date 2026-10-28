@@ -1,0 +1,4230 @@
+<roblox version="4">
+  <Item class="Folder" referent="OutbreakKit">
+    <Properties>
+      <string name="Name">OutbreakKit</string>
+    </Properties>
+    <Item class="Model" referent="DestinationSign">
+      <Properties>
+        <string name="Name">DestinationSign</string>
+      </Properties>
+      <Item class="MeshPart" referent="DestinationSign0">
+        <Properties>
+          <string name="Name">Sign_Post</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">512</token>
+          <Color3uint8 name="Color3uint8">4285029456</Color3uint8>
+          <Vector3 name="size">
+            <X>0.25</X>
+            <Y>5</Y>
+            <Z>0.25000083446502686</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.25</X>
+            <Y>5</Y>
+            <Z>0.25000083446502686</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.0999999046325684</X>
+            <Y>2.5</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://83701402067676</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="DestinationSign1">
+        <Properties>
+          <string name="Name">Sign_Post.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">512</token>
+          <Color3uint8 name="Color3uint8">4285029456</Color3uint8>
+          <Vector3 name="size">
+            <X>0.25</X>
+            <Y>5</Y>
+            <Z>0.25000083446502686</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.25</X>
+            <Y>5</Y>
+            <Z>0.25000083446502686</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.0999999046325684</X>
+            <Y>2.5</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://111351265339971</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="DestinationSign2">
+        <Properties>
+          <string name="Name">Sign_Plate</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>5</X>
+            <Y>2.200000047683716</Y>
+            <Z>0.25000035762786865</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>5</X>
+            <Y>2.200000047683716</Y>
+            <Z>0.25000035762786865</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>4.400000095367432</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://92809683717571</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="DestinationSign3">
+        <Properties>
+          <string name="Name">Sign_Stripe</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.2199999988079071</X>
+            <Y>2.200000047683716</Y>
+            <Z>0.28000035881996155</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.2199999988079071</X>
+            <Y>2.200000047683716</Y>
+            <Z>0.28000035881996155</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.299999952316284</X>
+            <Y>4.400000095367432</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://104153240104515</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="FieldTent">
+      <Properties>
+        <string name="Name">FieldTent</string>
+      </Properties>
+      <Item class="MeshPart" referent="FieldTent0">
+        <Properties>
+          <string name="Name">Tent_Floor</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>0.1500011384487152</Y>
+            <Z>7</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>8</X>
+            <Y>0.1500011384487152</Y>
+            <Z>7</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.07500000298023224</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://100360367727018</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent1">
+        <Properties>
+          <string name="Name">Tent_Canvas</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>4.087077617645264</X>
+            <Y>4.0870771408081055</Y>
+            <Z>7</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>4.087077617645264</X>
+            <Y>4.0870771408081055</Y>
+            <Z>7</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2</X>
+            <Y>2</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://86228560169456</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent2">
+        <Properties>
+          <string name="Name">Tent_Canvas.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>4.087077617645264</X>
+            <Y>4.0870771408081055</Y>
+            <Z>7</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>4.087077617645264</X>
+            <Y>4.0870771408081055</Y>
+            <Z>7</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2</X>
+            <Y>2</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://90336235983623</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent3">
+        <Properties>
+          <string name="Name">Tent_Pole</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.1400000900030136</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.1400000900030136</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>4</X>
+            <Y>0.30000001192092896</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://89546736893066</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent4">
+        <Properties>
+          <string name="Name">Tent_Pole.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>4.099999904632568</Y>
+            <Z>0.14000067114830017</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>4.099999904632568</Y>
+            <Z>0.14000067114830017</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>2.049999952316284</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://108638703225070</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent5">
+        <Properties>
+          <string name="Name">Tent_Pole.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.1400000900030136</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.1400000900030136</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-4</X>
+            <Y>0.30000001192092896</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://128249697954720</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="FieldTent6">
+        <Properties>
+          <string name="Name">Tent_Ridge</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.11999999731779099</X>
+            <Y>0.12000121921300888</Y>
+            <Z>7.400000095367432</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.11999999731779099</X>
+            <Y>0.12000121921300888</Y>
+            <Z>7.400000095367432</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>4</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://104490813325082</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="Floodlight">
+      <Properties>
+        <string name="Name">Floodlight</string>
+      </Properties>
+      <Item class="MeshPart" referent="Floodlight0">
+        <Properties>
+          <string name="Name">Lamp_Base</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.2000003457069397</Y>
+            <Z>2</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.2000003457069397</Y>
+            <Z>2</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.10000000149011612</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://138783199986087</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Floodlight1">
+        <Properties>
+          <string name="Name">Lamp_Pole</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.23999999463558197</X>
+            <Y>7</Y>
+            <Z>0.2400011420249939</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.23999999463558197</X>
+            <Y>7</Y>
+            <Z>0.2400011420249939</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>3.5</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://111045225124443</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Floodlight2">
+        <Properties>
+          <string name="Name">Lamp_Housing</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>1</Y>
+            <Z>0.5000001788139343</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>1</Y>
+            <Z>0.5000001788139343</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>7</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://102778303980885</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Floodlight3">
+        <Properties>
+          <string name="Name">Lamp_Lens</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4293716190</Color3uint8>
+          <Vector3 name="size">
+            <X>1.7000000476837158</X>
+            <Y>0.6499999761581421</Y>
+            <Z>0.08000011742115021</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.7000000476837158</X>
+            <Y>0.6499999761581421</Y>
+            <Z>0.08000011742115021</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>7</Y>
+            <Z>-0.30000001192092896</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://81289727438840</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="Grenade">
+      <Properties>
+        <string name="Name">Grenade</string>
+      </Properties>
+      <Item class="MeshPart" referent="Grenade0">
+        <Properties>
+          <string name="Name">Grenade_Body</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>0.7608452439308167</X>
+            <Y>0.8500001430511475</Y>
+            <Z>0.8000001311302185</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.7608452439308167</X>
+            <Y>0.8500001430511475</Y>
+            <Z>0.8000001311302185</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.44999998807907104</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://78805609280803</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Grenade1">
+        <Properties>
+          <string name="Name">Grenade_Neck</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.4000000059604645</X>
+            <Y>0.2199999988079071</Y>
+            <Z>0.40000003576278687</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.4000000059604645</X>
+            <Y>0.2199999988079071</Y>
+            <Z>0.40000003576278687</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.9800000190734863</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://116165944457494</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Grenade2">
+        <Properties>
+          <string name="Name">Grenade_Lever</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.3997153341770172</X>
+            <Y>0.901175856590271</Y>
+            <Z>0.22000014781951904</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.3997153341770172</X>
+            <Y>0.901175856590271</Y>
+            <Z>0.22000014781951904</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.34999996423721313</X>
+            <Y>0.8500000238418579</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://96163651602997</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="Helipad">
+      <Properties>
+        <string name="Name">Helipad</string>
+      </Properties>
+      <Item class="MeshPart" referent="Helipad0">
+        <Properties>
+          <string name="Name">Pad_Base</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>18</X>
+            <Y>0.2500029504299164</Y>
+            <Z>18</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>18</X>
+            <Y>0.2500029504299164</Y>
+            <Z>18</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.125</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://76984134920588</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad1">
+        <Properties>
+          <string name="Name">Pad_Ring</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.20000000298023224</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.5</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.20000000298023224</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.5</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-8</X>
+            <Y>0.25999999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://79301423591531</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad2">
+        <Properties>
+          <string name="Name">Pad_Ring.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-7.846282005310059</X>
+            <Y>0.25999999046325684</Y>
+            <Z>1.5607225894927979</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://134562097709571</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad3">
+        <Properties>
+          <string name="Name">Pad_Ring.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.758801281452179</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.758801281452179</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-7.391036033630371</X>
+            <Y>0.25999999046325684</Y>
+            <Z>3.061467409133911</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://87516163053905</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad4">
+        <Properties>
+          <string name="Name">Pad_Ring.003</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.9996496438980103</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.9996496438980103</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-6.651756763458252</X>
+            <Y>0.25999999046325684</Y>
+            <Z>4.444561958312988</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://134739572419293</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad5">
+        <Properties>
+          <string name="Name">Pad_Ring.004</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.202081322669983</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.202081322669983</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-5.656854152679443</X>
+            <Y>0.25999999046325684</Y>
+            <Z>5.656854152679443</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://115820748637550</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad6">
+        <Properties>
+          <string name="Name">Pad_Ring.005</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.3583184480667114</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.3583184480667114</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-4.444561958312988</X>
+            <Y>0.25999999046325684</Y>
+            <Z>6.651756763458252</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://105354723242051</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad7">
+        <Properties>
+          <string name="Name">Pad_Ring.006</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.4623558521270752</X>
+            <Y>0.020000267773866653</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.4623558521270752</X>
+            <Y>0.020000267773866653</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-3.061467409133911</X>
+            <Y>0.25999999046325684</Y>
+            <Z>7.391036033630371</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://83159532370954</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad8">
+        <Properties>
+          <string name="Name">Pad_Ring.007</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5101956129074097</X>
+            <Y>0.020000915974378586</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5101956129074097</X>
+            <Y>0.020000915974378586</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.5607225894927979</X>
+            <Y>0.25999999046325684</Y>
+            <Z>7.846282005310059</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://135690442786881</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad9">
+        <Properties>
+          <string name="Name">Pad_Ring.008</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.20000000298023224</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.20000000298023224</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.25999999046325684</Y>
+            <Z>8</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://90524835190179</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad10">
+        <Properties>
+          <string name="Name">Pad_Ring.009</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5101959705352783</X>
+            <Y>0.020000305026769638</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5101959705352783</X>
+            <Y>0.020000305026769638</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.5607225894927979</X>
+            <Y>0.25999999046325684</Y>
+            <Z>7.846282005310059</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://78711504017598</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad11">
+        <Properties>
+          <string name="Name">Pad_Ring.010</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.4623559713363647</X>
+            <Y>0.020000115036964417</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.4623559713363647</X>
+            <Y>0.020000115036964417</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>3.061467409133911</X>
+            <Y>0.25999999046325684</Y>
+            <Z>7.391036033630371</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://137435300498513</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad12">
+        <Properties>
+          <string name="Name">Pad_Ring.011</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.3583184480667114</X>
+            <Y>0.02000022865831852</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.3583184480667114</X>
+            <Y>0.02000022865831852</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>4.444561958312988</X>
+            <Y>0.25999999046325684</Y>
+            <Z>6.651756763458252</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://113533494896307</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad13">
+        <Properties>
+          <string name="Name">Pad_Ring.012</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>5.656854152679443</X>
+            <Y>0.25999999046325684</Y>
+            <Z>5.656854152679443</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://129782538276472</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad14">
+        <Properties>
+          <string name="Name">Pad_Ring.013</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.9996496438980103</X>
+            <Y>0.020000305026769638</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.9996496438980103</X>
+            <Y>0.020000305026769638</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>6.651756763458252</X>
+            <Y>0.25999999046325684</Y>
+            <Z>4.444561958312988</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://139791087148906</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad15">
+        <Properties>
+          <string name="Name">Pad_Ring.014</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.758801281452179</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.758801281452179</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>7.391036033630371</X>
+            <Y>0.25999999046325684</Y>
+            <Z>3.061467409133911</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://137335662064847</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad16">
+        <Properties>
+          <string name="Name">Pad_Ring.015</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>7.846282005310059</X>
+            <Y>0.25999999046325684</Y>
+            <Z>1.5607225894927979</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://84098858830614</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad17">
+        <Properties>
+          <string name="Name">Pad_Ring.016</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.20000000298023224</X>
+            <Y>0.020000267773866653</Y>
+            <Z>1.5</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.20000000298023224</X>
+            <Y>0.020000267773866653</Y>
+            <Z>1.5</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>8</X>
+            <Y>0.25999999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://91823589128581</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad18">
+        <Properties>
+          <string name="Name">Pad_Ring.017</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>7.846282005310059</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-1.5607225894927979</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://83975981604980</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad19">
+        <Properties>
+          <string name="Name">Pad_Ring.018</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.758801281452179</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.4623554944992065</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.758801281452179</X>
+            <Y>0.02000022865831852</Y>
+            <Z>1.4623554944992065</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>7.391036033630371</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-3.061467409133911</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://95085680672056</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad20">
+        <Properties>
+          <string name="Name">Pad_Ring.019</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.9996496438980103</X>
+            <Y>0.020000075921416283</Y>
+            <Z>1.3583182096481323</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.9996496438980103</X>
+            <Y>0.020000075921416283</Y>
+            <Z>1.3583182096481323</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>6.651756763458252</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-4.444561958312988</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://100097944346544</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad21">
+        <Properties>
+          <string name="Name">Pad_Ring.020</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>5.656854152679443</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-5.656854152679443</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://124957750569062</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad22">
+        <Properties>
+          <string name="Name">Pad_Ring.021</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.3583184480667114</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.3583184480667114</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.9996496438980103</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>4.444561958312988</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-6.651756763458252</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://137770157404844</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad23">
+        <Properties>
+          <string name="Name">Pad_Ring.022</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.4623558521270752</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.4623558521270752</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>3.061467409133911</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-7.391036033630371</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://80259844571847</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad24">
+        <Properties>
+          <string name="Name">Pad_Ring.023</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5101956129074097</X>
+            <Y>0.02000095322728157</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5101956129074097</X>
+            <Y>0.02000095322728157</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.5607225894927979</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-7.846282005310059</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://77119752219922</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad25">
+        <Properties>
+          <string name="Name">Pad_Ring.024</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.20000000298023224</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.20000000298023224</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-8</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://70388446673096</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad26">
+        <Properties>
+          <string name="Name">Pad_Ring.025</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.5101956129074097</X>
+            <Y>0.020000915974378586</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.5101956129074097</X>
+            <Y>0.020000915974378586</Y>
+            <Z>0.4887927174568176</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.5607225894927979</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-7.846282005310059</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://70668929107784</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad27">
+        <Properties>
+          <string name="Name">Pad_Ring.026</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.4623559713363647</X>
+            <Y>0.020000115036964417</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.4623559713363647</X>
+            <Y>0.020000115036964417</Y>
+            <Z>0.758801281452179</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-3.061467409133911</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-7.391036033630371</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://118632174890907</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad28">
+        <Properties>
+          <string name="Name">Pad_Ring.027</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.3583184480667114</X>
+            <Y>0.0200001522898674</Y>
+            <Z>0.9996484518051147</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.3583184480667114</X>
+            <Y>0.0200001522898674</Y>
+            <Z>0.9996484518051147</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-4.444561958312988</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-6.651756763458252</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://74970181605694</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad29">
+        <Properties>
+          <string name="Name">Pad_Ring.028</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.202081322669983</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.202081322669983</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-5.656854152679443</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-5.656854152679443</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://128068789180700</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad30">
+        <Properties>
+          <string name="Name">Pad_Ring.029</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.9996496438980103</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.9996496438980103</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.3583184480667114</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-6.651756763458252</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-4.444561958312988</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://97766535921261</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad31">
+        <Properties>
+          <string name="Name">Pad_Ring.030</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.758801281452179</X>
+            <Y>0.020000075921416283</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.758801281452179</X>
+            <Y>0.020000075921416283</Y>
+            <Z>1.4623559713363647</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-7.391036033630371</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-3.061467409133911</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://113383948251700</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad32">
+        <Properties>
+          <string name="Name">Pad_Ring.031</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.4887927174568176</X>
+            <Y>0.020000115036964417</Y>
+            <Z>1.5101959705352783</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-7.846282005310059</X>
+            <Y>0.25999999046325684</Y>
+            <Z>-1.5607225894927979</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://130509486448453</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad33">
+        <Properties>
+          <string name="Name">Pad_H</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4293716190</Color3uint8>
+          <Vector3 name="size">
+            <X>0.550000011920929</X>
+            <Y>0.020000647753477097</Y>
+            <Z>4</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.550000011920929</X>
+            <Y>0.020000647753477097</Y>
+            <Z>4</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.399999976158142</X>
+            <Y>0.25999999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://95630319846264</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad34">
+        <Properties>
+          <string name="Name">Pad_H.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4293716190</Color3uint8>
+          <Vector3 name="size">
+            <X>0.550000011920929</X>
+            <Y>0.020000647753477097</Y>
+            <Z>4</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.550000011920929</X>
+            <Y>0.020000647753477097</Y>
+            <Z>4</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.399999976158142</X>
+            <Y>0.25999999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://96651396501737</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Helipad35">
+        <Properties>
+          <string name="Name">Pad_H.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4293716190</Color3uint8>
+          <Vector3 name="size">
+            <X>3.299999952316284</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.550000011920929</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>3.299999952316284</X>
+            <Y>0.020000075921416283</Y>
+            <Z>0.550000011920929</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.25999999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://125579186616012</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="Medkit">
+      <Properties>
+        <string name="Name">Medkit</string>
+      </Properties>
+      <Item class="MeshPart" referent="Medkit0">
+        <Properties>
+          <string name="Name">Medkit_Case</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.8000001311302185</Y>
+            <Z>1.3000001907348633</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.8000001311302185</Y>
+            <Z>1.3000001907348633</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.4000000059604645</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://127552994286354</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Medkit1">
+        <Properties>
+          <string name="Name">Medkit_Patch</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4293716190</Color3uint8>
+          <Vector3 name="size">
+            <X>0.8999999761581421</X>
+            <Y>0.0200001522898674</Y>
+            <Z>0.8999999761581421</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.8999999761581421</X>
+            <Y>0.0200001522898674</Y>
+            <Z>0.8999999761581421</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.8100000023841858</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://118127896231151</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Medkit2">
+        <Properties>
+          <string name="Name">Medkit_Cross</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4289996840</Color3uint8>
+          <Vector3 name="size">
+            <X>0.550000011920929</X>
+            <Y>0.029999999329447746</Y>
+            <Z>0.17000000178813934</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.550000011920929</X>
+            <Y>0.029999999329447746</Y>
+            <Z>0.17000000178813934</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.8299999833106995</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://82928396931943</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Medkit3">
+        <Properties>
+          <string name="Name">Medkit_Cross.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4289996840</Color3uint8>
+          <Vector3 name="size">
+            <X>0.17000000178813934</X>
+            <Y>0.030000152066349983</Y>
+            <Z>0.550000011920929</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.17000000178813934</X>
+            <Y>0.030000152066349983</Y>
+            <Z>0.550000011920929</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.8299999833106995</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://83528958856028</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="SandbagWall">
+      <Properties>
+        <string name="Name">SandbagWall</string>
+      </Properties>
+      <Item class="MeshPart" referent="SandbagWall0">
+        <Properties>
+          <string name="Name">Sandbag</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.8499999046325684</X>
+            <Y>0.3499999940395355</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://98629640312658</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall1">
+        <Properties>
+          <string name="Name">Sandbag.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.9500000476837158</X>
+            <Y>0.3499999940395355</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://87749328634285</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall2">
+        <Properties>
+          <string name="Name">Sandbag.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.9500000476837158</X>
+            <Y>0.3499999940395355</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://124499528018713</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall3">
+        <Properties>
+          <string name="Name">Sandbag.003</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000001668930054</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.8499999046325684</X>
+            <Y>0.3499999940395355</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://89122011447566</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall4">
+        <Properties>
+          <string name="Name">Sandbag.004</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>1.9999998807907104</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.9999998807907104</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.4000000953674316</X>
+            <Y>1.0099999904632568</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://116916469852338</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall5">
+        <Properties>
+          <string name="Name">Sandbag.005</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.5</X>
+            <Y>1.0099999904632568</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://137920932602619</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall6">
+        <Properties>
+          <string name="Name">Sandbag.006</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.4000000953674316</X>
+            <Y>1.0099999904632568</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://138819351357324</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall7">
+        <Properties>
+          <string name="Name">Sandbag.007</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.7000000476837158</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-3.3000001907348633</X>
+            <Y>1.0099999904632568</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://75220641216741</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall8">
+        <Properties>
+          <string name="Name">Sandbag.008</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.8499999046325684</X>
+            <Y>1.6699999570846558</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://110566197253563</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall9">
+        <Properties>
+          <string name="Name">Sandbag.009</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.9500000476837158</X>
+            <Y>1.6699999570846558</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://84928167479101</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall10">
+        <Properties>
+          <string name="Name">Sandbag.010</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.9500000476837158</X>
+            <Y>1.6699999570846558</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://76276072638866</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SandbagWall11">
+        <Properties>
+          <string name="Name">Sandbag.011</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1312</token>
+          <Color3uint8 name="Color3uint8">4288054368</Color3uint8>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2</X>
+            <Y>0.699999988079071</Y>
+            <Z>0.949999988079071</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.8499999046325684</X>
+            <Y>1.6699999570846558</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://136359413529735</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="SupplyCrate">
+      <Properties>
+        <string name="Name">SupplyCrate</string>
+      </Properties>
+      <Item class="MeshPart" referent="SupplyCrate0">
+        <Properties>
+          <string name="Name">Crate_Body</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">512</token>
+          <Color3uint8 name="Color3uint8">4285029456</Color3uint8>
+          <Vector3 name="size">
+            <X>3</X>
+            <Y>2.500000238418579</Y>
+            <Z>2.40000057220459</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>3</X>
+            <Y>2.500000238418579</Y>
+            <Z>2.40000057220459</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>1.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://114204571599243</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SupplyCrate1">
+        <Properties>
+          <string name="Name">Crate_Strap</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.18000000715255737</X>
+            <Y>2.619999885559082</Y>
+            <Z>2.520000457763672</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.18000000715255737</X>
+            <Y>2.619999885559082</Y>
+            <Z>2.520000457763672</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.350000023841858</X>
+            <Y>1.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://128993238870327</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SupplyCrate2">
+        <Properties>
+          <string name="Name">Crate_Strap.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.18000000715255737</X>
+            <Y>2.619999885559082</Y>
+            <Z>2.520000457763672</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.18000000715255737</X>
+            <Y>2.619999885559082</Y>
+            <Z>2.520000457763672</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.350000023841858</X>
+            <Y>1.25</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://91767496962299</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="SupplyCrate3">
+        <Properties>
+          <string name="Name">Crate_Patch</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.6499999761581421</X>
+            <Y>0.550000011920929</Y>
+            <Z>0.0500001534819603</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.6499999761581421</X>
+            <Y>0.550000011920929</Y>
+            <Z>0.0500001534819603</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>1.399999976158142</Y>
+            <Z>-1.2300000190734863</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://116132541347468</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="Turret">
+      <Properties>
+        <string name="Name">Turret</string>
+      </Properties>
+      <Item class="MeshPart" referent="Turret0">
+        <Properties>
+          <string name="Name">Turret_Leg</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.1599999964237213</X>
+            <Y>0.752287745475769</Y>
+            <Z>2.7839202880859375</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.1599999964237213</X>
+            <Y>0.752287745475769</Y>
+            <Z>2.7839202880859375</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>0.3499999940395355</Y>
+            <Z>0.7999999523162842</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://120015414384056</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret1">
+        <Properties>
+          <string name="Name">Turret_Leg.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>2.491440773010254</X>
+            <Y>0.7522874474525452</Y>
+            <Z>1.5296034812927246</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2.491440773010254</X>
+            <Y>0.7522874474525452</Y>
+            <Z>1.5296034812927246</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.6929782629013062</X>
+            <Y>0.3499999940395355</Y>
+            <Z>-0.3997262120246887</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://85927983209780</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret2">
+        <Properties>
+          <string name="Name">Turret_Leg.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>2.4899544715881348</X>
+            <Y>0.7522883415222168</Y>
+            <Z>1.5323656797409058</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2.4899544715881348</X>
+            <Y>0.7522883415222168</Y>
+            <Z>1.5323656797409058</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.6925040483474731</X>
+            <Y>0.3499999940395355</Y>
+            <Z>-0.4005473852157593</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://73459794557358</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret3">
+        <Properties>
+          <string name="Name">Turret_Mast</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.5</X>
+            <Y>2</Y>
+            <Z>0.5000003576278687</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.5</X>
+            <Y>2</Y>
+            <Z>0.5000003576278687</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>1.2000000476837158</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://114696830140065</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret4">
+        <Properties>
+          <string name="Name">Turret_Receiver</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>1.2000000476837158</X>
+            <Y>0.8000004291534424</Y>
+            <Z>1.8000001907348633</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.2000000476837158</X>
+            <Y>0.8000004291534424</Y>
+            <Z>1.8000001907348633</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>2.5</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://118177446948263</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret5">
+        <Properties>
+          <string name="Name">Turret_Barrel</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.26629582047462463</X>
+            <Y>0.2800000011920929</Y>
+            <Z>3</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.26629582047462463</X>
+            <Y>0.2800000011920929</Y>
+            <Z>3</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>2.5</Y>
+            <Z>-1.7999999523162842</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://128703472394459</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="Turret6">
+        <Properties>
+          <string name="Name">Turret_Ammo</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4294953984</Color3uint8>
+          <Vector3 name="size">
+            <X>0.699999988079071</X>
+            <Y>0.7000001668930054</Y>
+            <Z>1.0000001192092896</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.699999988079071</X>
+            <Y>0.7000001668930054</Y>
+            <Z>1.0000001192092896</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1</X>
+            <Y>2.3499999046325684</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://70652484541630</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Model" referent="UtilityHelicopter">
+      <Properties>
+        <string name="Name">UtilityHelicopter</string>
+      </Properties>
+      <Item class="MeshPart" referent="UtilityHelicopter0">
+        <Properties>
+          <string name="Name">Heli_Fuselage</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>3.5999999046325684</X>
+            <Y>3.1000006198883057</Y>
+            <Z>6.199999809265137</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>3.5999999046325684</X>
+            <Y>3.1000006198883057</Y>
+            <Z>6.199999809265137</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>3.4000000953674316</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://118697361764927</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter1">
+        <Properties>
+          <string name="Name">Heli_Windshield</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>1.399999976158142</X>
+            <Y>1.155018925666809</Y>
+            <Z>0.290505975484848</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.399999976158142</X>
+            <Y>1.155018925666809</Y>
+            <Z>0.290505975484848</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.800000011920929</X>
+            <Y>3.9000000953674316</Y>
+            <Z>-3.119999885559082</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://71286358662331</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter2">
+        <Properties>
+          <string name="Name">Heli_SideWindow</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>0.05999999865889549</X>
+            <Y>1.1000006198883057</Y>
+            <Z>1.7999999523162842</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.05999999865889549</X>
+            <Y>1.1000006198883057</Y>
+            <Z>1.7999999523162842</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.809999942779541</X>
+            <Y>4</Y>
+            <Z>-1.25</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://122114708026116</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter3">
+        <Properties>
+          <string name="Name">Heli_Door</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.05999999865889549</X>
+            <Y>2.000000238418579</Y>
+            <Z>1.700000286102295</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.05999999865889549</X>
+            <Y>2.000000238418579</Y>
+            <Z>1.700000286102295</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.809999942779541</X>
+            <Y>3.4499998092651367</Y>
+            <Z>1</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://134677985586610</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter4">
+        <Properties>
+          <string name="Name">Heli_DoorWindow</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>0.07999999821186066</X>
+            <Y>0.75</Y>
+            <Z>1.2999999523162842</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.07999999821186066</X>
+            <Y>0.75</Y>
+            <Z>1.2999999523162842</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.850000023841858</X>
+            <Y>4</Y>
+            <Z>1</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://134702640644876</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter5">
+        <Properties>
+          <string name="Name">Heli_DoorHandle</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.10000000149011612</X>
+            <Y>0.07999999821186066</Y>
+            <Z>0.4000000059604645</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.10000000149011612</X>
+            <Y>0.07999999821186066</Y>
+            <Z>0.4000000059604645</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>1.8600000143051147</X>
+            <Y>3.4000000953674316</Y>
+            <Z>1.5</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://133953928788116</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter6">
+        <Properties>
+          <string name="Name">Heli_Engine</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.699999988079071</X>
+            <Y>0.5000002980232239</Y>
+            <Z>2</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.699999988079071</X>
+            <Y>0.5000002980232239</Y>
+            <Z>2</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0.8999999761581421</X>
+            <Y>5</Y>
+            <Z>0.3999999761581421</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://91192912561285</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter7">
+        <Properties>
+          <string name="Name">Heli_Windshield.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>1.399999976158142</X>
+            <Y>1.155018925666809</Y>
+            <Z>0.290505975484848</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>1.399999976158142</X>
+            <Y>1.155018925666809</Y>
+            <Z>0.290505975484848</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.800000011920929</X>
+            <Y>3.9000000953674316</Y>
+            <Z>-3.119999885559082</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://137271579069949</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter8">
+        <Properties>
+          <string name="Name">Heli_SideWindow.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>0.05999999865889549</X>
+            <Y>1.1000006198883057</Y>
+            <Z>1.7999999523162842</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.05999999865889549</X>
+            <Y>1.1000006198883057</Y>
+            <Z>1.7999999523162842</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.809999942779541</X>
+            <Y>4</Y>
+            <Z>-1.25</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://129514865935485</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter9">
+        <Properties>
+          <string name="Name">Heli_Door.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.05999999865889549</X>
+            <Y>2.000000238418579</Y>
+            <Z>1.700000286102295</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.05999999865889549</X>
+            <Y>2.000000238418579</Y>
+            <Z>1.700000286102295</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.809999942779541</X>
+            <Y>3.4499998092651367</Y>
+            <Z>1</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://132155771977348</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter10">
+        <Properties>
+          <string name="Name">Heli_DoorWindow.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1568</token>
+          <Color3uint8 name="Color3uint8">4280960080</Color3uint8>
+          <Vector3 name="size">
+            <X>0.07999999821186066</X>
+            <Y>0.75</Y>
+            <Z>1.2999999523162842</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.07999999821186066</X>
+            <Y>0.75</Y>
+            <Z>1.2999999523162842</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.850000023841858</X>
+            <Y>4</Y>
+            <Z>1</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://103730671653159</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter11">
+        <Properties>
+          <string name="Name">Heli_DoorHandle.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.10000000149011612</X>
+            <Y>0.07999999821186066</Y>
+            <Z>0.4000000059604645</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.10000000149011612</X>
+            <Y>0.07999999821186066</Y>
+            <Z>0.4000000059604645</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-1.8600000143051147</X>
+            <Y>3.4000000953674316</Y>
+            <Z>1.5</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://121807291606389</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter12">
+        <Properties>
+          <string name="Name">Heli_Engine.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.699999988079071</X>
+            <Y>0.5000002980232239</Y>
+            <Z>2</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.699999988079071</X>
+            <Y>0.5000002980232239</Y>
+            <Z>2</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-0.8999999761581421</X>
+            <Y>5</Y>
+            <Z>0.3999999761581421</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://130225752898581</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter13">
+        <Properties>
+          <string name="Name">Heli_Nose</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>2.700000047683716</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.8999999761581421</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>2.700000047683716</X>
+            <Y>0.6000000238418579</Y>
+            <Z>0.8999999761581421</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>2.9000000953674316</Y>
+            <Z>-3</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://139647347979264</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter14">
+        <Properties>
+          <string name="Name">Heli_Tail</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>0.699999988079071</X>
+            <Y>1.1184887886047363</Y>
+            <Z>7.029378890991211</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.699999988079071</X>
+            <Y>1.1184887886047363</Y>
+            <Z>7.029378890991211</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>3.700000286102295</Y>
+            <Z>5.800000190734863</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://103170603592517</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter15">
+        <Properties>
+          <string name="Name">Heli_Fin</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4283850818</Color3uint8>
+          <Vector3 name="size">
+            <X>0.20000000298023224</X>
+            <Y>2.700000286102295</Y>
+            <Z>1.2000000476837158</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.20000000298023224</X>
+            <Y>2.700000286102295</Y>
+            <Z>1.2000000476837158</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>4.699999809265137</Y>
+            <Z>9.199999809265137</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://80754414972561</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter16">
+        <Properties>
+          <string name="Name">Heli_RotorMast</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.36000001430511475</X>
+            <Y>1.5</Y>
+            <Z>0.36000025272369385</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.36000001430511475</X>
+            <Y>1.5</Y>
+            <Z>0.36000025272369385</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>5.400000095367432</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://110757601104237</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter17">
+        <Properties>
+          <string name="Name">Heli_Rotor</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>16</X>
+            <Y>0.10000000149011612</Y>
+            <Z>0.2800000309944153</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>16</X>
+            <Y>0.10000000149011612</Y>
+            <Z>0.2800000309944153</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>6.199999809265137</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://125942132968957</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter18">
+        <Properties>
+          <string name="Name">Heli_Rotor.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.2800007164478302</X>
+            <Y>0.10000000149011612</Y>
+            <Z>16</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.2800007164478302</X>
+            <Y>0.10000000149011612</Y>
+            <Z>16</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>6.199999809265137</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://71621086646765</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter19">
+        <Properties>
+          <string name="Name">Heli_Skid</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.25999999046325684</X>
+            <Y>0.26000022888183594</Y>
+            <Z>7</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.25999999046325684</X>
+            <Y>0.26000022888183594</Y>
+            <Z>7</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.200000047683716</X>
+            <Y>1.2000000476837158</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://114635838798897</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter20">
+        <Properties>
+          <string name="Name">Heli_SkidStrut</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.200000047683716</X>
+            <Y>1.9000000953674316</Y>
+            <Z>-1.600000023841858</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://107697381364098</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter21">
+        <Properties>
+          <string name="Name">Heli_SkidStrut.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>2.200000047683716</X>
+            <Y>1.9000000953674316</Y>
+            <Z>1.600000023841858</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://114204959039809</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter22">
+        <Properties>
+          <string name="Name">Heli_Skid.001</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.25999999046325684</X>
+            <Y>0.26000022888183594</Y>
+            <Z>7</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.25999999046325684</X>
+            <Y>0.26000022888183594</Y>
+            <Z>7</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.200000047683716</X>
+            <Y>1.2000000476837158</Y>
+            <Z>0</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://92944514022712</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter23">
+        <Properties>
+          <string name="Name">Heli_SkidStrut.002</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.200000047683716</X>
+            <Y>1.9000000953674316</Y>
+            <Z>-1.600000023841858</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://79071684484537</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter24">
+        <Properties>
+          <string name="Name">Heli_SkidStrut.003</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4288060064</Color3uint8>
+          <Vector3 name="size">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.14000000059604645</X>
+            <Y>1.5</Y>
+            <Z>0.14000029861927032</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>-2.200000047683716</X>
+            <Y>1.9000000953674316</Y>
+            <Z>1.600000023841858</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://126773695645109</url>
+          </Content>
+        </Properties>
+      </Item>
+      <Item class="MeshPart" referent="UtilityHelicopter25">
+        <Properties>
+          <string name="Name">Heli_TailRotor</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <bool name="CanTouch">false</bool>
+          <bool name="CanQuery">false</bool>
+          <bool name="CastShadow">true</bool>
+          <token name="Material">1088</token>
+          <Color3uint8 name="Color3uint8">4281612348</Color3uint8>
+          <Vector3 name="size">
+            <X>0.1599999964237213</X>
+            <Y>1.569777250289917</Y>
+            <Z>1.5697766542434692</Z>
+          </Vector3>
+          <Vector3 name="InitialSize">
+            <X>0.1599999964237213</X>
+            <Y>1.569777250289917</Y>
+            <Z>1.5697766542434692</Z>
+          </Vector3>
+          <CoordinateFrame name="CFrame">
+            <X>0</X>
+            <Y>4.699999809265137</Y>
+            <Z>9.199999809265137</Z>
+            <R00>1</R00>
+            <R01>0</R01>
+            <R02>0</R02>
+            <R10>0</R10>
+            <R11>1</R11>
+            <R12>0</R12>
+            <R20>0</R20>
+            <R21>0</R21>
+            <R22>1</R22>
+          </CoordinateFrame>
+          <Content name="MeshId">
+            <url>rbxassetid://125413644450095</url>
+          </Content>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

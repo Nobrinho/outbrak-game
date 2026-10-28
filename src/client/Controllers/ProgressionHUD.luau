@@ -13,6 +13,7 @@ local Shared = ReplicatedStorage.Shared
 local Config = require(Shared.Config)
 local InputController = require(script.Parent.InputController)
 local Theme = require(script.Parent.Parent.UI.Theme)
+local Layout = require(script.Parent.Parent.UI.Layout)
 
 local ProgressionHUD = {}
 
@@ -28,6 +29,7 @@ local boostLabel: TextLabel
 local vipPanel: Frame
 local packButton: TextButton
 local boostButton: TextButton
+local progressSummary: TextLabel
 
 local function number(name: string, default: number): number
 	local value = player:GetAttribute(name)
@@ -38,13 +40,18 @@ local function buildBadge()
 	badge = Instance.new("Frame")
 	badge.Name = "Level"
 	badge.Position = UDim2.fromOffset(16, 160)
-	badge.Size = UDim2.fromOffset(170, 40)
+	badge.Size = UDim2.fromOffset(210, 40)
 	Theme.panel(badge)
 	badge.Parent = screen
 
+	Theme.image(badge, "ui.icons.xp", {
+		Position = UDim2.fromOffset(8, 5),
+		Size = UDim2.fromOffset(16, 16),
+		ImageColor3 = Theme.COLOR.accent,
+	})
 	levelLabel = Theme.text(badge, "heavy", {
-		Position = UDim2.fromOffset(12, 3),
-		Size = UDim2.new(1, -20, 0, 20),
+		Position = UDim2.fromOffset(30, 3),
+		Size = UDim2.new(1, -38, 0, 20),
 		TextXAlignment = Enum.TextXAlignment.Left,
 	})
 	local back = Instance.new("Frame")
@@ -120,12 +127,12 @@ local function buildVip()
 	vipPanel.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 1.5
-	aspect.Parent = vipPanel
+	aspect:Destroy()
 
 	Theme.text(vipPanel, "display", {
 		Position = UDim2.fromScale(0.06, 0.04),
 		Size = UDim2.fromScale(0.7, 0.14),
-		Text = "VIP",
+		Text = "PROGRESSÃO",
 		TextColor3 = Theme.COLOR.accent,
 		TextXAlignment = Enum.TextXAlignment.Left,
 	})
@@ -140,21 +147,26 @@ local function buildVip()
 		setVipOpen(false)
 	end)
 
+	progressSummary = Theme.text(vipPanel, "heavy", {
+		Position = UDim2.fromScale(0.06, 0.19),
+		Size = UDim2.fromScale(0.88, 0.07),
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
 	packButton = offerRow(
 		vipPanel,
-		0.26,
+		0.30,
 		"PACOTE DO SOBREVIVENTE",
 		"Armas douradas e um rastro. Só visual — nada de vantagem."
 	)
 	boostButton = offerRow(
 		vipPanel,
-		0.56,
+		0.60,
 		"BOOST 2x XP — 1 HORA",
 		"Dobra o XP de conta. Acumula se comprar de novo."
 	)
 	Theme.text(vipPanel, "label", {
-		Position = UDim2.fromScale(0.06, 0.86),
-		Size = UDim2.fromScale(0.88, 0.08),
+		Position = UDim2.fromScale(0.06, 0.9),
+		Size = UDim2.fromScale(0.88, 0.06),
 		Text = "Nada à venda aumenta dano, vida ou dá armas exclusivas.",
 		TextColor3 = Theme.COLOR.muted,
 	})
@@ -187,19 +199,19 @@ end
 local function update()
 	local calm = outOfCombat()
 	badge.Visible = calm
-	vipButton.Visible = calm
-	if not calm and vipPanel.Visible then
-		setVipOpen(false)
-	end
+		and not ReplicatedStorage:FindFirstChild("Match")
+		and not InputController.isModalOpen()
+	vipButton.Visible = false
 	local level = number("Level", 1)
 	local progress = number("LevelXP", 0)
 	local needed = math.max(1, number("LevelXPNeeded", 100))
 	levelLabel.Text = `NÍVEL {level}   {math.floor(progress)} / {needed} XP`
+	progressSummary.Text = levelLabel.Text
 	xpFill.Size = UDim2.fromScale(math.clamp(progress / needed, 0, 1), 1)
 
 	-- BoostUntil is os.time() on the server; server time on the client is the same clock.
 	local boostLeft = number("BoostUntil", 0) - workspace:GetServerTimeNow()
-	boostLabel.Visible = calm and boostLeft > 0
+	boostLabel.Visible = badge.Visible and boostLeft > 0
 	if boostLeft > 0 then
 		boostLabel.Text = "2x XP — " .. clock(boostLeft)
 	end
@@ -209,34 +221,49 @@ local function update()
 		then "EM BREVE"
 		elseif owned then "ATIVO"
 		else "COMPRAR"
-	packButton.AutoButtonColor = M.survivorPackId ~= 0 and not owned
+	packButton.AutoButtonColor = false
+	packButton:SetAttribute("AssetDisabled", M.survivorPackId == 0 or owned)
+	packButton.TextColor3 = if M.survivorPackId == 0 or owned
+		then Theme.COLOR.text
+		else Theme.COLOR.panel
 	boostButton.Text = if M.xpBoostProductId == 0 then "EM BREVE" else "COMPRAR"
-	boostButton.AutoButtonColor = M.xpBoostProductId ~= 0
+	boostButton.AutoButtonColor = false
+	boostButton:SetAttribute("AssetDisabled", M.xpBoostProductId == 0)
+	boostButton.TextColor3 = if M.xpBoostProductId == 0 then Theme.COLOR.text else Theme.COLOR.panel
 end
 
 function ProgressionHUD.init()
 	screen = Instance.new("ScreenGui")
 	screen.Name = "ProgressionHUD"
-	screen.ResetOnSpawn = false
-	screen.IgnoreGuiInset = true
-	screen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-	screen.DisplayOrder = 4
+	Layout.configure(screen, 40)
 	buildBadge()
 	buildVip()
-	-- Build tag in the corner so testers can say which version they played.
-	Theme.text(screen, "label", {
-		AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, -8, 1, -4),
-		Size = UDim2.fromOffset(160, 14),
-		Text = "build " .. Config.BUILD,
-		TextColor3 = Theme.COLOR.muted,
-		TextTransparency = 0.3,
-		TextXAlignment = Enum.TextXAlignment.Right,
-	})
+	InputController.registerModal("VIP", function()
+		setVipOpen(false)
+	end)
+	InputController.panelRequested:connect(function(name)
+		if name == "Progression" then
+			setVipOpen(true)
+		end
+	end)
 end
 
 function ProgressionHUD.start()
 	screen.Parent = player:WaitForChild("PlayerGui")
+	Layout.bind(screen, function(m)
+		badge.AnchorPoint = Vector2.new(0, 1)
+		badge.Position = UDim2.new(0, 12, 1, if m.touch then -m.vitalsBottom else -16)
+		badge.Size = UDim2.fromOffset(if m.touch then 190 else 240, 48)
+		boostLabel.AnchorPoint = Vector2.new(0, 1)
+		boostLabel.Position = UDim2.new(0, 12, 1, if m.touch then -m.vitalsBottom - 52 else -70)
+		vipPanel.Size = UDim2.fromOffset(math.min(620, m.size.X - 24), math.min(440, m.size.Y - 20))
+	end)
+	local match = ReplicatedStorage:FindFirstChild("Match")
+	if match then
+		match:GetAttributeChangedSignal("Phase"):Connect(function()
+			setVipOpen(false)
+		end)
+	end
 	RunService.RenderStepped:Connect(update)
 end
 

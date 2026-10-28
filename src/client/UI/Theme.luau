@@ -4,22 +4,14 @@
 -- display face for announcements (Bangers). Every HUD builds its panels and text through here.
 
 local Theme = {}
+local Tokens = require(script.Parent.Tokens)
+local AssetView = require(script.Parent.AssetView)
 
-Theme.COLOR = table.freeze({
-	panel = Color3.fromRGB(16, 16, 20),
-	text = Color3.fromRGB(236, 232, 222),
-	muted = Color3.fromRGB(160, 156, 148),
-	accent = Color3.fromRGB(255, 204, 0), -- interactive / economy
-	danger = Color3.fromRGB(220, 40, 40),
-	player = Color3.fromRGB(0, 200, 230),
-	fire = Color3.fromRGB(255, 140, 20),
-})
-
-Theme.FONT = table.freeze({
-	label = Font.new("rbxasset://fonts/families/Oswald.json", Enum.FontWeight.Medium),
-	heavy = Font.new("rbxasset://fonts/families/Oswald.json", Enum.FontWeight.Bold),
-	display = Font.new("rbxasset://fonts/families/Bangers.json"),
-})
+Theme.TOKENS = Tokens
+Theme.COLOR = Tokens.color
+Theme.FONT = Tokens.font
+Theme.image = AssetView.image
+Theme.skinButton = AssetView.button
 
 export type TextStyle = "label" | "heavy" | "display"
 
@@ -30,7 +22,7 @@ function Theme.text(parent: Instance, style: TextStyle, props: { [string]: any }
 	l.TextColor3 = Theme.COLOR.text
 	l.FontFace = Theme.FONT[style]
 	l.TextScaled = true
-	l.TextStrokeTransparency = 0.75
+	l.TextStrokeTransparency = Tokens.transparency.textStroke
 	for key, value in props do
 		(l :: any)[key] = value
 	end
@@ -41,19 +33,26 @@ end
 -- Styles a frame as a HUD panel: dark glass, thin light edge and the yellow corner tab.
 function Theme.panel(frame: GuiObject, transparency: number?)
 	frame.BackgroundColor3 = Theme.COLOR.panel
-	frame.BackgroundTransparency = transparency or 0.3
+	frame.BackgroundTransparency = transparency or Tokens.transparency.hud
 	frame.BorderSizePixel = 0
 	frame.ClipsDescendants = true
+	AssetView.slice(
+		frame,
+		if (transparency or Tokens.transparency.hud) <= 0.15
+			then "ui.panels.modal"
+			else "ui.panels.hud",
+		transparency
+	)
 
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 4)
+	corner.CornerRadius = UDim.new(0, Tokens.geometry.radius)
 	corner.Parent = frame
 
 	local stroke = Instance.new("UIStroke")
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Color = Theme.COLOR.text
-	stroke.Transparency = 0.85
-	stroke.Thickness = 1
+	stroke.Transparency = Tokens.transparency.edge
+	stroke.Thickness = Tokens.geometry.stroke
 	stroke.Parent = frame
 
 	-- A square turned 45° and clipped by the panel reads as a cut, highlighted corner.
@@ -61,7 +60,7 @@ function Theme.panel(frame: GuiObject, transparency: number?)
 	tab.Name = "CornerTab"
 	tab.AnchorPoint = Vector2.new(0.5, 0.5)
 	tab.Position = UDim2.fromOffset(0, 0)
-	tab.Size = UDim2.fromOffset(16, 16)
+	tab.Size = UDim2.fromOffset(Tokens.geometry.cornerTab, Tokens.geometry.cornerTab)
 	tab.Rotation = 45
 	tab.BackgroundColor3 = Theme.COLOR.accent
 	tab.BorderSizePixel = 0
@@ -70,15 +69,18 @@ function Theme.panel(frame: GuiObject, transparency: number?)
 end
 
 -- Big action button (shop, class cards): yellow fill, dark heavy text.
-function Theme.button(button: TextButton)
-	button.BackgroundColor3 = Theme.COLOR.accent
-	button.TextColor3 = Theme.COLOR.panel
+function Theme.button(button: TextButton, family: string?)
+	button.BackgroundColor3 = if family == "secondary"
+		then Theme.COLOR.surface
+		else Theme.COLOR.accent
+	button.TextColor3 = if family == "secondary" then Theme.COLOR.text else Theme.COLOR.panel
 	button.FontFace = Theme.FONT.heavy
 	button.TextScaled = true
 	button.AutoButtonColor = true
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 4)
+	corner.CornerRadius = UDim.new(0, Tokens.geometry.radius)
 	corner.Parent = button
+	AssetView.button(button, family or "primary")
 end
 
 return Theme

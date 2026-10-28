@@ -1,0 +1,1244 @@
+{
+  "version": "0.1",
+  "published": true,
+  "image_ids": {
+    "ui.icons.ammo": 97243113556282,
+    "ui.buttons.primary-normal": 106458604108814,
+    "ui.icons.interact": 133519777132674,
+    "ui.icons.trophy": 84555181167536,
+    "marketing.outbreak-cover-v1": 135053658234557,
+    "ui.icons.check": 76892908173750,
+    "ui.icons.camp": 81142378868127,
+    "ui.icons.skull": 130276061589305,
+    "ui.icons.farm": 73975336440404,
+    "ui.icons.melee": 96738322402007,
+    "ui.icons.helipad": 135805558779241,
+    "ui.icons.turret": 113318263850627,
+    "ui.icons.timer": 87456773526774,
+    "ui.icons.fire": 95522562347438,
+    "ui.icons.gunslinger": 95908302038926,
+    "backgrounds.hub-loading-v1": 99721427189963,
+    "ui.icons.helicopter": 92554080172324,
+    "ui.icons.wave": 77574317565358,
+    "ui.icons.aim": 84219121987173,
+    "ui.icons.sound": 90770627546823,
+    "ui.icons.reload": 125058196404786,
+    "ui.icons.xp": 123225944048028,
+    "ui.icons.shield": 127196176140284,
+    "ui.icons.jump": 70418246264056,
+    "ui.icons.close": 94816822417754,
+    "ui.icons.exterminator": 139810766766094,
+    "ui.icons.repair": 100801134961014,
+    "ui.icons.lock": 127108017373907,
+    "marketing.outbreak-icon-v1": 102714639286344,
+    "ui.icons.grenade": 116471479401430,
+    "ui.icons.shop": 71357201039072,
+    "ui.icons.health": 138699493277793,
+    "ui.icons.credits": 108182117605308,
+    "ui.icons.back": 122470377652993,
+    "ui.icons.menu": 116441949381279,
+    "ui.icons.players": 79021447715274,
+    "ui.icons.warning": 101883588709469,
+    "ui.icons.settings": 79340032617968,
+    "ui.buttons.primary-disabled": 108599932978859,
+    "vfx.spark": 128800549522476,
+    "weapons.Rifle": 105057412784133,
+    "vfx.soft-particle": 121706136586710,
+    "ui.buttons.primary-focused": 73529123067654,
+    "vfx.muzzle-flash": 83151065164502,
+    "weapons.AK47": 132444785103734,
+    "weapons.SMG": 128044431512365,
+    "weapons.Shotgun": 72472513208480,
+    "ui.buttons.touch-normal": 126451580831412,
+    "ui.buttons.secondary-normal": 98817414788940,
+    "ui.panels.warning": 114231056779745,
+    "weapons.Bat": 108573527061645,
+    "ui.buttons.primary-hover": 104668763319743,
+    "weapons.Turret": 88591405580516,
+    "ui.buttons.primary-pressed": 115927684229871,
+    "ui.buttons.secondary-disabled": 108599932978859,
+    "weapons.Grenade": 118706572369369,
+    "weapons.Medkit": 105930538239827,
+    "ui.buttons.touch-focused": 133949273198429,
+    "vfx.smoke": 134409641596767,
+    "ui.buttons.secondary-focused": 81405821680551,
+    "ui.buttons.secondary-hover": 122915444159571,
+    "ui.buttons.touch-disabled": 86826259548698,
+    "ui.panels.hud": 139473246209273,
+    "ui.buttons.secondary-pressed": 79161754039517,
+    "weapons.Pistol": 120409691072080,
+    "ui.panels.modal": 139473246209273,
+    "weapons.Knife": 88964023912486,
+    "ui.buttons.touch-pressed": 88872093429833,
+    "ui.buttons.touch-hover": 88872093429833
+  },
+  "assets": [
+    {
+      "key": "backgrounds.hub-loading-v1",
+      "path": "assets/game/backgrounds/hub-loading-v1.png",
+      "bytes": 2145901,
+      "sha256": "562320dd26403893e0583625db8b4171c6054675c05669c8ee81fc08f4bc3924",
+      "status": "uploaded",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "robloxId": 99721427189963
+    },
+    {
+      "key": "characters.zombie-front-back-v1",
+      "path": "assets/game/characters/zombie-front-back-v1.png",
+      "bytes": 1842589,
+      "sha256": "c47f974a02bdbf1a1daf30f83126215b6b7efd0ac47b2a2bc711485be5d83032",
+      "status": "local-ready-not-uploaded",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB"
+    },
+    {
+      "key": "hub.DestinationSign",
+      "path": "assets/game/hub/DestinationSign.fbx",
+      "bytes": 25356,
+      "sha256": "7f6351f8ac2cd5c0a3743f6138420cf6a23d1ac9a7584a73b2e2bb55ad22fa2c",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.DestinationSign",
+      "path": "assets/game/hub/DestinationSign.png",
+      "bytes": 127890,
+      "sha256": "654f1339bcd3cbb70d60dcf3486fd67b2df796f50aca4b43b368b8d5f70fd671",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.FieldTent",
+      "path": "assets/game/hub/FieldTent.fbx",
+      "bytes": 34588,
+      "sha256": "3aabf146ca159ae2d9f47d9b9a846c0049d02b5dd0b92999b5e1340dccfb954e",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.FieldTent",
+      "path": "assets/game/hub/FieldTent.png",
+      "bytes": 133669,
+      "sha256": "b159df9ec2586d48c1e724cb4b901d2698fa2205a9d6cb2c9ac520df2a05fc24",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.Floodlight",
+      "path": "assets/game/hub/Floodlight.fbx",
+      "bytes": 26156,
+      "sha256": "71d1b24014ab5834775883f2650e3c2d0b56ba357751207bc1f207d3ba4f2c1e",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.Floodlight",
+      "path": "assets/game/hub/Floodlight.png",
+      "bytes": 104945,
+      "sha256": "3e248153c8ff98d3bdf66753bbbe0489d11ca258bf867282e062b6e9f003d047",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.Helipad",
+      "path": "assets/game/hub/Helipad.fbx",
+      "bytes": 111932,
+      "sha256": "912a717c8ac42f7d7938ab4a8344848f3cda93647a5711d180d43fa6ff1d3cb9",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.Helipad",
+      "path": "assets/game/hub/Helipad.png",
+      "bytes": 106202,
+      "sha256": "a31aaa7c0008c4489f24eaeb578642b584f537ab4b815b661a917cc14359e312",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.SandbagWall",
+      "path": "assets/game/hub/SandbagWall.fbx",
+      "bytes": 51372,
+      "sha256": "0fedcb0744a4e8992a7bcda3cfa14a57a334c8a0adfcddae3365e5c1f506c4c6",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.SandbagWall",
+      "path": "assets/game/hub/SandbagWall.png",
+      "bytes": 135955,
+      "sha256": "4f6ccf29edb50adb85144322a674ea15bae232ae5b29288442fd6c9737cb8636",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.SupplyCrate",
+      "path": "assets/game/hub/SupplyCrate.fbx",
+      "bytes": 25388,
+      "sha256": "ec867c89bf3848988255a76fb3701b26646ca8815a34934991e1956514ddf998",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.SupplyCrate",
+      "path": "assets/game/hub/SupplyCrate.png",
+      "bytes": 183456,
+      "sha256": "4b045de32e853fbf66544b4a8dc54c3dd25b1f0d3214d1dc1842afb1bd22a231",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.UtilityHelicopter",
+      "path": "assets/game/hub/UtilityHelicopter.fbx",
+      "bytes": 86396,
+      "sha256": "aebfc38fe991f12f28e0c71a3223b8f01757ab8a956d7dfd58c39445e844358f",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.UtilityHelicopter",
+      "path": "assets/game/hub/UtilityHelicopter.png",
+      "bytes": 144935,
+      "sha256": "1ca93f2f42776b9cc8a9780c1d623e8bb160c266e9aba0e6a006dd4d10f37ff6",
+      "status": "local-ready-not-uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA"
+    },
+    {
+      "key": "hub.hub-and-equipment",
+      "path": "assets/game/hub/hub-and-equipment.blend",
+      "bytes": 149012,
+      "sha256": "6d3114eab89244f75bc259ba7e8b1b174e95ca386fc7668aef3316801317d9d8",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "hub.outbreak-kit-import",
+      "path": "assets/game/hub/outbreak-kit-import.fbx",
+      "bytes": 319388,
+      "sha256": "bf88905ae49ce1ee9372124ee497ca13588d2b0ca132ce926223223818a2d57e",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "marketing.outbreak-cover-v1",
+      "path": "assets/game/marketing/outbreak-cover-v1.png",
+      "bytes": 2260784,
+      "sha256": "701b1b19f8741d03377fe10898c2eb95fadd3c2cc892840aed248612e96f7e5a",
+      "status": "uploaded",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "robloxId": 135053658234557
+    },
+    {
+      "key": "marketing.outbreak-icon-v1",
+      "path": "assets/game/marketing/outbreak-icon-v1.png",
+      "bytes": 1915784,
+      "sha256": "d31a0fcecb5d3c7ab9d5fe4f64197b5020e9715a0d9cebfd6563ca09d99c8ca6",
+      "status": "uploaded",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "robloxId": 102714639286344
+    },
+    {
+      "key": "ui.buttons.primary-disabled",
+      "path": "assets/game/ui/buttons/primary-disabled.png",
+      "bytes": 398,
+      "sha256": "75985b65a201e50e627403e3e716a733897292b964d0c7cdf22f158f78bac611",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 108599932978859
+    },
+    {
+      "key": "ui.buttons.primary-focused",
+      "path": "assets/game/ui/buttons/primary-focused.png",
+      "bytes": 536,
+      "sha256": "b8d57f50df73df1255f27e65d26a4e1916515b2ada5b3d59731793171356e186",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 73529123067654
+    },
+    {
+      "key": "ui.buttons.primary-hover",
+      "path": "assets/game/ui/buttons/primary-hover.png",
+      "bytes": 406,
+      "sha256": "0fbff690a3ddbad64786452f70f3ec4815a2414bacf8cf0d923f57cc3b92ef4d",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 104668763319743
+    },
+    {
+      "key": "ui.buttons.primary-normal",
+      "path": "assets/game/ui/buttons/primary-normal.png",
+      "bytes": 362,
+      "sha256": "d668a1a7ecdc56fc160ef7b229b03618e7d353f3bfee917db68cd2126b5da2fa",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 106458604108814
+    },
+    {
+      "key": "ui.buttons.primary-pressed",
+      "path": "assets/game/ui/buttons/primary-pressed.png",
+      "bytes": 389,
+      "sha256": "b8a373eb9baac745980ae3a6dbd1b0dabbf961a42d07d32a3e81787204dc6d03",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 115927684229871
+    },
+    {
+      "key": "ui.buttons.secondary-disabled",
+      "path": "assets/game/ui/buttons/secondary-disabled.png",
+      "bytes": 398,
+      "sha256": "75985b65a201e50e627403e3e716a733897292b964d0c7cdf22f158f78bac611",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 108599932978859
+    },
+    {
+      "key": "ui.buttons.secondary-focused",
+      "path": "assets/game/ui/buttons/secondary-focused.png",
+      "bytes": 529,
+      "sha256": "4f64d0fff28ab5672b9e2f36496ac8b2507cc17833ad40429356312ce360b32c",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 81405821680551
+    },
+    {
+      "key": "ui.buttons.secondary-hover",
+      "path": "assets/game/ui/buttons/secondary-hover.png",
+      "bytes": 371,
+      "sha256": "337a32e5778a34e4325643ad07d33c69660892c8b4ed455ba89c7df5a8846c63",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 122915444159571
+    },
+    {
+      "key": "ui.buttons.secondary-normal",
+      "path": "assets/game/ui/buttons/secondary-normal.png",
+      "bytes": 376,
+      "sha256": "b392e47373dd46506527e912123dec9e60cbab6a57ca5fec5c350d08fb80fa7c",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 98817414788940
+    },
+    {
+      "key": "ui.buttons.secondary-pressed",
+      "path": "assets/game/ui/buttons/secondary-pressed.png",
+      "bytes": 370,
+      "sha256": "f789fdc0b056cd3530d94f5eda5cfddbdbdd91ebd8f49e89b2631ebb144c62d5",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 79161754039517
+    },
+    {
+      "key": "ui.buttons.touch-disabled",
+      "path": "assets/game/ui/buttons/touch-disabled.png",
+      "bytes": 702,
+      "sha256": "371e44754c03f44811da620831b3a869d749f1c9e020a81e4e0f6edce7bda8dc",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 86826259548698
+    },
+    {
+      "key": "ui.buttons.touch-focused",
+      "path": "assets/game/ui/buttons/touch-focused.png",
+      "bytes": 795,
+      "sha256": "58d1af2daa175523d4df4fad68db3e8b711b874234b3107ded9c8917365bd28d",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 133949273198429
+    },
+    {
+      "key": "ui.buttons.touch-hover",
+      "path": "assets/game/ui/buttons/touch-hover.png",
+      "bytes": 669,
+      "sha256": "c335753f27246e1641af287d4533198793e5f22ef5f16fbae6d64d1303850a3f",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 88872093429833
+    },
+    {
+      "key": "ui.buttons.touch-normal",
+      "path": "assets/game/ui/buttons/touch-normal.png",
+      "bytes": 649,
+      "sha256": "d5ab94eec0471c9f2d7a7d40f22691120ef2096b026df8c1c20ede672a47c80e",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 126451580831412
+    },
+    {
+      "key": "ui.buttons.touch-pressed",
+      "path": "assets/game/ui/buttons/touch-pressed.png",
+      "bytes": 669,
+      "sha256": "c335753f27246e1641af287d4533198793e5f22ef5f16fbae6d64d1303850a3f",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 88872093429833
+    },
+    {
+      "key": "ui.icons.aim",
+      "path": "assets/game/ui/icons/aim.png",
+      "bytes": 1925,
+      "sha256": "e90cb039c03b623bc08e1a550c2974b965c2b8667be920380db87ecd5170eb55",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 84219121987173
+    },
+    {
+      "key": "ui.icons.aim",
+      "path": "assets/game/ui/icons/aim.svg",
+      "bytes": 473,
+      "sha256": "726b699c79ca547c3e00d5312f7e810dc9b891b4c12b8a6849e23e0b9678bf12",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.ammo",
+      "path": "assets/game/ui/icons/ammo.png",
+      "bytes": 1027,
+      "sha256": "c6bee2aac873b6432505bc393a47a02905a9bed0a37f090ec6654094c0c9cfc0",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 97243113556282
+    },
+    {
+      "key": "ui.icons.ammo",
+      "path": "assets/game/ui/icons/ammo.svg",
+      "bytes": 564,
+      "sha256": "33fb1c7f53197280598e3cb605469e8f6a901105934136d6bf9b2f3fea89b753",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.back",
+      "path": "assets/game/ui/icons/back.png",
+      "bytes": 1311,
+      "sha256": "452e07fcc5f6fd95e172d180d9fa16e213508783d69da3b300763f0c4e4f33d5",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 122470377652993
+    },
+    {
+      "key": "ui.icons.back",
+      "path": "assets/game/ui/icons/back.svg",
+      "bytes": 239,
+      "sha256": "cec7c1b38852b5aaf8af69c654ac14d832f18fc02f578aef7e31f2daefac9b39",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.camp",
+      "path": "assets/game/ui/icons/camp.png",
+      "bytes": 1952,
+      "sha256": "31b54b2d648d69bd66e18e1d06a985e3e522694337152fee749c3c45d4d7b768",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 81142378868127
+    },
+    {
+      "key": "ui.icons.camp",
+      "path": "assets/game/ui/icons/camp.svg",
+      "bytes": 348,
+      "sha256": "683b114c9580ec316be4073e0d1c85e08bf6e28dfcdc47cd66a2b7324e26c843",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.check",
+      "path": "assets/game/ui/icons/check.png",
+      "bytes": 1332,
+      "sha256": "82a0b22314525f9fe366b3e18fa49ee0ec8685b02a5a4781a9c036d8af7ce550",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 76892908173750
+    },
+    {
+      "key": "ui.icons.check",
+      "path": "assets/game/ui/icons/check.svg",
+      "bytes": 239,
+      "sha256": "9c150626d7971e9c969e42f86102a87d942a8256cba1b3e2455eb65d65b03882",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.close",
+      "path": "assets/game/ui/icons/close.png",
+      "bytes": 1591,
+      "sha256": "bd8d44fb6d96eb1a5bde81fe8870cd88b4f3345a27201a53c1bd2a223842e55c",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 94816822417754
+    },
+    {
+      "key": "ui.icons.close",
+      "path": "assets/game/ui/icons/close.svg",
+      "bytes": 283,
+      "sha256": "398eeae2c17bc8f635e13bf4bbdfac3d0615a9bbfe9dc42226bb73af3fca7424",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.credits",
+      "path": "assets/game/ui/icons/credits.png",
+      "bytes": 2206,
+      "sha256": "84bf66532eb56b1fa313ea7d268537f56045c4fc4195f5275804ef399baacf21",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 108182117605308
+    },
+    {
+      "key": "ui.icons.credits",
+      "path": "assets/game/ui/icons/credits.svg",
+      "bytes": 352,
+      "sha256": "63b1a5a27cc54029e96342edb8d549f6e601dfb967d6e9282e09c05e525d5f20",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.exterminator",
+      "path": "assets/game/ui/icons/exterminator.png",
+      "bytes": 1657,
+      "sha256": "4f998ed118b7fc520cd4b9d38617591db91b0b0c8b9746efd9e4a62fd853227c",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 139810766766094
+    },
+    {
+      "key": "ui.icons.exterminator",
+      "path": "assets/game/ui/icons/exterminator.svg",
+      "bytes": 427,
+      "sha256": "3ca5f42a2a63ece18ace27759896384b13f1287a35cddd4bb21647e971c94e25",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.farm",
+      "path": "assets/game/ui/icons/farm.png",
+      "bytes": 1701,
+      "sha256": "9e5c9fe0b74c0ccbc2f1ec5b7abc82bb11ebe6551fac0078eaebc88a2b805c3e",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 73975336440404
+    },
+    {
+      "key": "ui.icons.farm",
+      "path": "assets/game/ui/icons/farm.svg",
+      "bytes": 399,
+      "sha256": "6b9ada6936466993c7b5f6a91adfc395e59b31537ef853aca32c4fff4e3d6eff",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.fire",
+      "path": "assets/game/ui/icons/fire.png",
+      "bytes": 2377,
+      "sha256": "74fbbe950c442bfd99fa2b828ca16c1ef0f331b972c950d4b51cf8674953deda",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 95522562347438
+    },
+    {
+      "key": "ui.icons.fire",
+      "path": "assets/game/ui/icons/fire.svg",
+      "bytes": 359,
+      "sha256": "5afa1ea446d87e1d1a8f75e2ba4c6de1b20479c82d548ec8246574d1cd340661",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.grenade",
+      "path": "assets/game/ui/icons/grenade.png",
+      "bytes": 2041,
+      "sha256": "a7ced9b3b9e99e0a3b7802a13223da660449c336577a6c1db7ee4ced9af9f8c1",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 116471479401430
+    },
+    {
+      "key": "ui.icons.grenade",
+      "path": "assets/game/ui/icons/grenade.svg",
+      "bytes": 348,
+      "sha256": "1b27d525e367fe5951d6a8ef9c59c47d8531cf148e88b7bf0b337b0f3d4b9d94",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.gunslinger",
+      "path": "assets/game/ui/icons/gunslinger.png",
+      "bytes": 2230,
+      "sha256": "96eb8f0a64c1c5f42868588e188c6e455e4335b8608c2ce755798af284767860",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 95908302038926
+    },
+    {
+      "key": "ui.icons.gunslinger",
+      "path": "assets/game/ui/icons/gunslinger.svg",
+      "bytes": 485,
+      "sha256": "448f4450dbed0fdfee29e01959a890c41b2bca3a70be1a53310ef094f4ae2528",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.health",
+      "path": "assets/game/ui/icons/health.png",
+      "bytes": 735,
+      "sha256": "66fbd20a4921f462323192e6854f103555884cf26e47788dad693305efe0af30",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 138699493277793
+    },
+    {
+      "key": "ui.icons.health",
+      "path": "assets/game/ui/icons/health.svg",
+      "bytes": 327,
+      "sha256": "bf3855edfe23d9c404cfbb5506c2f47515707e7329850a0f26786730b0428ffd",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.helicopter",
+      "path": "assets/game/ui/icons/helicopter.png",
+      "bytes": 1430,
+      "sha256": "12b769097d9090ef056dd1aa3b9faba0bcf0e834d90876a8a31159af5821a7b5",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 92554080172324
+    },
+    {
+      "key": "ui.icons.helicopter",
+      "path": "assets/game/ui/icons/helicopter.svg",
+      "bytes": 529,
+      "sha256": "7383e088e2eab4ee0c18761de0131a769f33b1f9331cd6e491ef67c47376fc12",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.helipad",
+      "path": "assets/game/ui/icons/helipad.png",
+      "bytes": 1892,
+      "sha256": "3bbed230ff481d61dbc42547c7dc0cd464db44d9cc6bee1d070231b14300e400",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 135805558779241
+    },
+    {
+      "key": "ui.icons.helipad",
+      "path": "assets/game/ui/icons/helipad.svg",
+      "bytes": 366,
+      "sha256": "b2d3e25ccadf9753621b44a7d4f0b5c60374321b5bbb73e2474582d902867236",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.interact",
+      "path": "assets/game/ui/icons/interact.png",
+      "bytes": 1903,
+      "sha256": "d91f616ee22b8c8db8d8588d87c0f4ea68a3d5ef9b68fdf22ab4c91264550557",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 133519777132674
+    },
+    {
+      "key": "ui.icons.interact",
+      "path": "assets/game/ui/icons/interact.svg",
+      "bytes": 275,
+      "sha256": "82100043009b4b32bbd74ca74c904827ab26bac36be5c74ab613595845bfa9e1",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.jump",
+      "path": "assets/game/ui/icons/jump.png",
+      "bytes": 1372,
+      "sha256": "cba91bc69b38f6a2591880f604ce3bd845611250ddff5063c0dc998342ef2fcd",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 70418246264056
+    },
+    {
+      "key": "ui.icons.jump",
+      "path": "assets/game/ui/icons/jump.svg",
+      "bytes": 339,
+      "sha256": "21bda407d9d264280393ffa8bbb99871673bb710f7a70bb266893f99f3e9e09f",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.lock",
+      "path": "assets/game/ui/icons/lock.png",
+      "bytes": 1102,
+      "sha256": "cfffad646c3172f314ff1df0428d5e6231c3db55731a8275dcac2b93d8f39ca9",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 127108017373907
+    },
+    {
+      "key": "ui.icons.lock",
+      "path": "assets/game/ui/icons/lock.svg",
+      "bytes": 411,
+      "sha256": "9a10bdb950d3e5c3f68a19a1dcc0db133c709ad134c34fdf7cf867716a4dee75",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.melee",
+      "path": "assets/game/ui/icons/melee.png",
+      "bytes": 1619,
+      "sha256": "bf5a26542036bb80a7b00e3783e04799634ee8b5a2107747f5f2986bdf3e7ec5",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 96738322402007
+    },
+    {
+      "key": "ui.icons.melee",
+      "path": "assets/game/ui/icons/melee.svg",
+      "bytes": 353,
+      "sha256": "bfaaac750ae862e4573155d1039d73a6d75bd858d1d90bd6c077bb99920bb4db",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.menu",
+      "path": "assets/game/ui/icons/menu.png",
+      "bytes": 659,
+      "sha256": "771c71a3712dee1a252192b2a5534759c14af47d477d2211b72667807049daa5",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 116441949381279
+    },
+    {
+      "key": "ui.icons.menu",
+      "path": "assets/game/ui/icons/menu.svg",
+      "bytes": 333,
+      "sha256": "ae4f7d4f252e118be176d43def5b38c037adf583aa9329a8d407aee457f1b26c",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.players",
+      "path": "assets/game/ui/icons/players.png",
+      "bytes": 1880,
+      "sha256": "f58827a05b09946cc225ceeb1e54dd1ce9293309e370b37e1079c99242376938",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 79021447715274
+    },
+    {
+      "key": "ui.icons.players",
+      "path": "assets/game/ui/icons/players.svg",
+      "bytes": 411,
+      "sha256": "7c3b04418647857c88a08783898a1d5fdff6c518c5b216000d20ebb0d24bc5af",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.reload",
+      "path": "assets/game/ui/icons/reload.png",
+      "bytes": 1841,
+      "sha256": "d5a7ed6b1965a91851e58e98d3089678b448720ec2a2fb0ae093d53d2ebe2443",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 125058196404786
+    },
+    {
+      "key": "ui.icons.reload",
+      "path": "assets/game/ui/icons/reload.svg",
+      "bytes": 340,
+      "sha256": "1079986f7090fdc3e21c11fa9bca8c1f810b7f7781999bb6c44788f90243448c",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.repair",
+      "path": "assets/game/ui/icons/repair.png",
+      "bytes": 1983,
+      "sha256": "9d95ada5a2c45cf99ac8fabda0f18a2b317cafe9f9e7cb620c43dbc08ea7e4ab",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 100801134961014
+    },
+    {
+      "key": "ui.icons.repair",
+      "path": "assets/game/ui/icons/repair.svg",
+      "bytes": 302,
+      "sha256": "9779f36936f255e09f9e47f5b51f2aff0cf17f12ef590b168f7ce6454faef853",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.settings",
+      "path": "assets/game/ui/icons/settings.png",
+      "bytes": 2293,
+      "sha256": "3afa2ead14d9dcc862d15d2c627c61043274e013137d3d95865e568999257bf8",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 79340032617968
+    },
+    {
+      "key": "ui.icons.settings",
+      "path": "assets/game/ui/icons/settings.svg",
+      "bytes": 646,
+      "sha256": "08de19f282409b0383081ce082925c62ff69f2576630ef409dfe10b377906a8f",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.shield",
+      "path": "assets/game/ui/icons/shield.png",
+      "bytes": 1783,
+      "sha256": "971b1fd7c0919c8bf3fbc5ca1d6337991bbddabf9cb5382244be3ba6e4ee2fb9",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 127196176140284
+    },
+    {
+      "key": "ui.icons.shield",
+      "path": "assets/game/ui/icons/shield.svg",
+      "bytes": 274,
+      "sha256": "37ed6a3153866bd2565a3b06c02df19bb82a3d6328c12d179359b2c21a85140f",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.shop",
+      "path": "assets/game/ui/icons/shop.png",
+      "bytes": 1110,
+      "sha256": "ad0e69b663573fad40d365069cfc8440aa89d540e592fead2394f6af8301a455",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 71357201039072
+    },
+    {
+      "key": "ui.icons.shop",
+      "path": "assets/game/ui/icons/shop.svg",
+      "bytes": 339,
+      "sha256": "df3e767c58e2985625cc8bfd8e8d859139c64ebec23bb04e64264dea02492c68",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.skull",
+      "path": "assets/game/ui/icons/skull.png",
+      "bytes": 1729,
+      "sha256": "f11800799954ebc3b6f0c66a274ff755a5f45f681b762bf1fc7a0341c60b1b1a",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 130276061589305
+    },
+    {
+      "key": "ui.icons.skull",
+      "path": "assets/game/ui/icons/skull.svg",
+      "bytes": 592,
+      "sha256": "cc12902c4b9c3f630c8cf3460288cebb5d3c4e3f83c7c7027fcb76607f0dd1e0",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.sound",
+      "path": "assets/game/ui/icons/sound.png",
+      "bytes": 1825,
+      "sha256": "d3e7fc2a1fa8188ebd62a2cda1d504242165d64bc00cfdc697bab67583074b77",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 90770627546823
+    },
+    {
+      "key": "ui.icons.sound",
+      "path": "assets/game/ui/icons/sound.svg",
+      "bytes": 387,
+      "sha256": "fca582967eab1594d90616347b04d696b8cf318e249c70e62d8d41733a444d2d",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.timer",
+      "path": "assets/game/ui/icons/timer.png",
+      "bytes": 1875,
+      "sha256": "44478838cf553961419e634891d740a1832e86901f0e15ad248b6bb6184c371a",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 87456773526774
+    },
+    {
+      "key": "ui.icons.timer",
+      "path": "assets/game/ui/icons/timer.svg",
+      "bytes": 413,
+      "sha256": "d03791267bfb9785793fe1dff67abcc0583d1222e2a8841acfe66d515dfa1e05",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.trophy",
+      "path": "assets/game/ui/icons/trophy.png",
+      "bytes": 1411,
+      "sha256": "bfc94c58499b5c666756ba68f54374b13eeaede0dfbe54b14b91bc2e9b029b30",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 84555181167536
+    },
+    {
+      "key": "ui.icons.trophy",
+      "path": "assets/game/ui/icons/trophy.svg",
+      "bytes": 449,
+      "sha256": "ad6dc89c7c9ae5b11c8c9e34c0b498c1f4f5a79c32460a66f608bfd181f68ed8",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.turret",
+      "path": "assets/game/ui/icons/turret.png",
+      "bytes": 1263,
+      "sha256": "db4898adce5bc36107cee2229b15926601f8a766139b661fd0420513ec5cfae4",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 113318263850627
+    },
+    {
+      "key": "ui.icons.turret",
+      "path": "assets/game/ui/icons/turret.svg",
+      "bytes": 498,
+      "sha256": "5dbb3c0e0128c7b01f3b50fa10396ded9e55b75a9fd20cc895a473a83a2e7b5a",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.warning",
+      "path": "assets/game/ui/icons/warning.png",
+      "bytes": 1685,
+      "sha256": "f33303743c8b3906333b73bf60a35d8d84b444d5f92796639d56d2e068d0f618",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 101883588709469
+    },
+    {
+      "key": "ui.icons.warning",
+      "path": "assets/game/ui/icons/warning.svg",
+      "bytes": 351,
+      "sha256": "af990bd02f044d509753d6310bd1c0ddadbdd3cd0e85477cffdf02f10f3d790b",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.wave",
+      "path": "assets/game/ui/icons/wave.png",
+      "bytes": 2318,
+      "sha256": "4c8f184522bc19611c680327db5f91f891c4acec0044bcbcb2bcba589fa1c957",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 77574317565358
+    },
+    {
+      "key": "ui.icons.wave",
+      "path": "assets/game/ui/icons/wave.svg",
+      "bytes": 402,
+      "sha256": "30a85224b003a064edd877b01019b25ce086b55a294bbceacd37930b03888ff8",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.icons.xp",
+      "path": "assets/game/ui/icons/xp.png",
+      "bytes": 1707,
+      "sha256": "7bc8599e5c84bafb17c596637138e2f36e65973d234b0795c7c723e02bf34b23",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 123225944048028
+    },
+    {
+      "key": "ui.icons.xp",
+      "path": "assets/game/ui/icons/xp.svg",
+      "bytes": 288,
+      "sha256": "e2e2aea86829f57720e822f8e3dc897092492dc52479bb0f85694355f2c531c1",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "ui.panels.hud",
+      "path": "assets/game/ui/panels/hud.png",
+      "bytes": 552,
+      "sha256": "0647deaa7c42855f758a6a7534ecbde8f19cb6e22cad6403db41374003d277d7",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 139473246209273
+    },
+    {
+      "key": "ui.panels.modal",
+      "path": "assets/game/ui/panels/modal.png",
+      "bytes": 552,
+      "sha256": "0647deaa7c42855f758a6a7534ecbde8f19cb6e22cad6403db41374003d277d7",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 139473246209273
+    },
+    {
+      "key": "ui.panels.warning",
+      "path": "assets/game/ui/panels/warning.png",
+      "bytes": 531,
+      "sha256": "5228f617f12b8ea2cee310394145ec97c1a4b17c59023a456fca9b87763f14e1",
+      "status": "uploaded",
+      "width": 64,
+      "height": 64,
+      "mode": "RGBA",
+      "robloxId": 114231056779745
+    },
+    {
+      "key": "vfx.muzzle-flash",
+      "path": "assets/game/vfx/muzzle-flash.png",
+      "bytes": 9481,
+      "sha256": "f4ec0f48b49d20e2bab9fd7a8f4cebfac37e57e7c880f31aab8f4851fd6bac15",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 83151065164502
+    },
+    {
+      "key": "vfx.smoke",
+      "path": "assets/game/vfx/smoke.png",
+      "bytes": 12170,
+      "sha256": "97a2f4d04809da78052a9582515e327228dc0d77f8295b7454755eeb38cc5f03",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 134409641596767
+    },
+    {
+      "key": "vfx.soft-particle",
+      "path": "assets/game/vfx/soft-particle.png",
+      "bytes": 11012,
+      "sha256": "18cd55547171d4dbea683845b2a89001420fe9a335a28f0e081eb4a6f2d67ab2",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 121706136586710
+    },
+    {
+      "key": "vfx.spark",
+      "path": "assets/game/vfx/spark.png",
+      "bytes": 2703,
+      "sha256": "c56a3951f03b0a7ec2f04f531bc714606d7694885e5a836dbc5d6d54a4048589",
+      "status": "uploaded",
+      "width": 256,
+      "height": 256,
+      "mode": "RGBA",
+      "robloxId": 128800549522476
+    },
+    {
+      "key": "weapons.AK47",
+      "path": "assets/game/weapons/AK47.png",
+      "bytes": 104741,
+      "sha256": "636307c159d176e47246790b69da72e887e94f0256989681fc597cb8ceac43d7",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 132444785103734
+    },
+    {
+      "key": "weapons.Bat",
+      "path": "assets/game/weapons/Bat.png",
+      "bytes": 92722,
+      "sha256": "231ba9973b4cc4942169a15cbe2b96181cf05d20ca1e9febae3659b04a492e50",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 108573527061645
+    },
+    {
+      "key": "weapons.Grenade",
+      "path": "assets/game/weapons/Grenade.fbx",
+      "bytes": 23276,
+      "sha256": "2ed96292a336342f178e1a02a764a089179a3a6e74124259bb964306c4a4875f",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "weapons.Grenade",
+      "path": "assets/game/weapons/Grenade.png",
+      "bytes": 155575,
+      "sha256": "6205dc7594f2988a909623394ce24e7007c83cc6fbcbc50d204d830df4ed5dc0",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 118706572369369
+    },
+    {
+      "key": "weapons.Knife",
+      "path": "assets/game/weapons/Knife.png",
+      "bytes": 92764,
+      "sha256": "6157b0c19a0fe27da0af051986632e755acbd9dea13fbde6e651e733c284deb9",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 88964023912486
+    },
+    {
+      "key": "weapons.Medkit",
+      "path": "assets/game/weapons/Medkit.fbx",
+      "bytes": 25356,
+      "sha256": "c01dda3a6c774ef87123b48c951e06b6feeaac29b656461fa4bb8261c9a18169",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "weapons.Medkit",
+      "path": "assets/game/weapons/Medkit.png",
+      "bytes": 152750,
+      "sha256": "9c87d646319cc682801ea2f5518145933ebf7256220be83380054995b4be18cd",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 105930538239827
+    },
+    {
+      "key": "weapons.Pistol",
+      "path": "assets/game/weapons/Pistol.png",
+      "bytes": 149219,
+      "sha256": "a8479a20c799d1eda753acff47724430e15842a14bdddb858e1a691abf30f6af",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 120409691072080
+    },
+    {
+      "key": "weapons.Rifle",
+      "path": "assets/game/weapons/Rifle.png",
+      "bytes": 107200,
+      "sha256": "5afd10a0e1f9db47855eb55d8a7cc8e0dc6e88ceec8b318171cd09347acf7422",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 105057412784133
+    },
+    {
+      "key": "weapons.SMG",
+      "path": "assets/game/weapons/SMG.png",
+      "bytes": 116116,
+      "sha256": "c8866b017d7a736fd16be8e288701c29a1e72d5432ca25931ed9e34ea65eb54b",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 128044431512365
+    },
+    {
+      "key": "weapons.Shotgun",
+      "path": "assets/game/weapons/Shotgun.png",
+      "bytes": 97417,
+      "sha256": "f3f6238111b945e3669a45f1b1e63d8f950c98ed216dfa679a5fbffab9abd701",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 72472513208480
+    },
+    {
+      "key": "weapons.Turret",
+      "path": "assets/game/weapons/Turret.fbx",
+      "bytes": 35212,
+      "sha256": "3c22e2bf4a7a12bdb8446bde80ba88eec41388c0dc708beeb57e7471ec26d68d",
+      "status": "local-ready-not-uploaded"
+    },
+    {
+      "key": "weapons.Turret",
+      "path": "assets/game/weapons/Turret.png",
+      "bytes": 154203,
+      "sha256": "ef0880d6403175a71ccd4afbe07f3a5706256f695ce874e7bd14db1570144048",
+      "status": "uploaded",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "robloxId": 88591405580516
+    }
+  ],
+  "existing_3d_weapons": "assets/export/weapons.fbx",
+  "model_report": "assets/game/hub/model-report.json",
+  "notes": [
+    "Image uploads recorded in published-images.json. Non-runtime previews remain local.",
+    "107 actual imported mesh IDs in hub/published-meshes.json; portable source assets/models/OutbreakKit.rbxmx."
+  ]
+}

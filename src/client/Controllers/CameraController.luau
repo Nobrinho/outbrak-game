@@ -9,6 +9,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local InputController = require(script.Parent.InputController)
+local Settings = require(script.Parent.Parent.UI.ControlSettings)
 local Theme = require(script.Parent.Parent.UI.Theme)
 
 local CameraController = {}
@@ -26,7 +27,42 @@ local humanoid: Humanoid?
 local root: BasePart?
 local diedAt = 0
 local spectating: Humanoid?
+local savedCameraType: Enum.CameraType?
 local spectateLabel: TextLabel
+local beforeNativeRotation = CFrame.identity
+local cameraTouchMoved = false
+local collision = RaycastParams.new()
+collision.FilterType = Enum.RaycastFilterType.Exclude
+collision.RespectCanCollide = true
+local function tuneTouchRotation()
+	if not cameraTouchMoved or not InputController.isTouch() or InputController.isModalOpen() then
+		cameraTouchMoved = false
+		return
+	end
+	cameraTouchMoved = false
+	local camera = workspace.CurrentCamera
+	if camera.CameraType ~= Enum.CameraType.Custom or not humanoid then
+		return
+	end
+	local factor =
+		Settings.get(if InputController.isDown("Aim") then "aimSensitivity" else "sensitivity")
+	if factor == 1 then
+		return
+	end
+	-- Scale the rotation already produced by the native camera once. Do not apply a
+	-- second TouchMoved delta or replace Roblox movement, orbit and camera ownership.
+	local native = camera.CFrame
+	local rotation = beforeNativeRotation:Lerp(native.Rotation, factor)
+	local focus = camera.Focus.Position
+	local localFocus = native:PointToObjectSpace(focus)
+	local adjusted = CFrame.new(focus) * rotation * CFrame.new(-localFocus)
+	collision.FilterDescendantsInstances = if player.Character then { player.Character } else {}
+	local ray = workspace:Raycast(focus, adjusted.Position - focus, collision)
+	if ray then
+		adjusted = CFrame.new(ray.Position + ray.Normal * 0.25) * rotation
+	end
+	camera.CFrame = adjusted
+end
 
 local function onCharacter(character: Model)
 	local h = character:WaitForChild("Humanoid") :: Humanoid
@@ -90,16 +126,27 @@ local function updateSpectate()
 end
 
 local function step(dt: number)
+	tuneTouchRotation()
 	updateSpectate()
+	local camera = workspace.CurrentCamera
 	if InputController.isModalOpen() then
-		-- A menu is open: give the mouse back so its buttons can be clicked.
-		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-	elseif not UserInputService.TouchEnabled or UserInputService.KeyboardEnabled then
-		UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+		if not savedCameraType then
+			savedCameraType = camera.CameraType
+		end
+		camera.CameraType = Enum.CameraType.Scriptable
+	else
+		if savedCameraType then
+			camera.CameraType = savedCameraType
+			savedCameraType = nil
+		end
 	end
+	UserInputService.MouseBehavior = if InputController.isModalOpen()
+			or InputController.isTouch()
+		then Enum.MouseBehavior.Default
+		else Enum.MouseBehavior.LockCenter
 
 	local h, r = humanoid, root
-	if not (h and r) or h.Sit then
+	if not (h and r) or h.Sit or InputController.isModalOpen() then
 		return
 	end
 
@@ -131,6 +178,21 @@ function CameraController.init()
 end
 
 function CameraController.start()
+	UserInputService.TouchMoved:Connect(function(_, processed)
+		if not processed then
+			cameraTouchMoved = true
+		end
+	end)
+	InputController.cancelled:connect(function()
+		cameraTouchMoved = false
+	end)
+	RunService:BindToRenderStep(
+		"SwarmCameraBefore",
+		Enum.RenderPriority.Camera.Value - 1,
+		function()
+			beforeNativeRotation = workspace.CurrentCamera.CFrame.Rotation
+		end
+	)
 	if player.Character then
 		task.spawn(onCharacter, player.Character)
 	end

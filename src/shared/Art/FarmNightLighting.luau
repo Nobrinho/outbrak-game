@@ -6,13 +6,14 @@ local Lighting = game:GetService("Lighting")
 local FarmNightLighting = {}
 
 function FarmNightLighting.apply()
-	Lighting.ClockTime = 0.5
-	Lighting.GeographicLatitude = 32
+	-- Place the moon above the northern skyline, visible from the farm entrance.
+	Lighting.ClockTime = 22
+	Lighting.GeographicLatitude = -35
 	Lighting.Brightness = 1.7
-	Lighting.ExposureCompensation = 0.15
+	Lighting.ExposureCompensation = 0.2
 	-- Keep outdoor silhouettes readable on mobile, including when post effects are disabled.
-	Lighting.Ambient = Color3.fromRGB(52, 58, 74)
-	Lighting.OutdoorAmbient = Color3.fromRGB(74, 88, 111)
+	Lighting.Ambient = Color3.fromRGB(60, 70, 90)
+	Lighting.OutdoorAmbient = Color3.fromRGB(95, 115, 145)
 	Lighting.EnvironmentDiffuseScale = 0.35
 	Lighting.EnvironmentSpecularScale = 0.6
 	Lighting.GlobalShadows = true
@@ -25,8 +26,8 @@ function FarmNightLighting.apply()
 	end
 	atmosphere.Density = 0.29
 	atmosphere.Offset = 0.12
-	atmosphere.Color = Color3.fromRGB(133, 164, 193)
-	atmosphere.Decay = Color3.fromRGB(39, 57, 83)
+	atmosphere.Color = Color3.fromRGB(120, 157, 196)
+	atmosphere.Decay = Color3.fromRGB(52, 80, 121)
 	atmosphere.Glare = 0.08
 	atmosphere.Haze = 1.5
 
@@ -71,9 +72,9 @@ function FarmNightLighting.apply()
 		clouds.Parent = workspace.Terrain
 	end
 	clouds.Enabled = true
-	clouds.Cover = 0.65
-	clouds.Density = 0.72
-	clouds.Color = Color3.fromRGB(79, 95, 118)
+	clouds.Cover = 0.7
+	clouds.Density = 0.48
+	clouds.Color = Color3.fromRGB(104, 127, 161)
 end
 
 return FarmNightLighting

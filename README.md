@@ -29,6 +29,17 @@ A experiência tem dois places, cada um com seu projeto do Rojo:
 
 - `stylua src` · `selene src`
 
+## Design system
+
+Identidade, tokens, componentes e regras de HUD para PC e mobile:
+[Outbreak UI v0.1](docs/design/DESIGN-SYSTEM.md).
+Prancha visual em PNG e SVG em `docs/design`; tokens compartilhados em
+`src/client/UI/Tokens.luau`.
+
+Kit de imagens, ícones, botões, partículas e peças 3D:
+[catálogo de assets](docs/design/ASSETS.md), com arquivos em `assets/game/`.
+[Integração e validação no Studio](docs/design/ASSET-INTEGRATION.md).
+
 ## Modelos 3D da fazenda
 
 Pipeline Blender → FBX → Roblox Studio: [docs/art/PIPELINE.md](docs/art/PIPELINE.md).

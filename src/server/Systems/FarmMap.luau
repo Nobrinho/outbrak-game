@@ -14,6 +14,7 @@ local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 
 local Tags = require(game:GetService("ReplicatedStorage").Shared.Tags)
+local KitModels = require(game:GetService("ReplicatedStorage").Shared.Art.KitModels)
 local FarmVisuals = require(game:GetService("ReplicatedStorage").Shared.Art.FarmVisuals)
 
 local FarmMap = {}
@@ -633,6 +634,9 @@ local function buildBarn()
 	}, barn)
 	tag(shop, Tags.ShopBox)
 	prompt(shop, "Abrir loja", "Suprimentos")
+	-- Visual-only supply display: prompt and original shop collision stay authoritative.
+	KitModels.clone("Medkit", shop.CFrame * CFrame.new(-1.5, shop.Size.Y / 2, 0), barn)
+	KitModels.clone("Grenade", shop.CFrame * CFrame.new(1.5, shop.Size.Y / 2, 0), barn)
 
 	-- Hay bales as cover inside.
 	for i, offset in { Vector2.new(-4, -12), Vector2.new(2, 12), Vector2.new(-6, 8) } do

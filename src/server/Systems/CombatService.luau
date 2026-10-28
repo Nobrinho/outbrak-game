@@ -17,6 +17,7 @@ local Config = require(Shared.Config)
 local Hitscan = require(Shared.Hitscan)
 local Net = require(Shared.Net)
 local Tags = require(Shared.Tags)
+local KitModels = require(Shared.Art.KitModels)
 local Types = require(Shared.Types)
 local HordeService = require(script.Parent.HordeService)
 local WeaponModels = require(Shared.Art.WeaponModels)
@@ -425,6 +426,7 @@ local function onThrowGrenade(player: Player, direction: unknown)
 	grenade.CFrame = CFrame.new(head.Position + dir.Unit * 2.5)
 	grenade.AssemblyLinearVelocity = dir.Unit * g.throwSpeed + Vector3.new(0, g.throwLift, 0)
 	grenade.Parent = grenadeFolder
+	KitModels.attach("Grenade", grenade, CFrame.new(0, -0.45, 0), 0.8)
 	grenade:SetNetworkOwner(nil) -- server simulates it, so the client can't steer the blast
 
 	-- Once it has (roughly) landed it starts pulling Runners in: the decoy.

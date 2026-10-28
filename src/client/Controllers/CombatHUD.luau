@@ -1,7 +1,7 @@
 --!strict
 -- Combat HUD, one job per corner so it reads at a glance on a phone:
---   top-left  — health bar with its number, credits under it;
---   top-right — ammo (big magazine count), weapon, grenades and, on keyboards, the ability;
+--   lower-left — health and credits (above the native stick on touch);
+--   lower-right on PC / quick slots on touch — weapon and ammunition;
 --   centre    — a ring crosshair, a reload bar under it and a hitmarker that flashes white on
 --               body hits and orange on headshots.
 -- On touch the grenade count and the ability cooldown live on their buttons (MobileHUD). The
@@ -10,7 +10,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 
 local Shared = game:GetService("ReplicatedStorage").Shared
 local Config = require(Shared.Config)
@@ -18,6 +17,10 @@ local Types = require(Shared.Types)
 local Text = require(Shared.Util.Text)
 local WeaponController = require(script.Parent.WeaponController)
 local Theme = require(script.Parent.Parent.UI.Theme)
+local Layout = require(script.Parent.Parent.UI.Layout)
+local Input = require(script.Parent.InputController)
+
+local AssetView = require(script.Parent.Parent.UI.AssetView)
 
 local CombatHUD = {}
 
@@ -25,14 +28,21 @@ local COLOR_TEXT = Color3.fromRGB(240, 240, 240)
 local COLOR_LOW = Color3.fromRGB(220, 40, 40)
 local COLOR_HEAD = Color3.fromRGB(255, 140, 20)
 
+local ammoPanel: Frame
+local vitalsPanel: Frame
 local screen: ScreenGui
 local center: ScreenGui
 local magLabel: TextLabel
 local reserveLabel: TextLabel
 local gunLabel: TextLabel
+local gunImage: ImageLabel?
 local grenadeLabel: TextLabel
 local creditsLabel: TextLabel
 local healthFill: Frame
+local healthBack: Frame
+local healthTitle: TextLabel
+local creditIcon: ImageLabel?
+local healthIcon: ImageLabel?
 local healthLabel: TextLabel
 local vignette: { Frame } = {}
 local damageFlash = 0 -- 0..1, decays every frame
@@ -60,6 +70,7 @@ end
 
 local function buildAmmoPanel()
 	local panel = Instance.new("Frame")
+	ammoPanel = panel
 	panel.Name = "Ammo"
 	panel.AnchorPoint = Vector2.new(1, 0)
 	panel.Position = UDim2.new(1, -16, 0, 16)
@@ -68,7 +79,7 @@ local function buildAmmoPanel()
 	panel.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 2.1
-	aspect.Parent = panel
+	aspect:Destroy()
 
 	magLabel = label(panel, {
 		Position = UDim2.fromScale(0.05, 0.02),
@@ -82,13 +93,18 @@ local function buildAmmoPanel()
 		TextTransparency = 0.3,
 	})
 	gunLabel = label(panel, {
-		Position = UDim2.fromScale(0.05, 0.52),
-		Size = UDim2.fromScale(0.9, 0.2),
+		Position = UDim2.fromScale(0.3, 0.52),
+		Size = UDim2.fromScale(0.65, 0.2),
 		TextXAlignment = Enum.TextXAlignment.Right,
 		TextTransparency = 0.15,
 	})
+	gunImage = Theme.image(
+		panel,
+		"weapons.Pistol",
+		{ Position = UDim2.fromScale(0.03, 0.46), Size = UDim2.fromScale(0.25, 0.28) }
+	)
 	-- Keyboards only: on touch these live on the grenade and ability buttons.
-	local keyboard = not UserInputService.TouchEnabled or UserInputService.KeyboardEnabled
+	local keyboard = not Layout.isTouch()
 	grenadeLabel = label(panel, {
 		Position = UDim2.fromScale(0.05, 0.74),
 		Size = UDim2.fromScale(0.9, 0.2),
@@ -103,17 +119,12 @@ local function buildAmmoPanel()
 		TextXAlignment = Enum.TextXAlignment.Right,
 		Visible = keyboard,
 	})
-	-- Sits right under the ammo panel.
-	local function place()
-		abilityLabel.Position = UDim2.new(1, -16, 0, 16 + panel.AbsoluteSize.Y + 6)
-	end
-	panel:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
-	place()
 end
 
 -- Health bar with its number and, under it, the credits: the two things you check most.
 local function buildVitals()
 	local vitals = Instance.new("Frame")
+	vitalsPanel = vitals
 	vitals.Name = "Vitals"
 	vitals.Position = UDim2.fromOffset(16, 16)
 	vitals.Size = UDim2.fromScale(0.3, 0.1)
@@ -127,23 +138,24 @@ local function buildVitals()
 	pad.Parent = vitals
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 4.2
-	aspect.Parent = vitals
+	aspect:Destroy()
 	-- Thumb-readable on small phones, not oversized on monitors; the CLASSE/level/VIP column
 	-- starts below the max height (ClassController, ProgressionHUD).
 	local limits = Instance.new("UISizeConstraint")
 	limits.MinSize = Vector2.new(220, 52)
 	limits.MaxSize = Vector2.new(380, 90)
-	limits.Parent = vitals
+	limits:Destroy()
 
-	label(vitals, {
-		Position = UDim2.fromScale(0, 0),
-		Size = UDim2.fromScale(0.16, 0.48),
+	healthTitle = label(vitals, {
+		Position = UDim2.fromScale(0.1, 0),
+		Size = UDim2.fromScale(0.14, 0.48),
 		Text = "VIDA",
 		TextXAlignment = Enum.TextXAlignment.Left,
 	})
 	local back = Instance.new("Frame")
-	back.Position = UDim2.fromScale(0.18, 0.06)
-	back.Size = UDim2.fromScale(0.62, 0.36)
+	healthBack = back
+	back.Position = UDim2.fromScale(0.26, 0.06)
+	back.Size = UDim2.fromScale(0.54, 0.36)
 	back.BackgroundColor3 = Color3.new(0, 0, 0)
 	back.BackgroundTransparency = 0.35
 	back.BorderSizePixel = 0
@@ -164,8 +176,18 @@ local function buildVitals()
 		Size = UDim2.fromScale(0.18, 0.48),
 		TextXAlignment = Enum.TextXAlignment.Left,
 	})
+	healthIcon = Theme.image(vitals, "ui.icons.health", {
+		Position = UDim2.fromScale(0, 0.04),
+		Size = UDim2.fromScale(0.08, 0.4),
+		ImageColor3 = Theme.COLOR.player,
+	})
+	creditIcon = Theme.image(vitals, "ui.icons.credits", {
+		Position = UDim2.fromScale(0, 0.56),
+		Size = UDim2.fromScale(0.08, 0.36),
+		ImageColor3 = Theme.COLOR.accent,
+	})
 	creditsLabel = label(vitals, {
-		Position = UDim2.fromScale(0, 0.54),
+		Position = UDim2.fromScale(0.1, 0.54),
 		Size = UDim2.fromScale(0.6, 0.46),
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextColor3 = Theme.COLOR.accent,
@@ -240,10 +262,16 @@ end
 
 -- "+N" that rises from the credits line whenever credits go up.
 local function creditPopup(amount: number)
-	local popup = label(screen, {
+	if not creditsLabel.Visible then
+		return
+	end
+	local popup = label(vitalsPanel, {
 		Position = UDim2.fromOffset(
-			creditsLabel.AbsolutePosition.X + creditsLabel.TextBounds.X + 10,
-			creditsLabel.AbsolutePosition.Y
+			creditsLabel.AbsolutePosition.X
+				- vitalsPanel.AbsolutePosition.X
+				+ creditsLabel.TextBounds.X
+				+ 10,
+			creditsLabel.AbsolutePosition.Y - vitalsPanel.AbsolutePosition.Y
 		),
 		Size = UDim2.fromOffset(90, creditsLabel.AbsoluteSize.Y),
 		Text = "+" .. amount,
@@ -355,6 +383,13 @@ local function refresh()
 	local view = WeaponController.view
 	local gun = Config.GUNS[view.gun]
 	gunLabel.Text = Text.upper(gun.displayName)
+	if gunImage then
+		local uri = AssetView.resolve("weapons." .. view.gun)
+		gunImage.Visible = uri ~= nil and not Layout.isTouch()
+		if uri then
+			gunImage.Image = uri
+		end
+	end
 	magLabel.Text = tostring(view.mag)
 	magLabel.TextColor3 = if view.mag <= gun.magSize * 0.25 then COLOR_LOW else COLOR_TEXT
 	reserveLabel.Text = if Config.DEBUG.infiniteAmmo then "/ ∞" else "/ " .. view.reserve
@@ -383,9 +418,7 @@ end
 function CombatHUD.init()
 	screen = Instance.new("ScreenGui")
 	screen.Name = "CombatHUD"
-	screen.ResetOnSpawn = false
-	screen.IgnoreGuiInset = true
-	screen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+	Layout.configure(screen, 10)
 
 	center = Instance.new("ScreenGui")
 	center.Name = "Crosshair"
@@ -407,6 +440,15 @@ function CombatHUD.start()
 	end)
 	-- Credits, cooldown and health change constantly; a few writes per frame are cheap.
 	RunService.RenderStepped:Connect(function(dt)
+		local match = game:GetService("ReplicatedStorage"):FindFirstChild("Match")
+		local phase = match and match:GetAttribute("Phase")
+		local playing = Players.LocalPlayer:GetAttribute("InMatch") == true
+			and phase ~= "Lobby"
+			and phase ~= "Result"
+			and phase ~= "Waiting"
+		screen.Enabled = playing and not Input.isModalOpen()
+		local h = humanoid()
+		center.Enabled = screen.Enabled and h ~= nil and h.Health > 0
 		refreshStatus()
 		updateHealth(dt)
 	end)
@@ -432,6 +474,49 @@ function CombatHUD.start()
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 	screen.Parent = playerGui
 	center.Parent = playerGui
+	Layout.bind(screen, function(m)
+		if m.touch then
+			Layout.place(vitalsPanel, m.mobile.vitals)
+			Layout.place(ammoPanel, m.mobile.ammo)
+		else
+			vitalsPanel.AnchorPoint = Vector2.new(0, 1)
+			vitalsPanel.Position = UDim2.new(0, 12, 1, -16)
+			vitalsPanel.Size = UDim2.fromOffset(280, 72)
+			ammoPanel.AnchorPoint = Vector2.new(1, 1)
+			ammoPanel.Position = UDim2.new(1, -16, 1, -16)
+			ammoPanel.Size = UDim2.fromOffset(240, 100)
+		end
+		creditsLabel.Visible = not m.touch
+		if creditIcon then
+			creditIcon.Visible = not m.touch
+		end
+		healthTitle.Visible = not m.touch
+		healthBack.Position = if m.touch
+			then UDim2.fromScale(0.14, 0.2)
+			else UDim2.fromScale(0.26, 0.06)
+		healthBack.Size = if m.touch then UDim2.fromScale(0.6, 0.6) else UDim2.fromScale(0.54, 0.36)
+		healthLabel.Position = UDim2.fromScale(if m.touch then 0.78 else 0.82, 0)
+		healthLabel.Size =
+			UDim2.fromScale(if m.touch then 0.22 else 0.18, if m.touch then 1 else 0.48)
+		if healthIcon then
+			healthIcon.Position = UDim2.fromScale(0, if m.touch then 0.2 else 0.04)
+			healthIcon.Size = UDim2.fromScale(0.1, if m.touch then 0.6 else 0.4)
+		end
+		magLabel.Position = UDim2.fromScale(0.05, if m.touch then 0.06 else 0.02)
+		magLabel.Size = UDim2.fromScale(0.5, if m.touch then 0.62 else 0.5)
+		reserveLabel.Position = UDim2.fromScale(0.57, if m.touch then 0.2 else 0.18)
+		reserveLabel.Size = UDim2.fromScale(0.4, if m.touch then 0.42 else 0.28)
+		gunLabel.Position = UDim2.fromScale(0.05, if m.touch then 0.68 else 0.52)
+		gunLabel.Size = UDim2.fromScale(0.9, if m.touch then 0.27 else 0.2)
+		if gunImage then
+			gunImage.Visible = not m.touch
+		end
+		grenadeLabel.Visible = not m.touch
+		abilityLabel.Visible = not m.touch
+		abilityLabel.AnchorPoint = Vector2.new(1, 1)
+		abilityLabel.Position = UDim2.new(1, -16, 1, -124)
+		abilityLabel.Size = UDim2.fromOffset(math.min(320, m.size.X * 0.4), 24)
+	end)
 end
 
 return CombatHUD

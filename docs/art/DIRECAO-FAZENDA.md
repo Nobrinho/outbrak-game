@@ -4,7 +4,7 @@
 
 Imagem fornecida pelo usuário em 24/10/2026. Prioridade sobre a referência
 anterior de pôr do sol para composição, arquitetura, paleta e atmosfera.
-Este documento orienta a produção; não indica que os modelos já foram criados.
+Este documento orienta a produção. O estado da implementação está registrado ao final.
 
 ## Composição observada
 
@@ -64,3 +64,31 @@ de layout exigem conferir o flow field, as barricadas e os pontos de interação
 A primeira versão serve para validar composição e proporções. O acabamento
 e a fidelidade visual serão avaliados em capturas do motor. Preservar os
 requisitos de navegação e as tags do gameplay durante a integração.
+
+## Implementação e validação — 25/10/2026
+
+A camada `FarmVisuals` está integrada ao mapa gerado pelo `FarmMap`. Inclui
+fachadas de tábuas, telhados deteriorados, varanda, sótão com janela, trepadeiras,
+moinho com rotor, acabamento do silo, estradas com poças, pedras, vegetação e
+montanhas. `FarmNightLighting` coloca a lua sobre o horizonte norte e mantém
+contraste entre o ambiente azul e as janelas laranja. Os modelos Blender de
+trator, picape e caixotes já disponíveis continuam integrados por `FarmProps`.
+
+A posição dos prédios segue o mapa jogável existente, por isso a composição
+não é uma reprodução exata da imagem. Não foram alterados scripts de combate,
+ondas, economia, controles ou progressão nesta etapa gráfica.
+
+Validação executada no Studio:
+
+- Comparação antes/depois com `tools/verify-map-graphics.luau`: zero mudanças
+  nas propriedades verificadas dos 1.215 BaseParts originais e dos 6 prompts.
+- 14.400 células de navegação comparadas: zero mudanças de tipo ou proprietário.
+- 2.948 partes visuais adicionais: todas ancoradas e sem colisão, query ou toque.
+- Play: mapa e arte carregados no servidor e cliente; 4 barricadas, 2 zonas de
+  escalada, 3 torretas, 8 spawns, loja, munição e extração presentes.
+- StyLua e Selene passaram nos módulos gráficos alterados.
+
+O teste de início de partida não substitui medição de desempenho em celular
+real. O Studio registrou modo offline do DataStore e aviso de um asset de tipo
+incompatível, fora dos módulos de arte alterados.
+Captura: `assets/export/farm-night-2026-10-25.jpg`.

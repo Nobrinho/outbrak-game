@@ -14,6 +14,8 @@ local TweenService = game:GetService("TweenService")
 local Config = require(ReplicatedStorage.Shared.Config)
 local Net = require(ReplicatedStorage.Shared.Net)
 local Theme = require(script.Parent.Parent.UI.Theme)
+local Layout = require(script.Parent.Parent.UI.Layout)
+local Input = require(script.Parent.InputController)
 
 local MatchHUD = {}
 
@@ -69,10 +71,15 @@ local function build()
 	banner.Parent = screen
 	local aspect = Instance.new("UIAspectRatioConstraint")
 	aspect.AspectRatio = 4
-	aspect.Parent = banner
+	aspect:Destroy()
 
+	Theme.image(banner, "ui.icons.wave", {
+		Position = UDim2.fromScale(0.03, 0.12),
+		Size = UDim2.fromScale(0.08, 0.38),
+		ImageColor3 = Theme.COLOR.accent,
+	})
 	titleLabel =
-		text(banner, { Position = UDim2.fromScale(0.05, 0.08), Size = UDim2.fromScale(0.9, 0.5) })
+		text(banner, { Position = UDim2.fromScale(0.13, 0.08), Size = UDim2.fromScale(0.82, 0.5) })
 	detailLabel = text(banner, {
 		Position = UDim2.fromScale(0.05, 0.58),
 		Size = UDim2.fromScale(0.9, 0.34),
@@ -129,10 +136,7 @@ local function build()
 	-- Its own ScreenGui above the class picker, so PRONTO stays reachable with it open.
 	lobbyScreen = Instance.new("ScreenGui")
 	lobbyScreen.Name = "LobbyUI"
-	lobbyScreen.ResetOnSpawn = false
-	lobbyScreen.IgnoreGuiInset = true
-	lobbyScreen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
-	lobbyScreen.DisplayOrder = 6
+	Layout.configure(lobbyScreen, 11)
 	readyButton = Instance.new("TextButton")
 	readyButton.Name = "Ready"
 	readyButton.AnchorPoint = Vector2.new(0.5, 1)
@@ -143,7 +147,7 @@ local function build()
 	readyButton.Parent = lobbyScreen
 	local readyAspect = Instance.new("UIAspectRatioConstraint")
 	readyAspect.AspectRatio = 3.2
-	readyAspect.Parent = readyButton
+	readyAspect:Destroy()
 	readyButton.Activated:Connect(function()
 		Net.setReady():FireServer(player:GetAttribute("Ready") ~= true)
 	end)
@@ -156,7 +160,7 @@ local function build()
 	hubButton.Size = UDim2.fromScale(0.24, 0.055)
 	hubButton.Text = "VOLTAR AO ACAMPAMENTO"
 	hubButton.Visible = false
-	Theme.button(hubButton)
+	Theme.button(hubButton, "secondary")
 	hubButton.BackgroundColor3 = COLOR_PANEL
 	hubButton.TextColor3 = COLOR_TEXT
 	hubButton.Parent = lobbyScreen
@@ -172,6 +176,12 @@ local function build()
 	result.Visible = false
 	result.ZIndex = 5
 	result.Parent = screen
+	Theme.image(result, "ui.icons.trophy", {
+		Position = UDim2.fromScale(0.46, 0.17),
+		Size = UDim2.fromScale(0.08, 0.12),
+		ZIndex = 6,
+		ImageColor3 = Theme.COLOR.accent,
+	})
 	resultTitle = text(result, {
 		FontFace = Theme.FONT.display,
 		AnchorPoint = Vector2.new(0.5, 0.5),
@@ -184,7 +194,8 @@ local function build()
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.fromScale(0.5, 0.47),
 		Size = UDim2.fromScale(0.5, 0.3),
-		TextScaled = false,
+		TextScaled = true,
+		TextWrapped = true,
 		TextSize = 22,
 		TextYAlignment = Enum.TextYAlignment.Top,
 		ZIndex = 6,
@@ -285,6 +296,8 @@ local function clock(seconds: number): string
 end
 
 local function update()
+	screen.Enabled = not Input.isModalOpen()
+	lobbyScreen.Enabled = not Input.isModalOpen()
 	local phase = attr("Phase", "Waiting")
 	local wave = attr("Wave", 0)
 	local waves = attr("Waves", 10)
@@ -327,6 +340,8 @@ local function update()
 
 	local ready = player:GetAttribute("Ready") == true
 	readyButton.Visible = phase == "Lobby"
+		and player:GetAttribute("ClassConfirmed") == true
+		and not Input.isModalOpen()
 	readyButton.Text = if ready then "PRONTO ✓" else "PRONTO"
 	readyButton.BackgroundColor3 = if ready then COLOR_GOOD else COLOR_WARN
 
@@ -353,9 +368,7 @@ end
 function MatchHUD.init()
 	screen = Instance.new("ScreenGui")
 	screen.Name = "MatchHUD"
-	screen.ResetOnSpawn = false
-	screen.IgnoreGuiInset = true
-	screen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+	Layout.configure(screen, 10)
 	build()
 end
 
@@ -367,6 +380,23 @@ function MatchHUD.start()
 	RunService.RenderStepped:Connect(update)
 	screen.Parent = player:WaitForChild("PlayerGui")
 	lobbyScreen.Parent = screen.Parent
+	Layout.bind(screen, function(m)
+		local banner = screen:FindFirstChild("Banner") :: Frame
+		if m.touch then
+			Layout.place(banner, m.mobile.banner)
+			Layout.place(bossFrame, m.mobile.boss)
+		else
+			banner.AnchorPoint = Vector2.new(0.5, 0)
+			banner.Position = UDim2.new(0.5, 0, 0, 12)
+			banner.Size = UDim2.fromOffset(math.min(300, m.size.X * 0.42), 52)
+			bossFrame.AnchorPoint = Vector2.new(0.5, 0)
+			bossFrame.Position = UDim2.new(0.5, 0, 0, 70)
+			bossFrame.Size = UDim2.fromOffset(math.min(300, m.size.X * 0.38), 20)
+		end
+		readyButton.Size = UDim2.fromOffset(math.min(220, m.size.X * 0.32), 48)
+		hubButton.Position = UDim2.new(0.5, 0, 1, -76)
+		hubButton.Size = UDim2.fromOffset(math.min(260, m.size.X * 0.4), 44)
+	end)
 	TeleportService:SetTeleportGui(teleportScreen())
 end
 

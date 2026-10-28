@@ -1,0 +1,93 @@
+{
+  "blender": "4.5.9 LTS",
+  "weapons": {
+    "Pistol": {
+      "meshes": [
+        "Pistol_Metal",
+        "Pistol_Steel"
+      ],
+      "triangles": 176,
+      "muzzle_from_grip": [
+        0,
+        0.24,
+        -0.95
+      ]
+    },
+    "SMG": {
+      "meshes": [
+        "SMG_Metal",
+        "SMG_Steel"
+      ],
+      "triangles": 208,
+      "muzzle_from_grip": [
+        0,
+        0.28,
+        -1.48
+      ]
+    },
+    "Shotgun": {
+      "meshes": [
+        "Shotgun_Steel",
+        "Shotgun_Wood",
+        "Shotgun_Metal"
+      ],
+      "triangles": 224,
+      "muzzle_from_grip": [
+        0,
+        0.33,
+        -2.25
+      ]
+    },
+    "Rifle": {
+      "meshes": [
+        "Rifle_Metal",
+        "Rifle_Steel"
+      ],
+      "triangles": 284,
+      "muzzle_from_grip": [
+        0,
+        0.26,
+        -2.35
+      ]
+    },
+    "AK47": {
+      "meshes": [
+        "AK47_Metal",
+        "AK47_Wood",
+        "AK47_Steel"
+      ],
+      "triangles": 324,
+      "muzzle_from_grip": [
+        0,
+        0.24,
+        -2.25
+      ]
+    },
+    "Knife": {
+      "meshes": [
+        "Knife_WoodDark",
+        "Knife_Metal",
+        "Knife_Steel"
+      ],
+      "triangles": 68,
+      "muzzle_from_grip": [
+        0,
+        0.03,
+        -1.0
+      ]
+    },
+    "Bat": {
+      "meshes": [
+        "Bat_WoodDark",
+        "Bat_Wood",
+        "Bat_Steel"
+      ],
+      "triangles": 128,
+      "muzzle_from_grip": [
+        0,
+        0,
+        -2.45
+      ]
+    }
+  }
+}

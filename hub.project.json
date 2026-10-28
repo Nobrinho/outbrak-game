@@ -5,6 +5,9 @@
     "ReplicatedStorage": {
       "Shared": {
         "$path": "src/shared"
+      },
+      "OutbreakKit": {
+        "$path": "assets/models/OutbreakKit.rbxmx"
       }
     },
     "ReplicatedFirst": {
@@ -70,7 +73,10 @@
             "PortalHUD": {
               "$path": "src/hub/Controllers/PortalHUD.luau"
             },
-            "$ignoreUnknownInstances": false
+            "$ignoreUnknownInstances": false,
+            "MenuController": {
+              "$path": "src/client/Controllers/MenuController.luau"
+            }
           },
           "$ignoreUnknownInstances": false
         },

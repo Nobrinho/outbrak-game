@@ -4,6 +4,7 @@ local Structures = require(script.Parent.FarmStructures)
 local Environment = require(script.Parent.FarmEnvironment)
 local NightLighting = require(script.Parent.FarmNightLighting)
 local Props = require(script.Parent.FarmProps)
+local FacadeDetails = require(script.Parent.FarmFacadeDetails)
 
 local FarmVisuals = {}
 
@@ -14,6 +15,7 @@ function FarmVisuals.apply(map: Instance)
 	local root = Instance.new("Folder")
 	root.Name = "VisualUpgrade"
 	Structures.build(map, root, Props.apply(map, root))
+	FacadeDetails.build(root)
 	Environment.build(root)
 	-- Keep every surface out of movement, hitscan and overlap queries.
 	for _, item in root:GetDescendants() do

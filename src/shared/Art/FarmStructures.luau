@@ -95,7 +95,7 @@ function Structures.build(map: Instance, parent: Instance, meshed: { [string]: b
 			"WarmWindow",
 			Vector3.new(width, height, 0.12),
 			cf * CFrame.new(0, 0, 0.12),
-			WARM,
+			Color3.fromRGB(193, 86, 31),
 			folder
 		)
 		glass.Material = Enum.Material.Neon
