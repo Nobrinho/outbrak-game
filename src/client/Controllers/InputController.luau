@@ -10,7 +10,21 @@ local ActionState = require(script.Parent.Parent.UI.ActionState)
 local Settings = require(script.Parent.Parent.UI.ControlSettings)
 local Signal = require(game:GetService("ReplicatedStorage").Shared.Util.Signal)
 
-export type Action = "Fire" | "Aim" | "Reload" | "Ability" | "Interact" | "Grenade" | "Melee" | "Jump"
+export type Action =
+	"Fire"
+	| "Aim"
+	| "Reload"
+	| "Ability"
+	| "Interact"
+	| "Grenade"
+	| "Melee"
+	| "Jump"
+	-- Weapon slots: pick one directly, or step through them (mouse wheel, D-pad, HUD tap).
+	| "Slot1"
+	| "Slot2"
+	| "Slot3"
+	| "NextSlot"
+	| "PrevSlot"
 
 local InputController = {}
 
@@ -49,6 +63,9 @@ local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 	[Enum.KeyCode.E] = "Interact",
 	[Enum.KeyCode.G] = "Grenade",
 	[Enum.KeyCode.V] = "Melee",
+	[Enum.KeyCode.One] = "Slot1",
+	[Enum.KeyCode.Two] = "Slot2",
+	[Enum.KeyCode.Three] = "Slot3",
 	[Enum.KeyCode.ButtonR2] = "Fire",
 	[Enum.KeyCode.ButtonL2] = "Aim",
 	[Enum.KeyCode.ButtonX] = "Reload",
@@ -56,6 +73,8 @@ local KEY_BINDINGS: { [Enum.KeyCode | Enum.UserInputType]: Action } = {
 	[Enum.KeyCode.ButtonB] = "Melee",
 	[Enum.KeyCode.ButtonR1] = "Grenade",
 	[Enum.KeyCode.DPadUp] = "Interact",
+	[Enum.KeyCode.DPadRight] = "NextSlot",
+	[Enum.KeyCode.DPadLeft] = "PrevSlot",
 }
 
 -- Menus (shop, class picker) register while open: the mouse is freed and weapons hold fire.
@@ -111,6 +130,21 @@ function InputController.start()
 		if action then
 			InputController.setAction(action, true, input)
 		end
+	end)
+
+	-- The mouse wheel has no press/release: each notch is a tap of Next/PrevSlot.
+	UserInputService.InputChanged:Connect(function(input, processed)
+		if
+			processed
+			or InputController.isModalOpen()
+			or input.UserInputType ~= Enum.UserInputType.MouseWheel
+			or input.Position.Z == 0
+		then
+			return
+		end
+		local action: Action = if input.Position.Z < 0 then "NextSlot" else "PrevSlot"
+		InputController.setAction(action, true, "wheel")
+		InputController.setAction(action, false, "wheel")
 	end)
 
 	-- Releases are never filtered by `processed`, otherwise an action could stay stuck down.

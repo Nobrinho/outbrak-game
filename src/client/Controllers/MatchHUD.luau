@@ -15,6 +15,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Net = require(ReplicatedStorage.Shared.Net)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Layout = require(script.Parent.Parent.UI.Layout)
+local Hotkeys = require(script.Parent.Parent.UI.Hotkeys)
 local Input = require(script.Parent.InputController)
 
 local MatchHUD = {}
@@ -148,8 +149,14 @@ local function build()
 	local readyAspect = Instance.new("UIAspectRatioConstraint")
 	readyAspect.AspectRatio = 3.2
 	readyAspect:Destroy()
-	readyButton.Activated:Connect(function()
+	local function toggleReady()
 		Net.setReady():FireServer(player:GetAttribute("Ready") ~= true)
+	end
+	readyButton.Activated:Connect(toggleReady)
+	Hotkeys.bind(Enum.KeyCode.F, readyButton, function()
+		if readyButton.Visible and lobbyScreen.Enabled then
+			toggleReady()
+		end
 	end)
 
 	-- Back to the camp hub: in the lobby, while spectating, or on the result screen.
@@ -166,6 +173,11 @@ local function build()
 	hubButton.Parent = lobbyScreen
 	hubButton.Activated:Connect(function()
 		Net.returnToHub():FireServer()
+	end)
+	Hotkeys.bind(Enum.KeyCode.H, hubButton, function()
+		if hubButton.Visible and lobbyScreen.Enabled then
+			Net.returnToHub():FireServer()
+		end
 	end)
 
 	result = Instance.new("Frame")

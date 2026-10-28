@@ -21,6 +21,15 @@ local WeaponController = {}
 
 export type View = {
 	ready: boolean,
+	-- 1 primary, 2 sidearm, 3 melee. `gun`/`mag`/`reserve` are the gun in hand (the primary
+	-- while the melee weapon is out); the other fields carry both guns for the slot bar.
+	slot: number,
+	primary: Config.GunName,
+	sidearm: Config.GunName,
+	primaryMag: number,
+	primaryReserve: number,
+	sidearmMag: number,
+	sidearmReserve: number,
 	gun: Config.GunName,
 	melee: Config.MeleeName,
 	mag: number,
@@ -32,6 +41,13 @@ export type View = {
 -- What the HUD shows. Read-only outside this module.
 WeaponController.view = {
 	ready = false,
+	slot = 1,
+	primary = Config.CLASSES[Config.DEFAULT_CLASS].startGun,
+	sidearm = Config.LOADOUT.sidearm,
+	primaryMag = 0,
+	primaryReserve = 0,
+	sidearmMag = 0,
+	sidearmReserve = 0,
 	gun = Config.CLASSES[Config.DEFAULT_CLASS].startGun,
 	melee = Config.LOADOUT.melee,
 	mag = 0,
@@ -49,6 +65,8 @@ WeaponController.fired = Signal.new() :: Signal.Signal<string, Vector3, Vector3>
 WeaponController.swung = Signal.new() :: Signal.Signal<()>
 WeaponController.thrown = Signal.new() :: Signal.Signal<()>
 WeaponController.reloadStarted = Signal.new() :: Signal.Signal<()>
+-- The weapon in hand changed (argument: the new slot), as soon as it's requested locally.
+WeaponController.switched = Signal.new() :: Signal.Signal<number>
 
 local view = WeaponController.view
 local player = Players.LocalPlayer
@@ -57,6 +75,11 @@ local nextShot = 0
 local nextMelee = 0
 local nextGrenade = 0
 local reloadWatchdog = 0
+local drawnAt = 0 -- holster + draw in progress until then
+local nextSwitch = 0
+-- A switch sent but not yet confirmed: syncs still showing the old slot are stale.
+local pendingSlot: number? = nil
+local pendingUntil = 0
 
 local ASSIST_COS = math.cos(math.rad(Config.AIM_ASSIST_DEGREES))
 local COLOR_INCENDIARY = Color3.fromRGB(255, 90, 20)
@@ -97,9 +120,36 @@ local function onSync(payload: unknown)
 	local state = payload :: Types.WeaponState
 	local gun = state.gun :: Config.GunName
 	local melee = state.melee :: Config.MeleeName
-	if not Config.GUNS[gun] or not Config.MELEE[melee] then
+	local primary = state.primary :: Config.GunName
+	local sidearm = state.sidearm :: Config.GunName
+	if
+		not Config.GUNS[gun]
+		or not Config.MELEE[melee]
+		or not Config.GUNS[primary]
+		or not Config.GUNS[sidearm]
+		or typeof(state.slot) ~= "number"
+	then
 		return
 	end
+	if pendingSlot then
+		if state.slot == pendingSlot or os.clock() > pendingUntil then
+			pendingSlot = nil
+		else
+			return
+		end
+	end
+	if state.slot ~= view.slot then
+		-- The server moved us (shop purchase, respawn, rejected switch): follow it.
+		view.slot = state.slot
+		drawnAt = os.clock() + Config.LOADOUT.switchTime
+		WeaponController.switched:fire(view.slot)
+	end
+	view.primary = primary
+	view.sidearm = sidearm
+	view.primaryMag = state.primaryMag
+	view.primaryReserve = state.primaryReserve
+	view.sidearmMag = state.sidearmMag
+	view.sidearmReserve = state.sidearmReserve
 	local pending = if Config.DEBUG.infiniteAmmo then 0 else math.max(0, shotSeq - state.shotSeq)
 	view.gun = gun
 	view.melee = melee
@@ -176,7 +226,13 @@ end
 
 local function requestReload()
 	local gun = Config.GUNS[view.gun]
-	if not view.ready or view.reloading or view.mag >= gun.magSize or view.reserve <= 0 then
+	if
+		not view.ready
+		or view.slot == 3
+		or view.reloading
+		or view.mag >= gun.magSize
+		or view.reserve <= 0
+	then
 		return
 	end
 	view.reloading = true
@@ -296,11 +352,18 @@ local function step()
 		Net.weaponSync():FireServer()
 		WeaponController.changed:fire()
 	end
-	if view.reloading or now < nextShot or InputController.isModalOpen() then
+	if view.reloading or now < nextShot or now < drawnAt or InputController.isModalOpen() then
 		return
 	end
 	local me = body()
 	if not me then
+		return
+	end
+	if view.slot == 3 then
+		-- Melee in hand: the fire button swings it.
+		if InputController.isDown("Fire") then
+			swing()
+		end
 		return
 	end
 
@@ -319,6 +382,28 @@ local function step()
 	else
 		requestReload()
 	end
+end
+
+-- Puts `slot` (1 primary, 2 sidearm, 3 melee) in hand. The local view switches at once (the
+-- draw plays right away); the server confirms through the next sync.
+function WeaponController.switchTo(slot: number)
+	local now = os.clock()
+	if not view.ready or slot == view.slot or now < nextSwitch or not body() then
+		return
+	end
+	nextSwitch = now + Config.LOADOUT.switchCooldown
+	drawnAt = now + Config.LOADOUT.switchTime
+	view.slot = slot
+	view.reloading = false
+	if slot == 1 then
+		view.gun, view.mag, view.reserve = view.primary, view.primaryMag, view.primaryReserve
+	elseif slot == 2 then
+		view.gun, view.mag, view.reserve = view.sidearm, view.sidearmMag, view.sidearmReserve
+	end
+	pendingSlot, pendingUntil = slot, now + 1
+	Net.switchSlot():FireServer(slot)
+	WeaponController.switched:fire(slot)
+	WeaponController.changed:fire()
 end
 
 function WeaponController.start()
@@ -340,6 +425,16 @@ function WeaponController.start()
 			swing()
 		elseif action == "Grenade" then
 			throwGrenade()
+		elseif action == "Slot1" then
+			WeaponController.switchTo(1)
+		elseif action == "Slot2" then
+			WeaponController.switchTo(2)
+		elseif action == "Slot3" then
+			WeaponController.switchTo(3)
+		elseif action == "NextSlot" then
+			WeaponController.switchTo(view.slot % 3 + 1)
+		elseif action == "PrevSlot" then
+			WeaponController.switchTo((view.slot + 1) % 3 + 1)
 		end
 	end)
 

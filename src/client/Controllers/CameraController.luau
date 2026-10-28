@@ -1,7 +1,8 @@
 --!strict
 -- Over-the-shoulder third-person camera. The character always faces where the camera looks
 -- (shooter-style), the camera sits offset to the right shoulder, and aiming zooms the FOV.
--- On touch the default drag-to-look camera is kept; on PC the mouse is locked to the center.
+-- On touch the default drag-to-look camera is kept; on PC the mouse is locked to the center
+-- (except while Alt is held, so the screen buttons can be clicked).
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10,6 +11,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local InputController = require(script.Parent.InputController)
 local Settings = require(script.Parent.Parent.UI.ControlSettings)
+local Hotkeys = require(script.Parent.Parent.UI.Hotkeys)
 local Theme = require(script.Parent.Parent.UI.Theme)
 
 local CameraController = {}
@@ -27,7 +29,7 @@ local humanoid: Humanoid?
 local root: BasePart?
 local diedAt = 0
 local spectating: Humanoid?
-local savedCameraType: Enum.CameraType?
+local frozenForModal = false
 local spectateLabel: TextLabel
 local beforeNativeRotation = CFrame.identity
 local cameraTouchMoved = false
@@ -130,18 +132,17 @@ local function step(dt: number)
 	updateSpectate()
 	local camera = workspace.CurrentCamera
 	if InputController.isModalOpen() then
-		if not savedCameraType then
-			savedCameraType = camera.CameraType
-		end
+		frozenForModal = true
 		camera.CameraType = Enum.CameraType.Scriptable
-	else
-		if savedCameraType then
-			camera.CameraType = savedCameraType
-			savedCameraType = nil
-		end
+	elseif frozenForModal then
+		-- Always back to Custom: a modal that opens before the character spawns (class picker)
+		-- would otherwise save the engine's pre-spawn Fixed camera and restore a frozen one.
+		frozenForModal = false
+		camera.CameraType = Enum.CameraType.Custom
 	end
 	UserInputService.MouseBehavior = if InputController.isModalOpen()
 			or InputController.isTouch()
+			or Hotkeys.cursorReleased()
 		then Enum.MouseBehavior.Default
 		else Enum.MouseBehavior.LockCenter
 

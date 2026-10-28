@@ -88,6 +88,7 @@ export type GunStats = {
 	pellets: number,
 	headMultiplier: number,
 	noise: number, -- studs within which Runners hear it
+	recoil: number, -- visual kick per shot (1 = a light rifle round)
 }
 
 export type MeleeStats = {
@@ -147,6 +148,7 @@ local GUNS: { [GunName]: GunStats } = {
 		pellets = 1,
 		headMultiplier = 2,
 		noise = 40,
+		recoil = 0.8,
 	},
 	SMG = {
 		displayName = "Submetralhadora",
@@ -160,6 +162,7 @@ local GUNS: { [GunName]: GunStats } = {
 		pellets = 1,
 		headMultiplier = 1.5,
 		noise = 45,
+		recoil = 0.55,
 	},
 	Shotgun = {
 		displayName = "Escopeta",
@@ -173,6 +176,7 @@ local GUNS: { [GunName]: GunStats } = {
 		pellets = 8,
 		headMultiplier = 1.5,
 		noise = 60,
+		recoil = 2.2,
 	},
 	Rifle = {
 		displayName = "Rifle",
@@ -186,6 +190,7 @@ local GUNS: { [GunName]: GunStats } = {
 		pellets = 1,
 		headMultiplier = 2,
 		noise = 60,
+		recoil = 0.9,
 	},
 	AK47 = {
 		displayName = "AK-47",
@@ -199,6 +204,7 @@ local GUNS: { [GunName]: GunStats } = {
 		pellets = 1,
 		headMultiplier = 2,
 		noise = 70,
+		recoil = 1.3,
 	},
 }
 
@@ -379,9 +385,13 @@ return table.freeze({
 		finalMix = table.freeze({ Runner = 0.85, Creeper = 0.1, Bull = 0.05 }),
 		resultTime = 12,
 	}),
-	-- Melee everyone starts with; the starting gun comes from the class (CLASSES.startGun).
+	-- Melee and sidearm everyone starts with; the primary gun comes from the class
+	-- (CLASSES.startGun). Slots: 1 primary, 2 sidearm, 3 melee.
 	LOADOUT = table.freeze({
 		melee = "Knife" :: MeleeName,
+		sidearm = "Pistol" :: GunName,
+		switchTime = 0.35, -- holster + draw; no firing until it's done
+		switchCooldown = 0.25, -- between switch requests
 	}),
 	AMMO_BOX_COOLDOWN = 30,
 	BARRICADE = table.freeze({

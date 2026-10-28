@@ -10,6 +10,7 @@ local Text = require(ReplicatedStorage.Shared.Util.Text)
 local Input = require(script.Parent.InputController)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Layout = require(script.Parent.Parent.UI.Layout)
+local Hotkeys = require(script.Parent.Parent.UI.Hotkeys)
 local ClassController = {}
 local player = Players.LocalPlayer
 local screen: ScreenGui
@@ -149,6 +150,12 @@ function ClassController.init()
 	reopen.Parent = screen
 	reopen.Activated:Connect(function()
 		setOpen(true)
+	end)
+	-- Opens only, like the button: the picker is closed by confirming or going back.
+	Hotkeys.bind(Enum.KeyCode.C, reopen, function()
+		if not overlay.Visible then
+			setOpen(true)
+		end
 	end)
 	Input.registerModal("ClassPicker", function()
 		setOpen(false)

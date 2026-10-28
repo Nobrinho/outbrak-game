@@ -2,7 +2,8 @@
 
 Conventions (docs/art/PIPELINE.md): 1 Blender unit = 1 stud, Z up, flat faces. Each weapon is
 split into one mesh per colour tone (<Weapon>_Metal, _Steel, _Wood, _WoodDark); Roblox recolours
-them by name (and the Survivor Pack turns _Metal/_Steel gold). Two tiny marker cubes per weapon,
+them by name (and the Survivor Pack turns _Metal/_Steel gold). Magazines are their own mesh,
+<Weapon>_Mag (metal colour), so the game can pull them out of the gun while reloading. Two tiny marker cubes per weapon,
 <Weapon>_Grip at the hand and <Weapon>_Muzzle at the barrel tip, let the game find the grip,
 measure the import scale and start tracers.
 
@@ -33,6 +34,7 @@ TONES = {
     "Steel": (150, 154, 160),
     "Wood": (110, 72, 44),
     "WoodDark": (80, 52, 34),
+    "Mag": (42, 44, 48),
     "Marker": (255, 0, 255),
 }
 SPACING = 5.0
@@ -51,8 +53,8 @@ for tone, rgb in TONES.items():
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     bsdf.inputs["Base Color"].default_value = linear
-    bsdf.inputs["Roughness"].default_value = 0.55 if tone in ("Metal", "Steel") else 0.85
-    bsdf.inputs["Metallic"].default_value = 0.6 if tone in ("Metal", "Steel") else 0
+    bsdf.inputs["Roughness"].default_value = 0.55 if tone in ("Metal", "Steel", "Mag") else 0.85
+    bsdf.inputs["Metallic"].default_value = 0.6 if tone in ("Metal", "Steel", "Mag") else 0
     materials[tone] = mat
 
 
@@ -164,6 +166,7 @@ def pistol(b):
     b.box("Metal", (0.27, 0.32, 1.05), (0, 0.22, -0.32), bevel=0.05)  # slide
     b.box("Metal", (0.24, 0.16, 0.8), (0, 0.02, -0.22))  # frame
     b.box("Metal", (0.24, 0.62, 0.34), (0, -0.25, 0.05), rot=(-14, 0, 0), bevel=0.05)  # grip
+    b.box("Mag", (0.2, 0.5, 0.26), (0, -0.33, 0.07), rot=(-14, 0, 0))  # magazine (base pokes out)
     b.box("Metal", (0.08, 0.06, 0.32), (0, -0.12, -0.25), bevel=0)  # trigger guard
     b.cylinder("Steel", 0.07, 0.14, (0, 0.24, -0.88), sides=6)  # barrel crown
     b.box("Steel", (0.06, 0.06, 0.06), (0, 0.4, -0.75), bevel=0)  # front sight
@@ -172,7 +175,7 @@ def pistol(b):
 
 def smg(b):
     b.box("Metal", (0.3, 0.42, 1.25), (0, 0.2, -0.35), bevel=0.05)  # receiver
-    b.box("Metal", (0.22, 0.75, 0.28), (0, -0.32, -0.5), rot=(6, 0, 0))  # magazine
+    b.box("Mag", (0.22, 0.75, 0.28), (0, -0.32, -0.5), rot=(6, 0, 0))  # magazine
     b.box("Metal", (0.22, 0.5, 0.3), (0, -0.18, 0.05), rot=(-12, 0, 0))  # grip
     b.box("Metal", (0.07, 0.07, 0.75), (0.1, 0.25, 0.55), bevel=0)  # stock rods
     b.box("Metal", (0.07, 0.07, 0.75), (-0.1, 0.25, 0.55), bevel=0)
@@ -199,7 +202,7 @@ def rifle(b):
     b.cylinder("Steel", 0.15, 0.12, (0, 0.65, -0.9), sides=8)  # scope front lens ring
     b.box("Metal", (0.08, 0.2, 0.1), (0, 0.48, -0.25), bevel=0)  # scope mounts
     b.box("Metal", (0.08, 0.2, 0.1), (0, 0.48, -0.65), bevel=0)
-    b.box("Metal", (0.22, 0.7, 0.32), (0, -0.32, -0.6), rot=(8, 0, 0))  # magazine
+    b.box("Mag", (0.22, 0.7, 0.32), (0, -0.32, -0.6), rot=(8, 0, 0))  # magazine
     b.box("Metal", (0.22, 0.48, 0.28), (0, -0.2, 0.05), rot=(-15, 0, 0))  # grip
     b.box("Metal", (0.26, 0.48, 0.95), (0, 0.1, 0.8), taper=(1, 0.75))  # stock
     return (0, 0.26, -2.35)
@@ -212,8 +215,8 @@ def ak47(b):
     b.cylinder("Steel", 0.07, 0.75, (0, 0.24, -1.85), sides=8)  # barrel
     b.box("Metal", (0.06, 0.18, 0.08), (0, 0.38, -2.05), bevel=0)  # front sight
     # The curved magazine is the AK's silhouette: two segments bending forward.
-    b.box("Metal", (0.22, 0.45, 0.3), (0, -0.18, -0.48), rot=(8, 0, 0))
-    b.box("Metal", (0.22, 0.45, 0.3), (0, -0.55, -0.62), rot=(28, 0, 0))
+    b.box("Mag", (0.22, 0.45, 0.3), (0, -0.18, -0.48), rot=(8, 0, 0))
+    b.box("Mag", (0.22, 0.45, 0.3), (0, -0.55, -0.62), rot=(28, 0, 0))
     b.box("Wood", (0.24, 0.45, 0.28), (0, -0.18, 0.12), rot=(-18, 0, 0))  # pistol grip
     b.box("Wood", (0.26, 0.42, 1), (0, 0.02, 0.85), rot=(-10, 0, 0), taper=(1, 0.8))  # stock
     return (0, 0.24, -2.25)
