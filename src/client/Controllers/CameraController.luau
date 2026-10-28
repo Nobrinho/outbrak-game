@@ -1,7 +1,8 @@
 --!strict
 -- Over-the-shoulder third-person camera. The character always faces where the camera looks
 -- (shooter-style), the camera sits offset to the right shoulder, and aiming zooms the FOV.
--- On touch the default drag-to-look camera is kept; on PC the mouse is locked to the center.
+-- On touch the default drag-to-look camera is kept; on PC the mouse is locked to the center
+-- (except while Alt is held, so the screen buttons can be clicked).
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10,6 +11,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local InputController = require(script.Parent.InputController)
 local Settings = require(script.Parent.Parent.UI.ControlSettings)
+local Hotkeys = require(script.Parent.Parent.UI.Hotkeys)
 local Theme = require(script.Parent.Parent.UI.Theme)
 
 local CameraController = {}
@@ -140,6 +142,7 @@ local function step(dt: number)
 	end
 	UserInputService.MouseBehavior = if InputController.isModalOpen()
 			or InputController.isTouch()
+			or Hotkeys.cursorReleased()
 		then Enum.MouseBehavior.Default
 		else Enum.MouseBehavior.LockCenter
 

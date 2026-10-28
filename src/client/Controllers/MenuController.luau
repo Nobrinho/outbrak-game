@@ -6,6 +6,7 @@ local UserInputService = game:GetService("UserInputService")
 local Input = require(script.Parent.InputController)
 local Theme = require(script.Parent.Parent.UI.Theme)
 local Layout = require(script.Parent.Parent.UI.Layout)
+local Hotkeys = require(script.Parent.Parent.UI.Hotkeys)
 local Settings = require(script.Parent.Parent.UI.ControlSettings)
 local Menu = {}
 local screen: ScreenGui
@@ -52,7 +53,7 @@ local function refresh()
 	end
 	detail.Text = if touch
 		then "Segure ATIRAR e arraste para acompanhar o alvo.\nAnalógico e pulo são do Roblox. Ajustes valem nesta sessão.\nA partida online continua com o menu aberto."
-		else "WASD: mover · Mouse: tiro / mira\nR: recarga · Q: habilidade · G: granada\nV: corpo a corpo · E: interagir · Espaço: pular"
+		else "WASD: mover · Mouse: tiro / mira\nR: recarga · Q: habilidade · G: granada\nV: corpo a corpo · E: interagir · Espaço: pular\nM: menu · C: classe · F: pronto · H: acampamento\nSegure Alt para soltar o cursor"
 end
 function Menu.init()
 	screen = Instance.new("ScreenGui")
@@ -68,15 +69,11 @@ function Menu.init()
 	Theme.panel(panel, 0.05)
 	panel.Visible = false
 	panel.Parent = screen
-	Theme.text(
-		panel,
-		"display",
-		{
-			Position = UDim2.fromOffset(16, 8),
-			Size = UDim2.new(1, -32, 0, 32),
-			Text = "MENU E CONTROLES",
-		}
-	)
+	Theme.text(panel, "display", {
+		Position = UDim2.fromOffset(16, 8),
+		Size = UDim2.new(1, -32, 0, 32),
+		Text = "MENU E CONTROLES",
+	})
 	list = Instance.new("ScrollingFrame")
 	list.Name = "Options"
 	list.Position = UDim2.fromOffset(16, 48)
@@ -141,6 +138,9 @@ function Menu.init()
 		setOpen(false)
 	end)
 	openButton.Activated:Connect(function()
+		setOpen(not panel.Visible)
+	end)
+	Hotkeys.bind(Enum.KeyCode.M, openButton, function()
 		setOpen(not panel.Visible)
 	end)
 	Input.registerModal("Menu", function()
