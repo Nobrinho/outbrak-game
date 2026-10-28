@@ -69,6 +69,7 @@ function ControlLayout.solve(width: number, height: number, nativeJump: Rect?, e
 					ammoWidth,
 					44
 				)
+				local contextHint = rect(ammo.x, ammo.y - 52, ammo.w, 44)
 				local vitals =
 					rect(margin, movement.y - 50, math.min(180, movement.w - margin * 2), 40)
 				local bannerWidth = math.min(280, width - 240)
@@ -78,6 +79,7 @@ function ControlLayout.solve(width: number, height: number, nativeJump: Rect?, e
 				local widgets = {
 					Vitals = vitals,
 					Ammo = ammo,
+					ContextHint = contextHint,
 					Banner = banner,
 					Boss = boss,
 					Menu = rect(width - 100, 12, 88, 44),
@@ -118,6 +120,7 @@ function ControlLayout.solve(width: number, height: number, nativeJump: Rect?, e
 					profile = profile.name,
 					actions = actions,
 					ammo = ammo,
+					contextHint = contextHint,
 					vitals = vitals,
 					banner = banner,
 					boss = boss,

@@ -6,6 +6,7 @@
 local UserInputService = game:GetService("UserInputService")
 
 local GuiService = game:GetService("GuiService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ActionState = require(script.Parent.Parent.UI.ActionState)
 local Settings = require(script.Parent.Parent.UI.ControlSettings)
 local Signal = require(game:GetService("ReplicatedStorage").Shared.Util.Signal)
@@ -46,6 +47,7 @@ function InputController.cancelAll(reason: string)
 end
 local modals: { [string]: boolean } = {}
 local closers: { [string]: () -> () } = {}
+local savedPromptsEnabled: boolean? = nil
 
 function InputController.registerModal(name: string, close: () -> ())
 	closers[name] = close
@@ -89,6 +91,17 @@ function InputController.setModal(name: string, open: boolean)
 	modals[name] = if open then true else nil
 	if open then
 		InputController.cancelAll("modal")
+	end
+	-- Native prompts also receive E/touch directly, outside our action router.
+	-- Suspend them while a modal is open so interaction cannot leak behind a menu.
+	if InputController.isModalOpen() then
+		if savedPromptsEnabled == nil then
+			savedPromptsEnabled = ProximityPromptService.Enabled
+		end
+		ProximityPromptService.Enabled = false
+	elseif savedPromptsEnabled ~= nil then
+		ProximityPromptService.Enabled = savedPromptsEnabled
+		savedPromptsEnabled = nil
 	end
 	InputController.modalChanged:fire(InputController.isModalOpen())
 end

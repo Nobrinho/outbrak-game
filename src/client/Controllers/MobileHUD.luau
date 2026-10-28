@@ -27,22 +27,14 @@ local COLOR_FIRE = Color3.fromRGB(220, 40, 40)
 local COLOR_CONTEXT = Color3.fromRGB(255, 204, 0)
 local COLOR_READY = Color3.fromRGB(0, 200, 230)
 
--- Button layout inside the cluster frame (scale units of the cluster, a square anchored
--- bottom-right; pos is the button centre). ATIRAR is biggest and sits where the thumb rests;
--- the rest arc around it without touching.
-type ButtonSpec = { action: Action, label: string, pos: Vector2, size: number, color: Color3? }
+-- Visual content only; ControlLayout owns geometry and minimum touch targets.
+type ButtonSpec = { action: Action, label: string, color: Color3? }
 local BUTTONS: { ButtonSpec } = {
-	{
-		action = "Fire",
-		label = "ATIRAR",
-		pos = Vector2.new(0.82, 0.79),
-		size = 76 / 210,
-		color = COLOR_FIRE,
-	},
-	{ action = "Aim", label = "MIRA", pos = Vector2.new(0.13, 0.60), size = 52 / 210 },
-	{ action = "Reload", label = "RECARGA", pos = Vector2.new(0.43, 0.86), size = 52 / 210 },
-	{ action = "Grenade", label = "GRANADA", pos = Vector2.new(0.13, 0.15), size = 52 / 210 },
-	{ action = "Ability", label = "PODER", pos = Vector2.new(0.43, 0.15), size = 52 / 210 },
+	{ action = "Fire", label = "ATIRAR", color = COLOR_FIRE },
+	{ action = "Aim", label = "MIRA" },
+	{ action = "Reload", label = "RECARGA" },
+	{ action = "Grenade", label = "GRANADA" },
+	{ action = "Ability", label = "PODER" },
 }
 
 local ACTION_ICON = {
@@ -58,11 +50,11 @@ local ACTION_ICON = {
 
 local player = Players.LocalPlayer
 local screen: ScreenGui
-local contextButton: TextButton
-local abilityButton: TextButton?
-local aimButton: TextButton?
+local contextButton: TextLabel
+local abilityButton: TextLabel?
+local aimButton: TextLabel?
 local grenadeBadge: TextLabel?
-local actionButtons: { [Action]: TextButton } = {}
+local actionButtons: { [Action]: TextLabel } = {}
 local aiming = false
 local router = TouchRouter.new()
 local hitTargets: { [GuiObject]: GuiObject } = {}
@@ -74,11 +66,19 @@ local function cancelTouches()
 	aiming = false
 	InputController.setAction("Aim", false, "touch.Aim")
 end
+local contextHint: TextLabel
+local promptStyle: Enum.ProximityPromptStyle?
 local contextFill: Frame?
 local holdStarted = 0
 local shownPrompt: ProximityPrompt?
 local holdingPrompt: ProximityPrompt?
 
+local function restorePromptStyle()
+	if shownPrompt and shownPrompt.Parent and promptStyle then
+		shownPrompt.Style = promptStyle
+	end
+	promptStyle = nil
+end
 local function corner(parent: GuiObject, radius: UDim)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = radius
@@ -87,7 +87,7 @@ end
 
 -- `passThrough` buttons are labels that don't sink the touch, so the default camera still
 -- turns when that finger drags (ATIRAR: hold to fire and drag to aim with one thumb).
-local function makeButton(spec: ButtonSpec, parent: GuiObject, passThrough: boolean?): TextButton
+local function makeButton(spec: ButtonSpec, parent: Instance, passThrough: boolean?): TextLabel
 	local target: any = Instance.new(if passThrough then "Frame" else "TextButton")
 	target.Name = spec.action
 	target.BackgroundTransparency = 1
@@ -283,10 +283,16 @@ local function buildTouchCluster()
 	contextButton = makeButton({
 		action = "Interact",
 		label = "USAR",
-		pos = Vector2.new(0.34, 0.32),
-		size = 0.2,
 		color = COLOR_CONTEXT,
 	}, screen)
+	contextHint = Theme.text(screen, "label", {
+		Name = "ContextHint",
+		TextWrapped = true,
+		Visible = false,
+		BackgroundColor3 = COLOR_PANEL,
+		BackgroundTransparency = 0.2,
+	})
+	Layout.limitText(contextHint, 12, 16)
 	contextButton.TextColor3 = COLOR_PANEL
 	contextButton.Visible = true
 	hitTargets[contextButton].Visible = false
@@ -313,8 +319,7 @@ local function buildTouchCluster()
 	fill.BorderSizePixel = 0
 	fill.Parent = contextButton
 	contextFill = fill
-	local knife =
-		makeButton({ action = "Melee", label = "FACA", pos = Vector2.zero, size = 1 }, screen)
+	local knife = makeButton({ action = "Melee", label = "FACA" }, screen)
 	knife.Name = "MeleeQuickSlot"
 	hitTargets[knife].Name = "MeleeQuickSlot"
 	bindHold(knife, function()
@@ -345,6 +350,7 @@ local function buildTouchCluster()
 		end
 		Layout.place(hitTargets[knife], model.actions.Melee)
 		Layout.place(hitTargets[contextButton], model.actions.Interact)
+		Layout.place(contextHint, model.contextHint)
 		screen:SetAttribute("LayoutProfile", model.profile)
 		screen:SetAttribute("LayoutValid", model.valid)
 		screen:SetAttribute("ControlsEnlarged", model.enlargement > 1)
@@ -372,17 +378,19 @@ local function watchPrompts()
 		if holdingPrompt and holdingPrompt ~= prompt then
 			router.cancel()
 		end
+		if shownPrompt ~= prompt then
+			restorePromptStyle()
+		end
 		shownPrompt = prompt
-		contextButton.Text = Text.upper(prompt.ActionText)
+		contextButton.Text = "USAR"
+		contextHint.Text = Text.upper(prompt.ActionText)
 		hitTargets[contextButton].Visible = screen.Enabled
 	end)
 	ProximityPromptService.PromptHidden:Connect(function(prompt)
 		if prompt == shownPrompt then
-			if holdingPrompt then
-				holdingPrompt:InputHoldEnd()
-				holdingPrompt = nil
-			end
+			router.releaseControl("Interact")
 			InputController.setAction("Interact", false, "touch.Interact")
+			restorePromptStyle()
 			shownPrompt = nil
 			hitTargets[contextButton].Visible = false
 		end
@@ -399,74 +407,93 @@ end
 function MobileHUD.start()
 	-- Always landscape on phones, whichever way the device is held (also set on StarterGui).
 	player:WaitForChild("PlayerGui").ScreenOrientation = Enum.ScreenOrientation.LandscapeSensor
-	if UserInputService.TouchEnabled then
+	screen.Parent = player:WaitForChild("PlayerGui")
+	local built = false
+	local function buildIfAvailable()
+		if built or not UserInputService.TouchEnabled then
+			return
+		end
+		built = true
 		buildTouchCluster()
 		watchPrompts()
 		-- Our context button replaces the built-in prompt tap target.
 		ProximityPromptService.MaxPromptsVisible = 1
-		-- Live button states: PODER's cooldown/ready ring, MIRA on/off, grenades left.
-		RunService.RenderStepped:Connect(function()
-			local match = ReplicatedStorage:FindFirstChild("Match")
-			local phase = match and match:GetAttribute("Phase")
-			local character = player.Character
-			local human = character and character:FindFirstChildOfClass("Humanoid")
-			local enabled = Layout.isTouch()
-				and not InputController.isModalOpen()
-				and player:GetAttribute("InMatch") == true
-				and human ~= nil
-				and human.Health > 0
-				and (phase == "Prep" or phase == "Wave" or phase == "Final" or phase == "Extract")
-			if screen.Enabled and not enabled then
-				cancelTouches()
-			end
-			screen.Enabled = enabled
-			hitTargets[contextButton].Visible = shownPrompt ~= nil and enabled
-			if contextFill then
-				contextFill.Size = UDim2.fromScale(
-					if holdingPrompt
-						then math.clamp(
-							(os.clock() - holdStarted) / math.max(holdingPrompt.HoldDuration, 0.01),
-							0,
-							1
-						)
-						else 0,
-					0.06
-				)
-			end
-			-- A menu or death can release Aim behind our back; keep the toggle in sync.
-			if aiming and not InputController.isDown("Aim") then
-				aiming = false
-			end
-			local aim = aimButton
-			if aim then
-				aim.BackgroundColor3 = if aiming then COLOR_READY else COLOR_PANEL
-			end
-			local badge = grenadeBadge
-			if badge then
-				local count = WeaponController.view.grenades
-				badge.Text = tostring(count)
-				badge.BackgroundColor3 = if count > 0
-					then COLOR_CONTEXT
-					else Color3.fromRGB(90, 90, 90)
-			end
-			local button = abilityButton
-			if not button then
-				return
-			end
-			local readyAt = player:GetAttribute("AbilityReadyAt")
-			local left = if typeof(readyAt) == "number"
-				then readyAt - workspace:GetServerTimeNow()
-				else 0
-			button.Text = if left > 0 then tostring(math.ceil(left)) else "PODER"
-			button.TextTransparency = if left > 0 then 0.35 else 0
-			local stroke = button:FindFirstChildOfClass("UIStroke")
-			if stroke then
-				stroke.Color = if left > 0 then COLOR_TEXT else COLOR_READY
-				stroke.Transparency = if left > 0 then 0.7 else 0
-				stroke.Thickness = if left > 0 then 2 else 4
-			end
-		end)
 	end
+	buildIfAvailable()
+	UserInputService:GetPropertyChangedSignal("TouchEnabled"):Connect(buildIfAvailable)
+	-- Live button states: PODER's cooldown/ready ring, MIRA on/off, grenades left.
+	RunService.RenderStepped:Connect(function()
+		if not built then
+			return
+		end
+		local match = ReplicatedStorage:FindFirstChild("Match")
+		local phase = match and match:GetAttribute("Phase")
+		local character = player.Character
+		local human = character and character:FindFirstChildOfClass("Humanoid")
+		local enabled = Layout.isTouch()
+			and not InputController.isModalOpen()
+			and player:GetAttribute("InMatch") == true
+			and human ~= nil
+			and human.Health > 0
+			and (phase == "Prep" or phase == "Wave" or phase == "Final" or phase == "Extract")
+		if screen.Enabled and not enabled then
+			cancelTouches()
+		end
+		screen.Enabled = enabled
+		hitTargets[contextButton].Visible = shownPrompt ~= nil and enabled
+		contextHint.Visible = shownPrompt ~= nil and enabled
+		if shownPrompt then
+			contextHint.Text = Text.upper(shownPrompt.ActionText)
+			if enabled and not promptStyle then
+				promptStyle = shownPrompt.Style
+				shownPrompt.Style = Enum.ProximityPromptStyle.Custom
+			elseif not enabled then
+				restorePromptStyle()
+			end
+		end
+		if contextFill then
+			contextFill.Size = UDim2.fromScale(
+				if holdingPrompt
+					then math.clamp(
+						(os.clock() - holdStarted) / math.max(holdingPrompt.HoldDuration, 0.01),
+						0,
+						1
+					)
+					else 0,
+				0.06
+			)
+		end
+		-- A menu or death can release Aim behind our back; keep the toggle in sync.
+		if aiming and not InputController.isDown("Aim") then
+			aiming = false
+		end
+		local aim = aimButton
+		if aim then
+			aim.BackgroundColor3 = if aiming then COLOR_READY else COLOR_PANEL
+		end
+		local badge = grenadeBadge
+		if badge then
+			local count = WeaponController.view.grenades
+			badge.Text = tostring(count)
+			badge.BackgroundColor3 = if count > 0 then COLOR_CONTEXT else Color3.fromRGB(90, 90, 90)
+		end
+		local button = abilityButton
+		if not button then
+			return
+		end
+		local readyAt = player:GetAttribute("AbilityReadyAt")
+		local left = if typeof(readyAt) == "number"
+			then readyAt - workspace:GetServerTimeNow()
+			else 0
+		button.Text = if left > 0 then tostring(math.ceil(left)) else "PODER"
+		button.TextTransparency = if left > 0 then 0.35 else 0
+		local stroke = button:FindFirstChildOfClass("UIStroke")
+		if stroke then
+			stroke.Color = if left > 0 then COLOR_TEXT else COLOR_READY
+			stroke.Transparency = if left > 0 then 0.7 else 0
+			stroke.Thickness = if left > 0 then 2 else 4
+		end
+	end)
 
 	InputController.cancelled:connect(function()
 		cancelTouches()
@@ -479,7 +506,6 @@ function MobileHUD.start()
 			router.release(input)
 		end
 	end)
-	screen.Parent = player:WaitForChild("PlayerGui")
 end
 
 return MobileHUD
