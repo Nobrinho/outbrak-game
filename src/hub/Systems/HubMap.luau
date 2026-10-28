@@ -521,6 +521,11 @@ local function buildLighting()
 	Lighting.ExposureCompensation = 0.2
 	Lighting.Ambient = Color3.fromRGB(96, 84, 82)
 	Lighting.OutdoorAmbient = Color3.fromRGB(140, 120, 112)
+	-- Set explicitly so nothing saved in the place (e.g. a map's night values) leaks in.
+	Lighting.GeographicLatitude = 0
+	Lighting.EnvironmentDiffuseScale = 0.3
+	Lighting.EnvironmentSpecularScale = 0.2
+	Lighting.ShadowSoftness = 0.2
 	local atmosphere = effect("Atmosphere") :: Atmosphere
 	atmosphere.Density = 0.3
 	atmosphere.Offset = 0.05
