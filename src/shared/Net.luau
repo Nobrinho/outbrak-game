@@ -70,6 +70,11 @@ function Net.throwGrenade(): RemoteEvent
 	return get("ThrowGrenade", "RemoteEvent") :: RemoteEvent
 end
 
+-- Client → server: (slot: number) 1 primary, 2 sidearm, 3 melee.
+function Net.switchSlot(): RemoteEvent
+	return get("SwitchSlot", "RemoteEvent") :: RemoteEvent
+end
+
 -- Server → client: authoritative WeaponState. Client → server (no payload): request one.
 function Net.weaponSync(): RemoteEvent
 	return get("WeaponSync", "RemoteEvent") :: RemoteEvent

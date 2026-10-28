@@ -31,11 +31,17 @@ local MELEE_ARC_SLACK = 15
 local FIRE_BURST = 2 -- shots that may arrive bunched together by network jitter
 local SYNC_MIN_INTERVAL = 0.25
 
+type Ammo = { mag: number, reserve: number }
+-- Three slots: 1 the primary `gun`, 2 the `sidearm`, 3 the `melee`. Each gun keeps its own
+-- magazine and reserve while holstered.
 type PlayerState = {
 	gun: Config.GunName,
+	sidearm: Config.GunName,
 	melee: Config.MeleeName,
-	mag: number,
-	reserve: number,
+	slot: number,
+	ammo: { primary: Ammo, sidearm: Ammo },
+	drawnAt: number, -- the weapon in hand is ready (holster + draw finished)
+	nextSwitch: number,
 	grenades: number,
 	reloadToken: number, -- bumps on every reload start/cancel so stale timers do nothing
 	reloading: boolean,
@@ -67,14 +73,22 @@ local function reserveFor(player: Player, gun: Config.GunName): number
 	return math.floor(Config.GUNS[gun].reserveMax * classOf(player).reserveBonus)
 end
 
+local function fullAmmo(player: Player, gun: Config.GunName): Ammo
+	return { mag = Config.GUNS[gun].magSize, reserve = reserveFor(player, gun) }
+end
+
 local function newState(player: Player): PlayerState
 	local class = classOf(player)
 	local gun = class.startGun
+	local sidearm = Config.LOADOUT.sidearm
 	return {
 		gun = gun,
+		sidearm = sidearm,
 		melee = Config.LOADOUT.melee,
-		mag = Config.GUNS[gun].magSize,
-		reserve = reserveFor(player, gun),
+		slot = 1,
+		ammo = { primary = fullAmmo(player, gun), sidearm = fullAmmo(player, sidearm) },
+		drawnAt = 0,
+		nextSwitch = 0,
 		grenades = class.grenades,
 		reloadToken = 0,
 		reloading = false,
@@ -88,19 +102,43 @@ local function newState(player: Player): PlayerState
 	}
 end
 
+-- The gun in hand and its ammo; nil while the melee weapon is out.
+local function heldGun(state: PlayerState): (Config.GunName?, Ammo?)
+	if state.slot == 1 then
+		return state.gun, state.ammo.primary
+	elseif state.slot == 2 then
+		return state.sidearm, state.ammo.sidearm
+	end
+	return nil, nil
+end
+
+-- Which model goes in the hand for the current slot.
+local function heldModel(state: PlayerState): string
+	return heldGun(state) or state.melee
+end
+
 local function sendSync(player: Player)
 	local state = states[player]
 	if not state then
 		return
 	end
+	local held, ammo = heldGun(state)
+	local shown = ammo or state.ammo.primary
 	local payload: Types.WeaponState = {
-		gun = state.gun,
+		gun = held or state.gun,
 		melee = state.melee,
-		mag = state.mag,
-		reserve = state.reserve,
+		mag = shown.mag,
+		reserve = shown.reserve,
 		grenades = state.grenades,
 		reloading = state.reloading,
 		shotSeq = shotSeqs[player] or 0,
+		slot = state.slot,
+		primary = state.gun,
+		sidearm = state.sidearm,
+		primaryMag = state.ammo.primary.mag,
+		primaryReserve = state.ammo.primary.reserve,
+		sidearmMag = state.ammo.sidearm.mag,
+		sidearmReserve = state.ammo.sidearm.reserve,
 	}
 	state.lastSync = os.clock()
 	syncRemote:FireClient(player, payload)
@@ -211,32 +249,42 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 	end
 	shotSeqs[player] = seq
 
-	local gun = Config.GUNS[state.gun]
+	local gunName, ammo = heldGun(state)
 	local _, root, head = aliveCharacter(player)
-	if not root or not head or state.reloading or state.mag < 1 then
+	if
+		not gunName
+		or not ammo
+		or not root
+		or not head
+		or state.reloading
+		or ammo.mag < 1
+		or os.clock() < state.drawnAt - 0.1
+	then
 		debugLog(
 			player,
 			string.format(
-				"tiro recusado (vivo=%s recarregando=%s pente=%d)",
+				"tiro recusado (vivo=%s recarregando=%s pente=%d slot=%d)",
 				tostring(root ~= nil),
 				tostring(state.reloading),
-				state.mag
+				if ammo then ammo.mag else 0,
+				state.slot
 			)
 		)
 		queueSync(player)
 		return
 	end
+	local gun = Config.GUNS[gunName]
 	if not takeFireAllowance(state, gun.fireRate) then
 		debugLog(player, "tiro recusado: cadência acima do limite")
 		queueSync(player)
 		return
 	end
 	if not Config.DEBUG.infiniteAmmo then
-		state.mag -= 1
+		ammo.mag -= 1
 	end
 	HordeService.noise(root.Position, gun.noise, 2.5, player)
-	shotFxRemote:FireAllClients(player, state.gun)
-	characterFxRemote:FireAllClients(player, "shot", state.gun)
+	shotFxRemote:FireAllClients(player, gunName)
+	characterFxRemote:FireAllClients(player, "shot", gunName)
 
 	local hitList = hits :: { unknown }
 	local eye = head.Position
@@ -265,7 +313,7 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 						local damage = gun.damage
 							* (if isHead then gun.headMultiplier else 1)
 							* backMultiplier(zombie, eye)
-							* (classOf(player).damageBonus[state.gun] or 1)
+							* (classOf(player).damageBonus[gunName] or 1)
 						local killed = HordeService.damage(zombie, damage, player)
 						if not killed and incendiary then
 							HordeService.bleed(zombie, ability.burnDps, ability.burnTime, player)
@@ -296,14 +344,17 @@ local function onFire(player: Player, shotSeq: unknown, hits: unknown)
 	end
 end
 
+-- Switching weapons bumps reloadToken, so a reload always finishes on the gun it started on.
 local function finishReload(player: Player, state: PlayerState, token: number)
 	if states[player] ~= state or state.reloadToken ~= token then
 		return
 	end
-	local gun = Config.GUNS[state.gun]
-	local amount = math.min(gun.magSize - state.mag, state.reserve)
-	state.mag += amount
-	state.reserve -= amount
+	local gunName, ammo = heldGun(state)
+	if gunName and ammo then
+		local amount = math.min(Config.GUNS[gunName].magSize - ammo.mag, ammo.reserve)
+		ammo.mag += amount
+		ammo.reserve -= amount
+	end
 	state.reloading = false
 	sendSync(player)
 end
@@ -313,18 +364,25 @@ local function onReload(player: Player)
 	if not state then
 		return
 	end
-	local gun = Config.GUNS[state.gun]
+	local gunName, ammo = heldGun(state)
 	local humanoid = aliveCharacter(player)
-	if not humanoid or state.reloading or state.mag >= gun.magSize or state.reserve <= 0 then
+	if
+		not gunName
+		or not ammo
+		or not humanoid
+		or state.reloading
+		or ammo.mag >= Config.GUNS[gunName].magSize
+		or ammo.reserve <= 0
+	then
 		queueSync(player)
 		return
 	end
 	state.reloading = true
-	characterFxRemote:FireAllClients(player, "reload", state.gun)
+	characterFxRemote:FireAllClients(player, "reload", gunName)
 	state.reloadToken += 1
 	local token = state.reloadToken
 	sendSync(player)
-	task.delay(gun.reloadTime, finishReload, player, state, token)
+	task.delay(Config.GUNS[gunName].reloadTime, finishReload, player, state, token)
 end
 
 -- Melee ------------------------------------------------------------------------------------
@@ -342,7 +400,7 @@ local function onMelee(player: Player)
 		return
 	end
 	state.nextMelee = now + melee.cooldown
-	characterFxRemote:FireAllClients(player, "melee", state.gun)
+	characterFxRemote:FireAllClients(player, "melee", heldModel(state))
 
 	local look = root.CFrame.LookVector
 	local forward = Vector3.new(look.X, 0, look.Z).Unit
@@ -413,7 +471,7 @@ local function onThrowGrenade(player: Player, direction: unknown)
 		state.grenades -= 1
 	end
 	state.nextGrenade = now + g.cooldown
-	characterFxRemote:FireAllClients(player, "throw", state.gun)
+	characterFxRemote:FireAllClients(player, "throw", heldModel(state))
 
 	local grenade = Instance.new("Part")
 	grenade.Name = "Grenade"
@@ -483,7 +541,8 @@ local function onAmmoBox(player: Player)
 		return
 	end
 	state.ammoBoxReadyAt = now + Config.AMMO_BOX_COOLDOWN
-	state.reserve = reserveFor(player, state.gun)
+	state.ammo.primary.reserve = reserveFor(player, state.gun)
+	state.ammo.sidearm.reserve = reserveFor(player, state.sidearm)
 	state.grenades = classOf(player).grenades
 	sendSync(player)
 end
@@ -495,7 +554,7 @@ local function watchAmmoBox(box: Instance)
 	end
 end
 
--- Puts the current gun's low-poly model (Art/WeaponModels) in the right hand, replacing
+-- Puts a weapon's low-poly model (Art/WeaponModels, gun or melee) in the right hand, replacing
 -- the previous one. Other players see it; the client also uses its Muzzle for tracers.
 local function attachWeapon(character: Model, gun: string)
 	local hand = character:WaitForChild("RightHand", 5) or character:FindFirstChild("Right Arm")
@@ -513,37 +572,85 @@ local function attachWeapon(character: Model, gun: string)
 		return
 	end
 	model.Name = "Gun"
+	-- Every piece hangs off an invisible Handle at the grip; the Handle rides a Motor6D on the
+	-- hand so clients can move the gun in the hand (recoil, tilts) through GripMotor.Transform.
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(0.2, 0.2, 0.2)
+	handle.Transparency = 1
+	handle.Massless = true
+	handle.CanCollide = false
+	handle.CanQuery = false
+	handle.CanTouch = false
+	handle.CFrame = model:GetPivot()
+	handle.Parent = model
 	-- Barrel along the hand's -Y (down the forearm) and the gun's top facing the back of the
 	-- hand, matching the aiming pose the client puts the arms in (PoseController).
 	model:PivotTo(hand.CFrame * CFrame.new(0, -0.3, 0) * CFrame.Angles(math.rad(-90), 0, 0))
 	for _, piece in model:GetChildren() do
-		if piece:IsA("BasePart") then
+		if piece:IsA("BasePart") and piece ~= handle then
 			local weld = Instance.new("WeldConstraint")
-			weld.Part0 = hand
+			weld.Part0 = handle
 			weld.Part1 = piece
 			weld.Parent = piece
 		end
 	end
+	local grip = Instance.new("Motor6D")
+	grip.Name = "GripMotor"
+	grip.Part0 = hand
+	grip.Part1 = handle
+	grip.C0 = hand.CFrame:ToObjectSpace(handle.CFrame)
+	grip.Parent = handle
 	model.Parent = character
 end
 
 -- Shop API ---------------------------------------------------------------------------------
 
--- Swaps the gun for `gun` with a full magazine and reserve. False if already equipped.
+-- Puts `slot` in hand: cancels a reload, starts the holster/draw delay, swaps the model and
+-- tells everyone so their clients play the draw.
+local function takeSlot(player: Player, state: PlayerState, slot: number)
+	state.slot = slot
+	state.reloading = false
+	state.reloadToken += 1
+	state.drawnAt = os.clock() + Config.LOADOUT.switchTime
+	local model = heldModel(state)
+	if player.Character then
+		attachWeapon(player.Character, model)
+	end
+	characterFxRemote:FireAllClients(player, "equip", model)
+	sendSync(player)
+end
+
+local function onSwitchSlot(player: Player, slot: unknown)
+	local state = states[player]
+	if not state or typeof(slot) ~= "number" then
+		return
+	end
+	local wanted = slot :: number
+	local now = os.clock()
+	if
+		(wanted ~= 1 and wanted ~= 2 and wanted ~= 3)
+		or wanted == state.slot
+		or now < state.nextSwitch
+		or not aliveCharacter(player)
+	then
+		queueSync(player)
+		return
+	end
+	state.nextSwitch = now + Config.LOADOUT.switchCooldown
+	takeSlot(player, state, wanted)
+end
+
+-- Swaps the primary for `gun` with a full magazine and reserve and puts it in hand. False if
+-- already owned.
 function CombatService.equipGun(player: Player, gun: Config.GunName): boolean
 	local state = states[player]
 	if not state or state.gun == gun then
 		return false
 	end
 	state.gun = gun
-	state.mag = Config.GUNS[gun].magSize
-	state.reserve = reserveFor(player, gun)
-	state.reloading = false
-	state.reloadToken += 1 -- cancels a reload in progress on the old gun
-	if player.Character then
-		attachWeapon(player.Character, gun)
-	end
-	sendSync(player)
+	state.ammo.primary = fullAmmo(player, gun)
+	takeSlot(player, state, 1)
 	return true
 end
 
@@ -553,6 +660,9 @@ function CombatService.equipMelee(player: Player, melee: Config.MeleeName): bool
 		return false
 	end
 	state.melee = melee
+	if state.slot == 3 and player.Character then
+		attachWeapon(player.Character, melee)
+	end
 	sendSync(player)
 	return true
 end
@@ -597,7 +707,7 @@ local function onPlayerAdded(player: Player)
 			end
 			local state = states[player]
 			if state and player.Character == character then
-				attachWeapon(character, state.gun)
+				attachWeapon(character, heldModel(state))
 			end
 		end)
 	end
@@ -609,7 +719,7 @@ local function onPlayerAdded(player: Player)
 	player:GetAttributeChangedSignal("SurvivorPack"):Connect(function()
 		local state = states[player]
 		if state and player.Character then
-			attachWeapon(player.Character, state.gun)
+			attachWeapon(player.Character, heldModel(state))
 		end
 	end)
 	-- Picking a class re-issues the loadout (only allowed during Prep, see ClassService).
@@ -618,7 +728,7 @@ local function onPlayerAdded(player: Player)
 			local state = newState(player)
 			states[player] = state
 			if player.Character then
-				attachWeapon(player.Character, state.gun)
+				attachWeapon(player.Character, heldModel(state))
 			end
 			sendSync(player)
 		end
@@ -637,6 +747,7 @@ end
 function CombatService.start()
 	Net.fireWeapon().OnServerEvent:Connect(onFire)
 	Net.reload().OnServerEvent:Connect(onReload)
+	Net.switchSlot().OnServerEvent:Connect(onSwitchSlot)
 	Net.melee().OnServerEvent:Connect(onMelee)
 	Net.throwGrenade().OnServerEvent:Connect(onThrowGrenade)
 	syncRemote.OnServerEvent:Connect(queueSync)

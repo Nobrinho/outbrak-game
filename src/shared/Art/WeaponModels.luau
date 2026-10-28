@@ -8,6 +8,10 @@
 -- _Wood, _WoodDark) plus <Name>_Grip / <Name>_Muzzle marker cubes (0.1 stud in Blender). The
 -- markers fix the importer's unit scale and orientation, so the raw import works as is.
 -- Without imported meshes, the part-built models below are used.
+--
+-- Magazine-fed guns get a separate "<Name>_Mag" piece (the client hides it and swaps it into
+-- the left hand while reloading): the <Name>_Mag mesh when the import has one, else a part
+-- from MAGS below.
 
 local WeaponModels = {}
 
@@ -52,7 +56,6 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 	SMG = {
 		pieces = {
 			p(Vector3.new(0.3, 0.45, 1.3), Vector3.new(0, 0.2, -0.35), METAL, Enum.Material.Metal),
-			p(Vector3.new(0.22, 0.75, 0.3), Vector3.new(0, -0.3, -0.45), METAL),
 			p(Vector3.new(0.14, 0.14, 0.5), Vector3.new(0, 0.25, -1.2), STEEL, Enum.Material.Metal),
 			p(Vector3.new(0.2, 0.35, 0.6), Vector3.new(0, 0.15, 0.55), METAL),
 		},
@@ -78,7 +81,6 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 			p(Vector3.new(0.3, 0.5, 1.8), Vector3.new(0, 0.2, -0.5), METAL, Enum.Material.Metal),
 			p(Vector3.new(0.16, 0.16, 1), Vector3.new(0, 0.3, -1.85), STEEL, Enum.Material.Metal),
 			p(Vector3.new(0.22, 0.22, 0.8), Vector3.new(0, 0.62, -0.5), METAL, Enum.Material.Metal),
-			p(Vector3.new(0.22, 0.7, 0.32), Vector3.new(0, -0.3, -0.6), METAL),
 			p(Vector3.new(0.26, 0.45, 0.9), Vector3.new(0, 0.1, 0.75), METAL),
 		},
 		muzzle = Vector3.new(0, 0.3, -2.4),
@@ -88,14 +90,6 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 			p(Vector3.new(0.3, 0.42, 1.5), Vector3.new(0, 0.2, -0.4), METAL, Enum.Material.Metal),
 			p(Vector3.new(0.32, 0.34, 0.7), Vector3.new(0, 0.18, -1.3), WOOD, Enum.Material.Wood),
 			p(Vector3.new(0.14, 0.14, 0.7), Vector3.new(0, 0.3, -1.95), STEEL, Enum.Material.Metal),
-			-- The curved magazine is the AK's silhouette.
-			p(
-				Vector3.new(0.22, 0.8, 0.32),
-				Vector3.new(0, -0.35, -0.55),
-				METAL,
-				nil,
-				Vector3.new(18, 0, 0)
-			),
 			p(
 				Vector3.new(0.26, 0.5, 1),
 				Vector3.new(0, 0.05, 0.75),
@@ -126,6 +120,38 @@ local MODELS: { [string]: { pieces: { Piece }, muzzle: Vector3 } } = {
 	},
 }
 
+-- Magazine boxes (grip space), matching the magazines in tools/blender/weapons.py.
+local MAGS: { [string]: Piece } = {
+	Pistol = p(
+		Vector3.new(0.2, 0.5, 0.26),
+		Vector3.new(0, -0.33, 0.07),
+		METAL,
+		nil,
+		Vector3.new(-14, 0, 0)
+	),
+	SMG = p(
+		Vector3.new(0.21, 0.74, 0.27),
+		Vector3.new(0, -0.32, -0.5),
+		METAL,
+		nil,
+		Vector3.new(6, 0, 0)
+	),
+	Rifle = p(
+		Vector3.new(0.21, 0.69, 0.31),
+		Vector3.new(0, -0.32, -0.6),
+		METAL,
+		nil,
+		Vector3.new(8, 0, 0)
+	),
+	AK47 = p(
+		Vector3.new(0.21, 0.85, 0.29),
+		Vector3.new(0, -0.36, -0.55),
+		METAL,
+		nil,
+		Vector3.new(18, 0, 0)
+	),
+}
+
 local GOLD = Color3.fromRGB(214, 172, 62)
 
 local TONE_COLORS: { [string]: Color3 } = {
@@ -133,6 +159,7 @@ local TONE_COLORS: { [string]: Color3 } = {
 	Steel = STEEL,
 	Wood = WOOD,
 	WoodDark = WOOD_DARK,
+	Mag = METAL,
 }
 local MARKER_SIZE = 0.1
 -- Grip → muzzle in studs as authored in Blender (assets/export/weapons.json).
@@ -145,6 +172,48 @@ local MESH_MUZZLE: { [string]: Vector3 } = {
 	Knife = Vector3.new(0, 0.03, -1.0),
 	Bat = Vector3.new(0, 0, -2.45),
 }
+
+local function newPiece(name: string, size: Vector3, cframe: CFrame): Part
+	local piece = Instance.new("Part")
+	piece.Name = name
+	piece.Size = size
+	piece.CFrame = cframe
+	piece.Anchored = false
+	piece.Massless = true
+	piece.CanCollide = false
+	piece.CanQuery = false
+	piece.CanTouch = false
+	piece.CastShadow = false
+	return piece
+end
+
+local function paint(piece: BasePart, def: Piece, skin: string?)
+	local metal = def.color == METAL or def.color == STEEL
+	if skin == "gold" and metal then
+		piece.Color = GOLD
+		piece.Material = Enum.Material.Foil
+	else
+		piece.Color = def.color
+		piece.Material = def.material or Enum.Material.SmoothPlastic
+	end
+end
+
+local function pieceFrame(def: Piece): CFrame
+	local rotation = def.rotation or Vector3.zero
+	return CFrame.new(def.offset)
+		* CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+end
+
+-- Adds the part-built "<name>_Mag" unless the model already has one (from the meshes).
+local function addMag(model: Model, name: string, skin: string?)
+	local def = MAGS[name]
+	if not def or model:FindFirstChild(name .. "_Mag") then
+		return
+	end
+	local mag = newPiece(name .. "_Mag", def.size, pieceFrame(def))
+	paint(mag, def, skin)
+	mag.Parent = model
+end
 
 local function meshSource(): Instance?
 	local assets = game:GetService("ReplicatedStorage"):FindFirstChild("Assets")
@@ -212,7 +281,7 @@ local function buildFromMeshes(name: string, skin: string?): Model?
 			local relative = gripFrame:ToObjectSpace(mesh.CFrame)
 			piece.Size = mesh.Size * scale
 			piece.CFrame = fix * (CFrame.new(relative.Position * scale) * relative.Rotation)
-			local metal = tone == "Metal" or tone == "Steel"
+			local metal = tone == "Metal" or tone == "Steel" or tone == "Mag"
 			piece.Color = if skin == "gold" and metal then GOLD else color
 			piece.Material = if skin == "gold" and metal
 				then Enum.Material.Foil
@@ -238,6 +307,7 @@ local function buildFromMeshes(name: string, skin: string?): Model?
 	muzzle.CanTouch = false
 	muzzle.CFrame = CFrame.new(expected)
 	muzzle.Parent = model
+	addMag(model, name, skin)
 	model.WorldPivot = CFrame.new()
 	return model
 end
@@ -255,39 +325,15 @@ function WeaponModels.build(name: string, skin: string?): Model?
 	end
 	local model = Instance.new("Model")
 	model.Name = name
-	local function part(partName: string, size: Vector3, cframe: CFrame): Part
-		local piece = Instance.new("Part")
-		piece.Name = partName
-		piece.Size = size
-		piece.CFrame = cframe
-		piece.Anchored = false
-		piece.Massless = true
-		piece.CanCollide = false
-		piece.CanQuery = false
-		piece.CanTouch = false
-		piece.CastShadow = false
-		piece.Parent = model
-		return piece
-	end
 	for i, piece in def.pieces do
-		local rotation = piece.rotation or Vector3.zero
-		local built = part(
-			"Piece" .. i,
-			piece.size,
-			CFrame.new(piece.offset)
-				* CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
-		)
-		local metal = piece.color == METAL or piece.color == STEEL
-		if skin == "gold" and metal then
-			built.Color = GOLD
-			built.Material = Enum.Material.Foil
-		else
-			built.Color = piece.color
-			built.Material = piece.material or Enum.Material.SmoothPlastic
-		end
+		local built = newPiece("Piece" .. i, piece.size, pieceFrame(piece))
+		paint(built, piece, skin)
+		built.Parent = model
 	end
-	local muzzle = part("Muzzle", Vector3.new(0.1, 0.1, 0.1), CFrame.new(def.muzzle))
+	addMag(model, name, skin)
+	local muzzle = newPiece("Muzzle", Vector3.new(0.1, 0.1, 0.1), CFrame.new(def.muzzle))
 	muzzle.Transparency = 1
+	muzzle.Parent = model
 	model.WorldPivot = CFrame.new()
 	return model
 end

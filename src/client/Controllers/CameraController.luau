@@ -27,7 +27,7 @@ local humanoid: Humanoid?
 local root: BasePart?
 local diedAt = 0
 local spectating: Humanoid?
-local savedCameraType: Enum.CameraType?
+local frozenForModal = false
 local spectateLabel: TextLabel
 local beforeNativeRotation = CFrame.identity
 local cameraTouchMoved = false
@@ -130,15 +130,13 @@ local function step(dt: number)
 	updateSpectate()
 	local camera = workspace.CurrentCamera
 	if InputController.isModalOpen() then
-		if not savedCameraType then
-			savedCameraType = camera.CameraType
-		end
+		frozenForModal = true
 		camera.CameraType = Enum.CameraType.Scriptable
-	else
-		if savedCameraType then
-			camera.CameraType = savedCameraType
-			savedCameraType = nil
-		end
+	elseif frozenForModal then
+		-- Always back to Custom: a modal that opens before the character spawns (class picker)
+		-- would otherwise save the engine's pre-spawn Fixed camera and restore a frozen one.
+		frozenForModal = false
+		camera.CameraType = Enum.CameraType.Custom
 	end
 	UserInputService.MouseBehavior = if InputController.isModalOpen()
 			or InputController.isTouch()

@@ -1,7 +1,9 @@
 --!strict
 -- Combat HUD, one job per corner so it reads at a glance on a phone:
 --   lower-left — health and credits (above the native stick on touch);
---   lower-right on PC / quick slots on touch — weapon and ammunition;
+--   lower-right on PC / quick slots on touch — weapon and ammunition, with the three weapon
+--               slots (1 primary, 2 pistol, 3 melee) under it; tapping the panel on touch
+--               switches to the next one;
 --   centre    — a ring crosshair, a reload bar under it and a hitmarker that flashes white on
 --               body hits and orange on headshots.
 -- On touch the grenade count and the ability cooldown live on their buttons (MobileHUD). The
@@ -37,6 +39,7 @@ local reserveLabel: TextLabel
 local gunLabel: TextLabel
 local gunImage: ImageLabel?
 local grenadeLabel: TextLabel
+local slotLabels: { TextLabel } = {}
 local creditsLabel: TextLabel
 local healthFill: Frame
 local healthBack: Frame
@@ -103,11 +106,44 @@ local function buildAmmoPanel()
 		"weapons.Pistol",
 		{ Position = UDim2.fromScale(0.03, 0.46), Size = UDim2.fromScale(0.25, 0.28) }
 	)
+	-- Weapon slots: the one in hand is bright, the others dim.
+	local strip = Instance.new("Frame")
+	strip.Name = "Slots"
+	strip.BackgroundTransparency = 1
+	strip.Position = UDim2.fromScale(0.05, 0.74)
+	strip.Size = UDim2.fromScale(0.42, 0.2)
+	strip.Parent = panel
+	local list = Instance.new("UIListLayout")
+	list.FillDirection = Enum.FillDirection.Horizontal
+	list.Padding = UDim.new(0.04, 0)
+	list.Parent = strip
+	for slot = 1, 3 do
+		slotLabels[slot] = label(strip, {
+			Name = "Slot" .. slot,
+			Size = UDim2.fromScale(0.3, 1),
+			Text = tostring(slot),
+			BackgroundColor3 = Theme.COLOR.muted,
+			BackgroundTransparency = 0.8,
+			LayoutOrder = slot,
+		})
+	end
+	-- Touch: tap the panel to switch to the next weapon.
+	local tap = Instance.new("TextButton")
+	tap.Name = "SwitchWeapon"
+	tap.Text = ""
+	tap.BackgroundTransparency = 1
+	tap.Size = UDim2.fromScale(1, 1)
+	tap.ZIndex = 5
+	tap.Visible = Layout.isTouch()
+	tap.Parent = panel
+	tap.Activated:Connect(function()
+		WeaponController.switchTo(WeaponController.view.slot % 3 + 1)
+	end)
 	-- Keyboards only: on touch these live on the grenade and ability buttons.
 	local keyboard = not Layout.isTouch()
 	grenadeLabel = label(panel, {
-		Position = UDim2.fromScale(0.05, 0.74),
-		Size = UDim2.fromScale(0.9, 0.2),
+		Position = UDim2.fromScale(0.5, 0.74),
+		Size = UDim2.fromScale(0.45, 0.2),
 		TextXAlignment = Enum.TextXAlignment.Right,
 		TextColor3 = Theme.COLOR.muted,
 		Visible = keyboard,
@@ -381,6 +417,23 @@ end
 
 local function refresh()
 	local view = WeaponController.view
+	for slot, slotLabel in slotLabels do
+		local active = slot == view.slot
+		slotLabel.TextTransparency = if active then 0 else 0.55
+		slotLabel.BackgroundTransparency = if active then 0.45 else 0.85
+	end
+	grenadeLabel.Text = "GRANADAS: " .. view.grenades
+	if view.slot == 3 then
+		-- Melee in hand: no ammunition to show.
+		gunLabel.Text = Text.upper(Config.MELEE[view.melee].displayName)
+		magLabel.Text = "—"
+		magLabel.TextColor3 = COLOR_TEXT
+		reserveLabel.Text = ""
+		if gunImage then
+			gunImage.Visible = false
+		end
+		return
+	end
 	local gun = Config.GUNS[view.gun]
 	gunLabel.Text = Text.upper(gun.displayName)
 	if gunImage then
